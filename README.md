@@ -2,8 +2,6 @@
 
 A small collection of browser-based astronomy tools for the Friday astronomy club at Watling Academy in Milton Keynes. The club runs from October to February; this site is its growing project hub.
 
-**Live hub:** https://ttfnrob.github.io/astronomy-club/ (available after GitHub Pages is enabled and its first deployment completes).
-
 ## Projects
 
 ### Exoplanet Drawing Board
@@ -26,4 +24,4 @@ The main app is self-contained HTML, CSS and JavaScript. It loads two optional t
 
 ## Publishing
 
-GitHub Actions deploys the contents of the repository root to GitHub Pages when commits are pushed to `main`. The workflow is in `.github/workflows/pages.yml`.
+GitHub Pages should serve the repository root from the `main` branch. There is no build step: Pages publishes the static HTML, SVG and README files as-is. The `.nojekyll` marker disables Jekyll processing, which this static site does not need.
