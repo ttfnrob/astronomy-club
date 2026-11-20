@@ -2,6 +2,8 @@
 
 A small collection of browser-based astronomy tools for the Friday astronomy club at Watling Academy in Milton Keynes. The club runs from October to February; this site is its growing project hub.
 
+**Live hub:** https://ttfnrob.github.io/astronomy-club/ (the custom domain `club.orbitingfrog.com` is being set up).
+
 ## Projects
 
 ### Exoplanet Drawing Board
