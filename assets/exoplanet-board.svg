@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 510" role="img" aria-labelledby="title desc">
+  <title id="title">Exoplanet Drawing Board</title><desc id="desc">A glowing star surrounded by illustrated planetary orbits on a starry blue background.</desc>
+  <defs><radialGradient id="bg"><stop stop-color="#172e49"/><stop offset="1" stop-color="#08111e"/></radialGradient><radialGradient id="sun"><stop stop-color="#fff6c2"/><stop offset=".42" stop-color="#ffd77a"/><stop offset="1" stop-color="#f49a53" stop-opacity=".12"/></radialGradient></defs>
+  <rect width="960" height="510" fill="url(#bg)"/>
+  <g fill="none" stroke="#d5e6f5"><ellipse cx="657" cy="248" rx="126" ry="86" stroke-opacity=".42"/><ellipse cx="657" cy="248" rx="220" ry="143" transform="rotate(-17 657 248)" stroke-opacity=".34"/><ellipse cx="657" cy="248" rx="308" ry="192" transform="rotate(19 657 248)" stroke-opacity=".26"/><ellipse cx="657" cy="248" rx="396" ry="233" transform="rotate(-9 657 248)" stroke-opacity=".18"/></g>
+  <circle cx="657" cy="248" r="55" fill="url(#sun)"/><circle cx="657" cy="248" r="18" fill="#ffe89d"/>
+  <circle cx="782" cy="248" r="9" fill="#91d9ed"/><circle cx="450" cy="196" r="12" fill="#f2d2a0"/><circle cx="963" cy="228" r="8" fill="#cfadff"/><circle cx="474" cy="472" r="7" fill="#86c8db"/>
+  <g fill="#f5f8fb" opacity=".75"><circle cx="124" cy="67" r="2"/><circle cx="361" cy="112" r="2"/><circle cx="845" cy="79" r="2"/><circle cx="578" cy="36" r="1.5"/><circle cx="305" cy="384" r="2"/><circle cx="886" cy="375" r="1.5"/><circle cx="84" cy="274" r="1.5"/><circle cx="544" cy="414" r="2"/></g>
+  <g font-family="system-ui,sans-serif"><text x="56" y="206" fill="#ffd77a" font-size="17" font-weight="700" letter-spacing="4">WATLING ASTRONOMY CLUB</text><text x="52" y="270" fill="#f4f7fb" font-family="Georgia,serif" font-size="46">Exoplanet</text><text x="52" y="322" fill="#f4f7fb" font-family="Georgia,serif" font-size="46">Drawing Board</text><text x="56" y="361" fill="#adc1d5" font-size="17">Real worlds. Drawn to explore.</text></g>
+</svg>

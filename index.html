@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="A collection of small astronomy tools made for Watling Astronomy Club at Watling Academy, Milton Keynes.">
+  <title>Watling Astronomy Club | Explore the sky</title>
+  <style>
+    :root{color-scheme:dark;--night:#07111f;--panel:#0d1b2c;--panel2:#102239;--line:#223750;--text:#f4f7fb;--muted:#a9bbce;--gold:#ffd77a;--cyan:#89d9ed;--serif:Georgia,'Times New Roman',serif;--sans:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(ellipse at 76% 0%,#17304a 0,transparent 38rem),var(--night);color:var(--text);font:16px/1.6 var(--sans)}
+    a{color:inherit}
+    .wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+    .top{padding:26px 0;border-bottom:1px solid #ffffff12}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:650;letter-spacing:.02em}
+    .mark{width:36px;height:36px;display:grid;place-items:center;border:1px solid #ffffff33;border-radius:50%;color:var(--gold);font-size:20px}
+    .hero{position:relative;padding:clamp(64px,12vw,132px) 0 92px;overflow:hidden}
+    .eyebrow{color:var(--gold);font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+    h1,h2,h3,p{margin-top:0}
+    h1{max-width:760px;margin:.8rem 0 1rem;font:400 clamp(3rem,8vw,6.8rem)/.98 var(--serif);letter-spacing:-.045em}
+    .intro{max-width:650px;color:#c2d0de;font-size:clamp(1.05rem,2vw,1.24rem)}
+    .season{display:inline-flex;align-items:center;gap:9px;margin-top:22px;padding:8px 13px;border:1px solid #ffffff25;border-radius:999px;color:#d5e2ef;font-size:.9rem}
+    .season:before{content:"";width:7px;height:7px;background:var(--gold);border-radius:50%;box-shadow:0 0 14px var(--gold)}
+    .orbit{position:absolute;right:-40px;top:38px;width:min(42vw,440px);height:auto;opacity:.72;pointer-events:none}
+    .tools{padding:0 0 100px}
+    .section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:24px}
+    h2{margin-bottom:0;font:400 clamp(2rem,4vw,3rem)/1.1 var(--serif)}
+    .section-head p{max-width:390px;margin:0;color:var(--muted);font-size:.94rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:22px}
+    .card{display:flex;flex-direction:column;min-height:100%;overflow:hidden;background:linear-gradient(155deg,#11243a,#0c1928 72%);border:1px solid var(--line);border-radius:16px;text-decoration:none;transition:transform .2s,border-color .2s,box-shadow .2s}
+    .card:hover{transform:translateY(-4px);border-color:#577491;box-shadow:0 18px 45px #0004}
+    .card:focus-visible,.brand:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+    .thumb{display:block;width:100%;aspect-ratio:16/8.5;background:#0a1421;border-bottom:1px solid var(--line);object-fit:cover}
+    .card-body{display:flex;flex:1;flex-direction:column;padding:22px 23px 23px}
+    .tag{align-self:flex-start;margin-bottom:12px;padding:4px 9px;border:1px solid #89d9ed55;border-radius:999px;color:var(--cyan);font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+    h3{margin-bottom:9px;font:400 1.7rem/1.15 var(--serif)}
+    .card p{margin-bottom:20px;color:var(--muted)}
+    .link{margin-top:auto;color:var(--gold);font-weight:650}
+    .link span{display:inline-block;margin-left:5px;transition:transform .2s}
+    .card:hover .link span{transform:translateX(4px)}
+    .about{padding:35px 0 48px;border-top:1px solid #ffffff12;color:var(--muted);font-size:.9rem}
+    .about p{max-width:740px;margin-bottom:8px}
+    .about strong{color:var(--text);font-weight:600}
+    footer{padding:20px 0 35px;border-top:1px solid #ffffff12;color:#8094aa;font-size:.82rem}
+    @media(max-width:680px){.wrap{width:min(100% - 32px,1120px)}.top{padding:20px 0}.hero{padding:70px 0 65px}.orbit{right:-100px;top:25px;width:270px;opacity:.34}.intro,.eyebrow,.season,h1{position:relative;z-index:1}.section-head{display:block}.section-head p{margin-top:12px}.tools{padding-bottom:70px}.card-body{padding:19px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.link span{transition:none}.card:hover{transform:none}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap"><a class="brand" href="./" aria-label="Watling Astronomy Club home"><span class="mark" aria-hidden="true">✦</span><span>Watling Astronomy Club</span></a></div></header>
+  <main>
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <svg class="orbit" viewBox="0 0 440 440" aria-hidden="true" fill="none">
+        <circle cx="220" cy="220" r="48" fill="#ffd77a" fill-opacity=".12" stroke="#ffd77a" stroke-opacity=".5"/>
+        <circle cx="220" cy="220" r="7" fill="#ffd77a"/><circle cx="220" cy="220" r="103" stroke="#b9d4ec" stroke-opacity=".42"/>
+        <circle cx="220" cy="220" r="157" stroke="#b9d4ec" stroke-opacity=".28"/><ellipse cx="220" cy="220" rx="205" ry="141" transform="rotate(-31 220 220)" stroke="#89d9ed" stroke-opacity=".3"/>
+        <circle cx="322" cy="220" r="5" fill="#89d9ed"/><circle cx="105" cy="112" r="7" fill="#f8f3dc"/><circle cx="374" cy="309" r="4" fill="#ffd77a"/>
+        <circle cx="313" cy="55" r="2" fill="#fff"/><circle cx="79" cy="273" r="2" fill="#fff"/><circle cx="263" cy="356" r="2" fill="#fff"/><circle cx="166" cy="68" r="2" fill="#fff"/>
+      </svg>
+      <p class="eyebrow">Look up. Ask questions. Find out.</p>
+      <h1 id="hero-title">A universe of<br>things to explore.</h1>
+      <p class="intro">A growing collection of little astronomy tools and activities for the Watling Astronomy Club. Made to turn big questions about space into things we can see, test and play with.</p>
+      <p class="season">Friday club · October to February · Watling Academy, Milton Keynes</p>
+    </section>
+    <section class="tools wrap" aria-labelledby="tools-title">
+      <div class="section-head"><h2 id="tools-title">The tool shed</h2><p>One tool to start with, and more sky-minded experiments to come.</p></div>
+      <div class="grid">
+        <a class="card" href="./tools/exoplanet-drawing-board/" aria-label="Open the Exoplanet Drawing Board">
+          <img class="thumb" src="./assets/exoplanet-board.svg" width="960" height="510" alt="Illustrated planetary orbits around a star, with the words Exoplanet Drawing Board">
+          <div class="card-body"><span class="tag">First tool · Exoplanets</span><h3>Exoplanet Drawing Board</h3><p>Browse real planetary systems as orbital sketches. Search thousands of systems, compare their planets, and tilt the view to explore which worlds cross their star.</p><span class="link">Explore the board <span aria-hidden="true">→</span></span></div>
+        </a>
+      </div>
+    </section>
+    <section class="about"><div class="wrap"><p><strong>About the club.</strong> Watling Astronomy Club is a Friday astronomy club at Watling Academy in Milton Keynes, running through the darker months from October to February.</p><p>These browser-based tools are small invitations to explore. New projects will join the collection as we make them.</p></div></section>
+  </main>
+  <footer><div class="wrap">Made for curious minds at Watling Astronomy Club.</div></footer>
+</body>
+</html>
