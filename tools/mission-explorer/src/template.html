@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mission Explorer: space missions replayed in 3D | Watling Astronomy Club</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --panel:#eceef2; --ink:#14161d; --soft:#555b6b; --line:#c9cdd8; --accent:#a85200; --btn:#14161d; --btn-ink:#f4f2ec; --card:#ffffff;
+  --disp:"Bricolage Grotesque","Arial Narrow",Arial,sans-serif; --body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ color-scheme:dark;
+  --panel:#12131b; --ink:#eceae4; --soft:#a2a7b8; --line:#2c2f3d; --accent:#ffb347; --btn:#ffb347; --btn-ink:#1a1206; --card:#1a1c27; } }
+:root[data-theme="dark"]{ color-scheme:dark;
+  --panel:#12131b; --ink:#eceae4; --soft:#a2a7b8; --line:#2c2f3d; --accent:#ffb347; --btn:#ffb347; --btn-ink:#1a1206; --card:#1a1c27; }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:var(--panel);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-text-size-adjust:100%;overflow:hidden}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
+/* home */
+#home{height:100%;overflow-y:auto}
+.homein{max-width:1180px;margin:0 auto;padding:28px 18px 40px}
+.club-link{margin:0 0 18px;font-size:.9rem}
+.club-link a{color:var(--accent);font-weight:600;text-decoration:none}
+.club-link a:hover{text-decoration:underline}
+#home h1{font:700 clamp(2rem,7vw,3.6rem)/1 var(--disp);letter-spacing:-.02em;margin:0;text-wrap:balance}
+#home .lede{color:var(--soft);max-width:56ch;margin:.8rem 0 1.6rem;font-size:1.05rem}
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.mc{display:flex;flex-direction:column;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0;overflow:hidden;cursor:pointer}
+.mc:hover{border-color:var(--accent)}
+.mc img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#06070c}
+.mc div{padding:12px 14px 14px}
+.mc b{display:block;font:700 1.3rem/1.1 var(--disp)}
+.mc i{display:block;font-style:normal;color:var(--accent);font-weight:600;font-size:.86rem;margin:3px 0 5px}
+.mc span{color:var(--soft);font-size:.94rem}
+.credits{color:var(--soft);font-size:.82rem;max-width:80ch;margin-top:26px}
+/* mission */
+#app{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto}
+.stage{position:relative;background:#06070c;min-height:0;overflow:hidden}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.stage canvas:active{cursor:grabbing}
+#fade{position:absolute;inset:0;background:#06070c;opacity:0;pointer-events:none;transition:opacity .35s}
+#fade.on{opacity:1}
+.hud{position:absolute;left:14px;right:14px;top:12px;color:#f3efe6;pointer-events:none;text-shadow:0 1px 6px #000}
+#hudDate{font:700 clamp(1.25rem,4.4vw,1.9rem)/1.05 var(--disp);font-variant-numeric:tabular-nums}
+#hudSub{font-size:.86rem;color:#c9c5ba;margin-top:3px;font-variant-numeric:tabular-nums}
+#viewBtn{position:absolute;right:12px;bottom:36px;font:500 .88rem var(--body);color:#f3efe6;background:rgba(20,22,32,.78);border:1px solid #5a5f73;border-radius:999px;padding:.5rem .9rem;min-height:40px;cursor:pointer}
+#viewBtn:hover{border-color:#ffb347}
+#hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#a9a69c;font-size:.8rem;pointer-events:none;transition:opacity .6s}
+.lbl{position:absolute;left:0;top:0;color:#efe9dc;font:500 .78rem/1 var(--body);white-space:nowrap;pointer-events:none;text-shadow:0 1px 4px #000,0 0 2px #000;will-change:transform}
+.lbl.craft{color:#ffb347;font-weight:600}.lbl.note{color:#ffd9a0}.lbl.alt{color:#a9dcff}
+#nogl{position:absolute;inset:0;display:grid;place-items:center;color:#d8d4ca;padding:24px;text-align:center}
+.panel{display:flex;flex-direction:column;min-height:0;max-height:52vh;border-top:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:10px;padding:8px 16px 0}
+#backBtn{background:none;border:1.5px solid var(--line);border-radius:999px;padding:.2rem .7rem;min-height:34px;cursor:pointer;font-size:.86rem;font-weight:500}
+.brand{font:700 .95rem var(--disp);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#count{font-size:.82rem;color:var(--soft);font-variant-numeric:tabular-nums}
+#ticks{display:flex;gap:3px;padding:2px 16px 0}
+#ticks button{flex:1;height:24px;padding:0;border:0;background:none;cursor:pointer;position:relative}
+#ticks button::after{content:"";position:absolute;left:0;right:0;top:10px;height:4px;border-radius:2px;background:var(--line)}
+#ticks button.done::after{background:var(--soft)}
+#ticks button.on::after{background:var(--accent);top:8px;height:8px}
+.copy{overflow-y:auto;padding:4px 16px 8px;min-height:0;flex:1}
+#kick{color:var(--accent);font-weight:600;font-size:.9rem;margin:0}
+.copy h2{font:700 clamp(1.3rem,5vw,1.9rem)/1.08 var(--disp);margin:2px 0 8px;letter-spacing:-.01em;text-wrap:balance}
+.copy p{margin:0 0 .6em;max-width:60ch}
+.copy p.src{color:var(--soft);font-size:.82rem}
+#fig{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:0;margin:0 0 10px;cursor:zoom-in}
+#fig img{width:92px;height:92px;object-fit:cover;border-radius:8px;flex:none;background:#06070c}
+#fig span{font-size:.82rem;color:var(--soft);line-height:1.35}
+#fig span b{display:block;color:var(--ink);font-weight:500}
+.nav{display:flex;gap:10px;padding:8px 16px 12px;border-top:1px solid var(--line)}
+.nav button{font:600 1rem var(--body);min-height:46px;border-radius:10px;cursor:pointer;padding:0 1.1rem}
+#prev{background:none;color:var(--ink);border:1.5px solid var(--line)}
+#next{flex:1;background:var(--btn);color:var(--btn-ink);border:0}
+.nav button:disabled{opacity:.35;cursor:default}
+#box{position:fixed;inset:0;z-index:20;background:rgba(4,5,9,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px;cursor:zoom-out}
+#box img{max-width:100%;max-height:78%;border-radius:6px}
+#box p{color:#d8d4ca;max-width:70ch;text-align:center;font-size:.9rem;margin:12px 0 0}
+#box button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:14px;background:rgba(30,32,44,.9);color:#f3efe6;border:1px solid #5a5f73;border-radius:999px;min-height:40px;padding:0 .9rem;cursor:pointer}
+@media (min-width:900px){
+  #app{grid-template-rows:minmax(0,1fr);grid-template-columns:440px minmax(0,1fr)}
+  .panel{order:-1;max-height:none;border-top:0;border-right:1px solid var(--line)}
+  .top{padding:20px 28px 0}#ticks{padding:8px 28px 4px}.copy{padding:16px 28px}.nav{padding:14px 28px 22px}
+  .copy p{font-size:1.05rem}
+  #fig{flex-direction:column;align-items:stretch}#fig img{width:100%;height:auto;max-height:270px}
+}
+@media (prefers-reduced-motion: reduce){#fade{transition:none}}
+</style>
+</head>
+<body>
+<main id="home">
+  <div class="homein">
+    <p class="club-link"><a href="../../">← Watling Astronomy Club</a></p>
+    <h1>Mission Explorer</h1>
+    <p class="lede">Seven space missions, replayed step by step in 3D with the photographs they sent home. Pick one to follow its route.</p>
+    <div id="cards"></div>
+    <p class="credits">BepiColombo, Artemis II, Voyager 1, Voyager 2 and Mars Express trajectories are from NASA JPL Horizons. Apollo 11 and Apollo 13 are gravity-model reconstructions, not flight telemetry; Beagle 2’s final descent is modelled from Mars Express’s pre-release path. BepiColombo’s route after 20 November 2026 is a Horizons prediction, not a completed flight. Photographs are from NASA, ESA and Wikimedia Commons; each carries its credit and licence. Planet surfaces in the 3D view are generated illustrations, not photographs.</p>
+  </div>
+</main>
+<div id="app" hidden>
+  <div class="stage" id="stage">
+    <div class="hud"><div id="hudDate"></div><div id="hudSub"></div></div>
+    <button id="viewBtn" hidden></button>
+    <div id="labels" aria-hidden="true"></div>
+    <div id="fade"></div>
+    <div id="hint">Drag to look around, pinch or scroll to zoom</div>
+  </div>
+  <section class="panel">
+    <div class="top"><button id="backBtn">All missions</button><span class="brand" id="brand"></span><span id="count"></span></div>
+    <div id="ticks"></div>
+    <div class="copy" id="copy" aria-live="polite"><p id="kick"></p><h2 id="title"></h2><button id="fig" hidden><img id="figImg" alt=""><span id="figCap"></span></button><div id="body"></div></div>
+    <div class="nav"><button id="prev">Back</button><button id="next">Next</button></div>
+  </section>
+</div>
+<div id="box" hidden><button id="boxClose">Close</button><img id="boxImg" alt=""><p id="boxCap"></p></div>
+<script id="traj" type="application/json">/*DATA*/</script>
+<script id="imgs" type="application/json">/*IMGS*/</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const DATA=JSON.parse($('traj').textContent), IMG=JSON.parse($('imgs').textContent);
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const JD=(y,m,d,h,mi)=>Date.UTC(y,m-1,d,h||0,mi||0)/864e5+2440587.5;
+const ESA='ESA/BepiColombo/MTM, CC BY-SA 3.0 IGO';
+const CRED={b_stack:'ESA, CC BY-SA 3.0 IGO',bg_replica:'Geni, CC BY-SA 4.0, via Wikimedia Commons',bg_sep:'ESA, CC BY-SA 3.0 IGO',bg_found:'NASA/JPL-Caltech/Univ. of Arizona/Univ. of Leicester',bg_mars:'ESA/DLR/FU Berlin/G. Michael, CC BY-SA 3.0 IGO',v2_jup:'NASA/JPL/Björn Jónsson',v1_io:'NASA/JPL/USGS',v2_tri:'NASA/JPL/USGS'};
+const credit=k=>CRED[k]||(k[0]==='b'&&k[1]==='_'?ESA:k[0]==='v'?'NASA/JPL':'NASA');
+const RECON="<span class='src'>The path shown is a reconstruction: a gravity model fitted to the published burn times and altitudes, not flight telemetry. Moon positions are from NASA JPL Horizons.</span>";
+const HZ="<span class='src'>Trajectory data: NASA JPL Horizons.</span>";
+
+/* ---------- missions ---------- */
+const MISSIONS=[
+{id:'bepicolombo',name:'BepiColombo',who:'ESA and JAXA, 2018 to today',blurb:'Nine flybys and eight years to slip into orbit round Mercury.',hero:'b_m4',fit:1.12,craft:'BepiColombo',ch:[
+ {k:"Why Mercury",t:"The least explored rocky planet",view:{planet:"Mercury"},hud:['Mercury','4,879 km across. A year lasts 88 days.'],b:[
+  "Mercury is the closest planet to the Sun and the hardest of the inner worlds to reach. Only two spacecraft have been there. Mariner 10 flew past three times in 1974 and 1975, and MESSENGER orbited from 2011 to 2015.",
+  "They left puzzles. An iron core that fills about 85% of the planet’s radius. A magnetic field that sits off-centre. Water ice hiding in polar craters on a world where the day side reaches 430°C."]},
+ {k:"Origins",t:"Named for the man who found the way in",T:0,pre:1,b:[
+  "Giuseppe “Bepi” Colombo was a mathematician and engineer from Padua. He explained why Mercury turns three times for every two trips round the Sun, and in 1970 showed NASA how a Venus flyby could send Mariner 10 past Mercury again and again.",
+  "ESA chose a Mercury orbiter as a cornerstone mission in 2000 and named it after him. Japan joined with a second orbiter. A planned lander was dropped in 2003 to save money."]},
+ {k:"The spacecraft",t:"Three machines flying as one",view:{model:1},img:'b_stack',cap:'The full stack in launch configuration at ESA’s test centre in the Netherlands, 2017.',b:[
+  "ESA’s Mercury Planetary Orbiter (MPO) will map the surface and probe the interior from a low orbit. JAXA’s Mio will swing further out to study the magnetic field and the solar wind around the planet.",
+  "For the cruise they rode on the Mercury Transfer Module, which carried the big solar wings and four British-built ion engines. A sunshield kept Mio cool on the way."]},
+ {k:"The problem",t:"Falling towards the Sun is the hard part",T:0,pre:1,ghost:.75,b:[
+  "Head inwards and the Sun’s gravity speeds you up. To be caught by little Mercury, a spacecraft has to shed a huge amount of energy. ESA puts it this way: it takes more energy to reach Mercury than to send a mission to Pluto.",
+  "BepiColombo’s answer was nine planetary flybys, each one a gravitational brake or a nudge, with ion engines thrusting gently in between. The faint line is the whole route."]},
+ {k:"20 October 2018",t:"Launch from Kourou",T:58,img:'b_first',cap:'The first image from space: a monitoring camera looks along one of the transfer module’s solar wings.',b:[
+  "An Ariane 5 lifted the four-tonne stack from Europe’s spaceport in French Guiana at 01:45 UTC, putting it on a path round the Sun close to Earth’s own.",
+  "Two months later the ion engines began the first long burn of the cruise."]},
+ {k:"10 April 2020",t:"One last look at Earth",close:0,img:'b_earth',cap:'Earth from one of the monitoring cameras during the flyby.',b:[
+  "Eighteen months after launch BepiColombo came home, passing about 12,700 km above the surface. Earth’s gravity bent its path inwards, towards Venus.",
+  "Controllers in Darmstadt flew the manoeuvre with a skeleton team during the first Covid lockdown."]},
+ {k:"15 October 2020",t:"First pass of Venus",close:1,img:'b_venus1',cap:'Venus during the first flyby, with the spacecraft’s antenna and boom in shot.',b:[
+  "A distant pass, about 10,700 km above the cloud tops. Venus took away some of the spacecraft’s speed and tightened its orbit round the Sun.",
+  "The instruments that could see past the transfer module sampled the planet’s atmosphere and space environment on the way through."]},
+ {k:"10 August 2021",t:"Venus again, much closer",close:2,img:'b_venus2',cap:'Venus fills the frame during the second flyby.',b:[
+  "Just 552 km above the planet this time. Solar Orbiter had flown past Venus only 33 hours earlier, giving scientists two viewpoints at once.",
+  "This pass dropped BepiColombo’s orbit far enough to meet Mercury for the first time."]},
+ {k:"1 October 2021",t:"Mercury, at last",close:3,img:'b_m1',cap:'The mission’s first view of Mercury, taken minutes after closest approach.',b:[
+  "Three years in, the first sight of the target. BepiColombo skimmed about 200 km above the night side, and its small monitoring cameras sent back black-and-white views of craters and lava plains as it pulled away.",
+  "It could not stay. It was still moving far too fast for Mercury’s gravity to hold."]},
+ {k:"23 June 2022",t:"Second Mercury flyby",close:4,b:[
+  "Another pass about 200 km up. Each encounter reshapes the spacecraft’s orbit so that it meets Mercury again a little more slowly.",
+  "Think of it as braking against the planet, one pass at a time."]},
+ {k:"19 June 2023",t:"Third flyby, and a new crater name",close:5,img:'b_m3',cap:'Mercury appears between the spacecraft’s body and antenna, 19 June 2023.',b:[
+  "About 240 km above the surface, approaching over the night side. The cameras caught a 218 km wide crater that was later named Manley, after the Jamaican artist Edna Manley."]},
+ {k:"April 2024",t:"A power fault changes the plan",date:[2024,4,26],b:[
+  "On 26 April 2024 the transfer module failed to deliver full power to its ion engines. Engineers traced it to unexpected electric currents between the solar array and the power unit. They recovered most of the thrust, but not all of it.",
+  "With weaker engines the old route no longer worked, so the flight dynamics team designed a slower one. Arrival moved from December 2025 to November 2026."]},
+ {k:"4 September 2024",t:"Fourth flyby, lower than planned",close:6,img:'b_m4',cap:'Rugged terrain near Mercury’s south, seen on the fourth flyby.',b:[
+  "The new route needed more help from Mercury, so the spacecraft flew about 165 km above the surface, 35 km closer than first planned.",
+  "It gave the mission its first clear view of the planet’s south pole."]},
+ {k:"1 December 2024",t:"A wide fifth pass",close:7,img:'b_m5',cap:'Mercury, small and distant, during the fifth flyby.',b:[
+  "This one stayed 37,600 km out. Far enough to be gentle, close enough for the MERTIS instrument to take the first mid-infrared readings of Mercury from a spacecraft.",
+  "Zoom out to see the whole pass."]},
+ {k:"8 January 2025",t:"The sixth and final flyby",close:8,img:'b_m6',cap:'Mercury’s sunlit north, labelled by ESA, on the final flyby.',b:[
+  "About 295 km over the north pole and straight through Mercury’s shadow. The cameras looked into craters whose floors never see sunlight, where ice is thought to survive.",
+  "After this, BepiColombo’s orbit round the Sun almost matched Mercury’s own."]},
+ {k:"3 September 2026",t:"The transfer module lets go",view:{model:2},b:[
+  "Its job done, the Mercury Transfer Module separated and drifted away. MPO took over power and steering for the remaining pair.",
+  "Two weeks later every MPO instrument was switched on together, with a clear view for the first time since launch."]},
+ {k:"21 November 2026",t:"Arrival: one burn, one chance",close:9,b:[
+  "Orbit insertion is scheduled for 21 November 2026. MPO’s four small chemical thrusters fire to slow the pair just enough for Mercury’s gravity to catch them. The sequence runs on its own, because nobody on Earth can step in fast enough.",
+  "The planned capture orbit is a long loop that takes about two and a half days and reaches roughly 55,000 km from the planet. This view plays the path JPL predicts for the first week."]},
+ {k:"What comes next",t:"Two orbiters, one small planet",view:{planet:"Mercury",orbits:1},hud:['From April 2027','MPO stays low to map the surface. Mio ranges out through the magnetic field.'],b:[
+  "Mio is due to separate on 9 to 10 December 2026, and its sunshield is released on 16 December. MPO then lowers itself towards its mapping orbit, with science set to begin in April 2027 and run for at least one Earth year.",
+  "The questions are the ones Mercury has posed for fifty years. Why so much iron? Why a magnetic field at all? How did ice get there?",
+  "<span class='src'>Trajectory data: NASA JPL Horizons, real flown path to 20 November 2026 and predicted path after. Written 20 November 2026, the day before insertion.</span>"]}
+]},
+{id:'artemis2',name:'Artemis II',who:'NASA, April 2026',blurb:'Four astronauts loop round the Moon and travel farther than anyone before.',hero:'ar_earthset',fit:4.7,craft:'Orion',ch:[
+ {k:"Why it flew",t:"The first crew to the Moon in over fifty years",T:0,pre:1,ghost:.6,b:[
+  "Nobody had travelled beyond low Earth orbit since Apollo 17 in December 1972. Artemis II was the test flight to change that: four astronauts, ten days, one loop round the Moon and back.",
+  "The crew were NASA’s Reid Wiseman, Victor Glover and Christina Koch, with Jeremy Hansen of the Canadian Space Agency."]},
+ {k:"1 April 2026",t:"Launch, then a day close to home",T:.45,fit:1.1,img:'ar_launch',cap:'The Space Launch System lifts off from Kennedy Space Center, 1 April 2026.',b:[
+  "The Space Launch System lifted the Orion capsule, which the crew named Integrity, from Pad 39B in Florida. Instead of heading straight out, Orion spent its first day in one long, looping orbit that reached about 70,000 km up while the crew checked that everything worked.",
+  "The path here is the real one, as tracked by NASA, starting a few hours after launch."]},
+ {k:"2 April 2026",t:"The push towards the Moon",date:[2026,4,3,6],b:[
+  "Back at the low point of that orbit, the European-built service module fired its main engine. Orion was now on a free-return path: even with no further burns, the Moon’s gravity would bend it round and send it back to Earth."]},
+ {k:"3 to 5 April 2026",t:"Four days out",date:[2026,4,5,12],img:'ar_moon',cap:'The Moon ahead, photographed by the crew on the approach.',b:[
+  "The crew tested manual flying, life support and communications as Earth shrank behind them. Early on 6 April Orion crossed into the region where the Moon’s gravity is stronger than Earth’s."]},
+ {k:"6 April 2026",t:"Round the far side",close:0,img:'ar_new',cap:'Earth about to set behind the Moon’s edge, seen from Orion.',b:[
+  "Orion passed about 6,550 km above the lunar far side. That is far higher than Apollo’s orbits, so the whole disc of the Moon fitted in the window. For around 40 minutes the Moon blocked all contact with Earth."]},
+ {k:"6 April 2026",t:"Farther than anyone before",ev:'maxdist',img:'ar_earthset',cap:'Earthset, taken through Orion’s window at 6:41 pm US Eastern time on 6 April.',b:[
+  "Minutes after closest approach the crew reached about 406,770 km from Earth, passing the record Apollo 13 set in 1970 by more than 6,000 km.",
+  "They photographed Earth setting behind the Moon."]},
+ {k:"6 April 2026",t:"An eclipse nobody on Earth could see",ev:'maxdist',dt:.09,img:'ar_eclipse',cap:'The Sun hidden behind the Moon, seen from Orion.',b:[
+  "From Orion’s position the Moon slid in front of the Sun, and the crew watched a total solar eclipse from behind the Moon, using eclipse glasses for the partial phases."]},
+ {k:"10 April 2026",t:"Home at eleven kilometres a second",T:'end',img:'ar_splash',cap:'Orion under its parachutes over the Pacific, 10 April 2026.',b:[
+  "Orion met the atmosphere at close to 11 km a second, on an entry path adjusted to go easier on the heat shield after the wear seen on Artemis I. It splashed down in the Pacific off San Diego.",HZ]}
+]},
+{id:'apollo11',name:'Apollo 11',who:'NASA, July 1969',blurb:'The first landing on the Moon, from launch to splashdown in eight days.',hero:'a11_lm',fit:4.7,craft:'Apollo 11',ch:[
+ {k:"Why go",t:"A deadline set by a president",T:0,pre:1,ghost:.6,b:[
+  "In May 1961 President Kennedy asked the United States to commit to landing a man on the Moon and returning him safely before the decade was out. The Soviet Union had just put the first person in orbit.",
+  "Eight years and four crewed Apollo test flights later, Apollo 11 was the attempt."]},
+ {k:"16 July 1969",t:"Leaving Earth",T:.03,fit:1.1,img:'a11_launch',cap:'The Saturn V clears the tower at 13:32 UTC.',b:[
+  "A Saturn V lifted Neil Armstrong, Buzz Aldrin and Michael Collins from Kennedy Space Center. After one and a half orbits the third stage fired again for nearly six minutes, and Apollo 11 was on its way.",
+  "The route starts here, at the end of that burn."]},
+ {k:"16 to 19 July 1969",t:"Three days of coasting",T:1.7,b:[
+  "The spacecraft climbed away from Earth, slowing all the time as gravity pulled back. About 60,000 km short of the Moon, lunar gravity took over and it began to speed up again.",
+  "Early in the coast Collins separated the command module Columbia, turned it round and pulled the lunar module Eagle out of the spent rocket stage."]},
+ {k:"19 July 1969",t:"Into lunar orbit",close:0,img:'a11_earthrise',cap:'Earth rising over the lunar horizon, photographed from orbit.',b:[
+  "Behind the Moon and out of radio contact, the main engine fired for six minutes to slow the spacecraft into orbit about 110 km above the surface.",
+  "Had the engine failed, the path would have swung them back towards Earth."]},
+ {k:"20 July 1969",t:"The Eagle has landed",ev:'landing',img:'a11_eagle',cap:'Eagle in lunar orbit, photographed from Columbia before the descent.',b:[
+  "Armstrong and Aldrin undocked Eagle and descended to the Sea of Tranquillity, touching down at 20:17 UTC with less than a minute of fuel in hand. Collins stayed in orbit, alone in Columbia."]},
+ {k:"21 July 1969",t:"Two and a half hours outside",ev:'landing',dt:.3,img:'a11_boot',cap:'Aldrin’s bootprint in the lunar soil.',b:[
+  "Armstrong stepped onto the surface at 02:56 UTC and Aldrin followed 19 minutes later. They set up experiments, planted a flag and collected 21.5 kg of rock and soil."]},
+ {k:"21 to 22 July 1969",t:"Up from the Moon, and home",ev:'tei',dt:.12,img:'a11_lm',cap:'Eagle on the surface with Earth overhead.',b:[
+  "Eagle’s ascent stage lifted off after 21 and a half hours on the surface and rejoined Columbia. Early on 22 July, again behind the Moon, the main engine fired to send all three home."]},
+ {k:"24 July 1969",t:"Splashdown in the Pacific",T:'end',img:'a11_recovery',cap:'Columbia is hoisted aboard the USS Hornet.',b:[
+  "The command module hit the atmosphere at about 11 km a second and splashed down south-west of Hawaii, eight days and three hours after launch. The crew spent the next three weeks in quarantine.",RECON]}
+]},
+{id:'apollo13',name:'Apollo 13',who:'NASA, April 1970',blurb:'An oxygen tank bursts on the way to the Moon. Getting home becomes the mission.',hero:'a13_sm',fit:4.7,craft:'Apollo 13',ch:[
+ {k:"The plan",t:"A third landing, at Fra Mauro",T:0,pre:1,ghost:.6,b:[
+  "Apollo 13 was meant to be the third Moon landing, aimed at the hills of Fra Mauro. Jim Lovell, Fred Haise and Jack Swigert launched on 11 April 1970.",
+  "Swigert had joined the crew two days earlier, after Ken Mattingly was exposed to German measles."]},
+ {k:"11 April 1970",t:"Launch, with one early scare",T:.03,fit:1.1,img:'a13_launch',cap:'Apollo 13 leaves Pad 39A at 19:13 UTC.',b:[
+  "One of the second-stage engines shut down two minutes early, and the others burned longer to make up for it. Nobody knew it yet, but that was the minor problem."]},
+ {k:"14 April 1970",t:"“Houston, we’ve had a problem”",ev:'explosion',img:'a13_sm',cap:'The damaged service module, photographed after it was cast off. A whole panel is missing.',b:[
+  "Nearly 56 hours in, and more than 320,000 km from Earth, an oxygen tank in the service module burst during a routine stir. A second tank began to leak. The command module was losing its oxygen, its water and its electricity.",
+  "The landing was off. The only question was how to get three men home."]},
+ {k:"Lifeboat",t:"Living in the lunar module",ev:'explosion',dt:.6,img:'a13_mailbox',cap:'The “mailbox” rigged up inside the lunar module to scrub carbon dioxide.',b:[
+  "The crew shut down the command module and moved into the lunar module Aquarius, built to keep two men alive for two days. It had to keep three alive for four.",
+  "Carbon dioxide built up. Engineers on the ground worked out how to fit the command module’s square filters to Aquarius’s round sockets with a flight-plan cover, a plastic bag, a hose and tape."]},
+ {k:"15 April 1970",t:"Round the far side",close:0,img:'a13_moon',cap:'The Moon from Apollo 13, with the lunar module’s thruster in the corner of the window.',b:[
+  "Apollo 13 swung behind the Moon about 254 km above the surface. At that moment the crew were roughly 400,000 km from Earth, a record for human travel that stood until 2026.",
+  "Two hours later they fired Aquarius’s descent engine to speed the trip home and move the landing to the Pacific."]},
+ {k:"15 to 17 April 1970",t:"The cold coast home",T:4.3,b:[
+  "With almost everything switched off, the cabin fell close to freezing and water was rationed to less than a fifth of a litre each per day. Lovell steered two more course corrections by hand, lining up Earth in the window."]},
+ {k:"17 April 1970",t:"Letting go of the lifeboat",T:'end',dt:-.12,img:'a13_lm',cap:'Aquarius drifts away an hour before re-entry.',b:[
+  "Hours from home the crew cast off the service module and saw the damage for the first time. Then they said goodbye to Aquarius and powered the command module back up."]},
+ {k:"17 April 1970",t:"Splashdown",T:'end',img:'a13_splash',cap:'The command module Odyssey under its parachutes in the South Pacific.',b:[
+  "Radio silence during re-entry lasted about a minute and a half longer than expected. Then Odyssey’s parachutes appeared. NASA called the flight a successful failure.",RECON]}
+]},
+{id:'voyager1',name:'Voyager 1',who:'NASA, 1977 to today',blurb:'Jupiter, Saturn, then out past the edge of the Sun’s influence.',hero:'v1_grs',fit:11,craft:'Voyager 1',ch:[
+ {k:"The opportunity",t:"A line-up that comes round every 176 years",T:0,pre:1,ghost:.6,fit:32,img:'v_model',cap:'The Voyager design: a 3.7 m dish, a boom of instruments and a nuclear power source.',b:[
+  "In the late 1970s Jupiter, Saturn, Uranus and Neptune sat in a rare arrangement. A spacecraft could use each planet’s gravity to reach the next. NASA built two identical probes to take the chance.",
+  "Voyager 1 got the faster route, aimed at Jupiter, Saturn and Saturn’s big moon Titan."]},
+ {k:"5 September 1977",t:"Launched second, arrived first",T:40,fit:6.2,img:'v_launch',cap:'Voyager 1 lifts off on a Titan IIIE Centaur from Cape Canaveral.',b:[
+  "Voyager 1 left 16 days after its twin, on a quicker path that overtook Voyager 2 before either reached the asteroid belt."]},
+ {k:"5 March 1979",t:"Jupiter",close:0,fit:6.2,img:'v1_grs',cap:'The Great Red Spot and its turbulent wake.',b:[
+  "Voyager 1 passed about 277,000 km above Jupiter’s cloud tops. It filmed the Great Red Spot turning, found a thin ring, and returned the first detailed views of the four large moons."]},
+ {k:"March 1979",t:"Volcanoes on Io",close:0,dt:4,noClose:1,fit:6.2,img:'v1_io',cap:'Io’s volcanic plains, with the dark lava lake Loki Patera.',b:[
+  "Days after the flyby, navigation engineer Linda Morabito spotted a plume rising over the edge of the moon Io in a routine image. It was the first active volcano seen anywhere beyond Earth. Io turned out to be the most volcanic world known."]},
+ {k:"12 November 1980",t:"Saturn and Titan",close:1,fit:11,img:'v1_sat',cap:'Looking back at Saturn’s rings eight hours after closest approach.',b:[
+  "The pass took Voyager 1 within 124,000 km of Saturn’s clouds and, hours earlier, close behind Titan to study its thick orange atmosphere.",
+  "That Titan pass flung the spacecraft up and out of the plane of the planets. There would be no more flybys."]},
+ {k:"14 February 1990",t:"The Pale Blue Dot",date:[1990,2,14],fit:46,img:'v_pbd',cap:'Earth is the faint speck about halfway down the right-hand sunbeam.',b:[
+  "From about 6 billion km away, Voyager 1 turned its camera back for a family portrait of the Solar System. Earth is less than a pixel across. The cameras were switched off for good soon after."]},
+ {k:"25 August 2012",t:"Into interstellar space",date:[2012,8,25],fit:135,img:'v_record',cap:'The cover of the golden record carried by both Voyagers, with playing instructions.',b:[
+  "At about 121 times Earth’s distance from the Sun, Voyager 1 crossed the heliopause, the edge of the bubble blown by the solar wind. It became the first human-made object in interstellar space."]},
+ {k:"Today",t:"Still calling home",T:'end',fit:190,b:[
+  "Voyager 1 is now more than 170 times as far from the Sun as Earth is, the most distant thing people have built. A radio signal takes about a day to reach it.",
+  "Its plutonium power source fades a little every year, and instruments are being switched off one by one to keep it talking.",HZ]}
+]},
+{id:'voyager2',name:'Voyager 2',who:'NASA, 1977 to today',blurb:'The only spacecraft to visit Uranus and Neptune, on a four-planet grand tour.',hero:'v2_nep',fit:34,craft:'Voyager 2',ch:[
+ {k:"The Grand Tour",t:"Four planets with one spacecraft",T:0,pre:1,ghost:.7,fit:34,img:'v_model',cap:'The Voyager design, shared by both spacecraft.',b:[
+  "Voyager 2 took the slower road so that it could keep going. If it survived Jupiter and Saturn, the line-up of the outer planets would let it carry on to Uranus and Neptune.",
+  "It remains the only spacecraft to have visited either."]},
+ {k:"20 August 1977",t:"Launched first",T:40,fit:6.2,img:'v_record',cap:'The golden record cover. Each Voyager carries one.',b:[
+  "It left Cape Canaveral 16 days before Voyager 1. Bolted to its side is a gold-plated record of greetings, music and sounds from Earth, with instructions for playing it."]},
+ {k:"9 July 1979",t:"Jupiter",close:0,fit:6.2,img:'v2_jup',cap:'Jupiter on approach, June 1979.',b:[
+  "Passing about 650,000 km above the clouds, Voyager 2 followed up its twin’s discoveries: more eruptions on Io, and a cracked, icy Europa that hinted at an ocean underneath."]},
+ {k:"26 August 1981",t:"Saturn",close:1,fit:11,img:'v2_sat',cap:'Saturn from Voyager 2.',b:[
+  "A closer pass than Voyager 1’s, about 100,000 km above the clouds, with sharper views of the rings. Saturn’s gravity bent the path on towards Uranus."]},
+ {k:"24 January 1986",t:"Uranus",close:2,fit:21,img:'v2_ura',cap:'Uranus as Voyager 2 saw it: pale and almost featureless.',b:[
+  "After four and a half more years, Voyager 2 flew 81,600 km above a planet tipped on its side. It found ten new moons, two new rings and a magnetic field tilted far from the planet’s axis."]},
+ {k:"25 August 1989",t:"Neptune",close:3,fit:33,img:'v2_nep',cap:'Neptune, with the Great Dark Spot and bright streaks of cloud.',b:[
+  "The closest planetary pass of the whole journey: about 4,900 km over Neptune’s north pole. Voyager 2 saw a storm the size of Earth and measured the fastest winds in the Solar System."]},
+ {k:"25 August 1989",t:"Geysers on a frozen moon",close:3,dt:2,noClose:1,fit:33,img:'v2_tri',cap:'Triton, Neptune’s largest moon.',b:[
+  "Five hours later it passed the moon Triton, one of the coldest places ever measured, and found dark plumes of gas and dust rising kilometres above the ice.",
+  "Neptune’s gravity threw Voyager 2 downwards, below the plane of the planets."]},
+ {k:"5 November 2018",t:"Interstellar space",date:[2018,11,5],fit:135,b:[
+  "Voyager 2 crossed the heliopause six years after its twin, at about 119 times Earth’s distance from the Sun. Its plasma instrument still worked, so it measured the boundary directly, which Voyager 1 could not."]},
+ {k:"Today",t:"Heading south, still working",T:'end',fit:165,b:[
+  "Voyager 2 is now about 144 times as far from the Sun as Earth is. Only one antenna on Earth can send it commands: the 70-metre dish near Canberra.",HZ]}
+]},
+{id:'beagle2',name:'Beagle 2',who:'UK, on ESA’s Mars Express, 2003',blurb:'Britain’s Mars lander vanished on Christmas Day. It was found eleven years later.',hero:'bg_replica',fit:1.75,craft:'Mars Express and Beagle 2',ch:[
+ {k:"The idea",t:"A British lander to look for life",T:0,pre:1,ghost:.6,img:'bg_replica',cap:'A full-size replica of Beagle 2 with its solar panels unfolded.',b:[
+  "Beagle 2 was the idea of Colin Pillinger of the Open University: a lander less than a metre across that would dig beneath the Martian surface and test the soil for signs of life.",
+  "It was built by a British team on a small budget and named after the ship that carried Charles Darwin. Its ride to Mars was ESA’s Mars Express orbiter."]},
+ {k:"2 June 2003",t:"Launch from Baikonur",T:6,b:[
+  "A Soyuz rocket sent Mars Express and its passenger on a six-month transfer. In 2003 Earth and Mars came closer together than they had in tens of thousands of years, which made the trip unusually short."]},
+ {k:"June to December 2003",t:"The cruise",T:120,b:[
+  "Beagle 2 had no engine of its own. It stayed bolted to Mars Express, mostly asleep, while the mothership steered them both."]},
+ {k:"19 December 2003",t:"Let go, six days out",ev:'release',img:'bg_sep',cap:'Beagle 2 drifting away, photographed by Mars Express. It was the last sight of the lander for eleven years.',b:[
+  "Mars Express aimed itself straight at Mars, then a spring pushed Beagle 2 away, spinning for stability.",
+  "The orbiter then fired its thrusters to miss the planet."]},
+ {k:"25 December 2003",t:"Christmas morning at Mars",close:0,b:[
+  "Beagle 2 hit the atmosphere at about 5.6 km a second, heading for the plain of Isidis Planitia. In this view the gold line is the lander’s coasting path and the blue line is Mars Express passing safely by.",
+  "<span class='src'>Beagle 2’s path here is calculated by letting Mars Express’s pre-release trajectory coast on under gravity.</span>"]},
+ {k:"25 December 2003",t:"Mars Express makes orbit",close:1,img:'bg_mars',cap:'Mars in colour, built from Mars Express images for the orbiter’s 20th anniversary.',b:[
+  "While Beagle 2 fell, Mars Express fired its main engine for more than half an hour and was captured into orbit. It is still working there more than twenty years on."]},
+ {k:"December 2003 onwards",t:"Silence",T:'end',b:[
+  "Beagle 2 was due to call home with a nine-note tune written by the band Blur. Nothing came. NASA’s Mars Odyssey listened. Jodrell Bank listened. Mars Express listened. In February 2004 the lander was declared lost."]},
+ {k:"January 2015",t:"Found, eleven years on",view:{planet:"Mars"},hud:['Mars','Beagle 2 lies on Isidis Planitia, just north of the equator.'],img:'bg_found',cap:'Beagle 2 on the surface of Mars, seen from orbit by NASA’s HiRISE camera.',b:[
+  "NASA’s Mars Reconnaissance Orbiter spotted Beagle 2 within 5 km of its target. It had landed safely. But not all of its solar panels had opened, and one that stayed shut was covering the radio antenna.",
+  "Beagle 2 was the UK’s first landing on Mars. It simply could not tell anyone. Colin Pillinger died in 2014, months before it was found.",HZ]}
+]}
+];
+
+/* ---------- home ---------- */
+MISSIONS.forEach(m=>{ const b=document.createElement('button'); b.className='mc'; const im=new Image(); im.src=IMG[m.hero]; im.alt='';
+  const d=document.createElement('div'); d.innerHTML='<b></b><i></i><span></span>'; d.children[0].textContent=m.name; d.children[1].textContent=m.who; d.children[2].textContent=m.blurb;
+  b.append(im,d); b.addEventListener('click',()=>{ location.hash=m.id }); $('cards').append(b) });
+let homeScroll=0;
+function route(){ const id=location.hash.replace('#',''), m=MISSIONS.find(x=>x.id===id);
+  if(m){ homeScroll=$('home').scrollTop; $('home').hidden=true; $('app').hidden=false; openMission(m) } else { $('app').hidden=true; $('home').hidden=false; $('home').scrollTop=homeScroll; M=null } }
+window.addEventListener('hashchange',route);
+$('backBtn').addEventListener('click',()=>{ location.hash='' });
+/* lightbox */
+function closeBox(){ $('box').hidden=true }
+$('fig').addEventListener('click',()=>{ const c=M.ch[cur]; $('boxImg').src=IMG[c.img]; $('boxCap').textContent=c.cap+' Credit: '+credit(c.img)+'.'; $('box').hidden=false });
+$('box').addEventListener('click',closeBox);
+
+/* ---------- panel ---------- */
+let M=null, X=null, cur=-1;
+function renderPanel(){ const c=M.ch[cur]; $('kick').textContent=c.k; $('title').textContent=c.t; $('brand').textContent=M.name;
+  if(c.img){ $('fig').hidden=false; $('figImg').src=IMG[c.img]; $('figImg').alt=c.cap; $('figCap').innerHTML='<b></b>'; $('figCap').firstChild.textContent=c.cap; $('figCap').append('Photo: '+credit(c.img)) } else $('fig').hidden=true;
+  $('body').innerHTML=c.b.map(p=>p.startsWith('<span')?'<p class="src">'+p+'</p>':'<p>'+p+'</p>').join('');
+  $('count').textContent=(cur+1)+' of '+M.ch.length; $('prev').disabled=cur===0; $('next').disabled=cur===M.ch.length-1;
+  $('next').textContent=cur===0?'Begin the journey':cur===M.ch.length-1?'End':'Next';
+  [...$('ticks').children].forEach((b,i)=>{b.className=i===cur?'on':i<cur?'done':''}); $('copy').scrollTop=0 }
+$('prev').addEventListener('click',()=>go(cur-1)); $('next').addEventListener('click',()=>go(cur+1));
+window.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeBox(); return } if(!M) return; if(e.target.tagName==='BUTTON'&&(e.key===' '||e.key==='Enter')) return; if(e.key==='ArrowRight') go(cur+1); if(e.key==='ArrowLeft') go(cur-1) });
+function buildTicks(){ $('ticks').textContent=''; M.ch.forEach((c,i)=>{ const b=document.createElement('button'); b.setAttribute('aria-label','Step '+(i+1)+': '+c.t); b.addEventListener('click',()=>go(i)); $('ticks').append(b) }) }
+
+/* ---------- WebGL ---------- */
+const stage=$('stage'); let gl=null;
+try{ if(window.THREE){ gl=new THREE.WebGLRenderer({antialias:true}); } }catch(e){ gl=null }
+let openMission, go;
+if(!gl){ const d=document.createElement('div'); d.id='nogl'; d.textContent='The 3D view could not start in this browser. The story and photographs still work with the buttons below.'; stage.append(d);
+  openMission=m=>{ M=m; X=DATA[m.id]; cur=-1; buildTicks(); go(0) }; go=i=>{ if(i<0||i>=M.ch.length) return; cur=i; renderPanel() }; route(); return }
+const V3=THREE.Vector3;
+gl.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); gl.setClearColor(0x06070c); stage.insertBefore(gl.domElement,stage.firstChild);
+const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(42,1,.005,8000);
+const gSys=new THREE.Group(), gClose=new THREE.Group(), gModel=new THREE.Group(); scene.add(gSys,gClose,gModel);
+const sunLight=new THREE.DirectionalLight(0xfff4e0,1.7), amb=new THREE.AmbientLight(0x8890b0,.34); scene.add(sunLight,amb);
+const E2T=(a,i)=>new V3(a[3*i],a[3*i+2],-a[3*i+1]);
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+{ const r=mulberry(7), p=new Float32Array(1800*3); for(let i=0;i<1800;i++){ const u=r()*2-1,a=r()*6.283,s=Math.sqrt(1-u*u); p[3*i]=3000*s*Math.cos(a);p[3*i+1]=3000*u;p[3*i+2]=3000*s*Math.sin(a) }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(p,3)); scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xc8cfff,size:1.4,sizeAttenuation:false,transparent:true,opacity:.75}))) }
+function glowTex(c0,c1){ const c=document.createElement('canvas'); c.width=c.height=128; const x=c.getContext('2d'), g=x.createRadialGradient(64,64,0,64,64,64); g.addColorStop(0,c0); g.addColorStop(.25,c1); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,128,128); return new THREE.CanvasTexture(c) }
+const craftTex=glowTex('rgba(255,255,255,1)','rgba(255,179,71,.85)'), dotTex=glowTex('rgba(255,255,255,1)','rgba(255,255,255,.55)'), sunTex=glowTex('rgba(255,236,190,1)','rgba(255,170,60,.5)');
+const sprite=(tex,s,col)=>{ const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,sizeAttenuation:false,depthTest:false,transparent:true,color:col==null?0xffffff:col})); sp.scale.set(s,s,1); return sp };
+function tube(pts,rad,rs,up){ const n=pts.length,pos=new Float32Array(n*rs*3),idx=[],t=new V3,a=new V3,b=new V3;
+  for(let i=0;i<n;i++){ t.subVectors(pts[Math.min(i+1,n-1)],pts[Math.max(i-1,0)]).normalize(); a.crossVectors(t,up); if(a.lengthSq()<1e-8) a.set(1,0,0); a.normalize(); b.crossVectors(t,a);
+    for(let j=0;j<rs;j++){ const an=j/rs*6.2832,c=Math.cos(an)*rad,s=Math.sin(an)*rad,o=(i*rs+j)*3; pos[o]=pts[i].x+a.x*c+b.x*s;pos[o+1]=pts[i].y+a.y*c+b.y*s;pos[o+2]=pts[i].z+a.z*c+b.z*s } }
+  for(let i=0;i<n-1;i++) for(let j=0;j<rs;j++){ const p=i*rs+j,q=i*rs+(j+1)%rs; idx.push(p,q,p+rs,q,q+rs,p+rs) }
+  const g=new THREE.BufferGeometry(); g.setAttribute('position',new THREE.BufferAttribute(pos,3)); g.setIndex(idx); g.userData.per=rs*6; return g }
+const GOLD=0xffb347, BLUE=0x8fd0ff;
+const TINT={Mercury:0xb9aea0,Venus:0xe8c98a,Earth:0x5fa8ff,Moon:0xcfcfcf,Mars:0xe07a4f,Jupiter:0xd9b48a,Saturn:0xe6d29a,Uranus:0x9fe3e6,Neptune:0x6f8cff};
+const RAD={Earth:6.371,Venus:6.052,Mercury:2.4397,Moon:1.7374,Mars:3.3895,Jupiter:71.492,Saturn:60.268,Uranus:25.559,Neptune:24.764};
+const POLE={Earth:[0,.9175,-.3978],Mars:[.446,.893,.0556],Saturn:[.0855,.8826,-.4624],Uranus:[-.029,-.991,.1325],Neptune:[.351,.881,.316]};
+
+/* textures */
+const perm=new Uint8Array(512); { const r=mulberry(11),p=[...Array(256).keys()]; for(let i=255;i>0;i--){const j=Math.floor(r()*(i+1));[p[i],p[j]]=[p[j],p[i]]} for(let i=0;i<512;i++) perm[i]=p[i&255] }
+function vn(x,y,z){ const X=Math.floor(x),Y=Math.floor(y),Z=Math.floor(z); x-=X;y-=Y;z-=Z; const u=x*x*(3-2*x),v=y*y*(3-2*y),w=z*z*(3-2*z), h=(i,j,k)=>perm[perm[perm[(X+i)&255]+((Y+j)&255)]+((Z+k)&255)]/255;
+  const l=(a,b,t)=>a+(b-a)*t; return l(l(l(h(0,0,0),h(1,0,0),u),l(h(0,1,0),h(1,1,0),u),v),l(l(h(0,0,1),h(1,0,1),u),l(h(0,1,1),h(1,1,1),u),v),w) }
+function fbm(x,y,z,o){ let s=0,a=.5,f=1; for(let i=0;i<o;i++){ s+=a*vn(x*f,y*f,z*f); a*=.5; f*=2 } return s }
+const mixc=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+const texCache={};
+function planetTex(kind){ if(texCache[kind]) return texCache[kind]; const W=768,H=384,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d'),im=x.createImageData(W,H),d=im.data;
+  for(let j=0;j<H;j++){ const lat=(.5-(j+.5)/H)*Math.PI,cl=Math.cos(lat),py=Math.sin(lat);
+    for(let i=0;i<W;i++){ const lon=(i+.5)/W*6.2832,px=cl*Math.cos(lon),pz=cl*Math.sin(lon),o=(j*W+i)*4; let r,g,b;
+      if(kind==='Mercury'){ const n=fbm(px*3+5,py*3,pz*3,5),m=fbm(px*14,py*14+3,pz*14,3),v=70+115*n+38*(m-.5); r=v*1.06;g=v;b=v*.92 }
+      else if(kind==='Moon'){ const n=fbm(px*2.2+9,py*2.2,pz*2.2,5),m=fbm(px*16,py*16+3,pz*16,3); let v=150+60*(m-.5)+40*(n-.5); if(n<.47) v-=Math.min(1,(.47-n)*9)*62; r=v;g=v;b=v*.98 }
+      else if(kind==='Mars'){ const n=fbm(px*2.4+2,py*2.4,pz*2.4,5),m=fbm(px*10,py*10,pz*10+4,3),dk=n<.46?Math.min(1,(.46-n)*8):0; r=205-70*dk+30*(m-.5); g=118-48*dk+24*(m-.5); b=72-22*dk+16*(m-.5); if(Math.abs(lat)>1.36+.12*(m-.5)){ r=g=b=238 } }
+      else if(kind==='Venus'){ const w=fbm(px*2,py*2,pz*2+9,4),s=.5+.5*Math.sin(py*10+w*7+px*1.5),n=fbm(px*6,py*14,pz*6,4),t=.55*s+.45*n; r=206+44*t;g=170+58*t;b=104+74*t }
+      else if(kind==='Jupiter'||kind==='Saturn'){ const J=kind==='Jupiter',w=fbm(px*3,py*8,pz*3,4),s=.5+.5*Math.sin(py*(J?17:22)+(w-.5)*(J?5:2)),t2=fbm(px*9+3,py*30,pz*9,3),t=Math.max(0,Math.min(1,J?.7*s+.3*t2:.5+.35*(s-.5)+.15*(t2-.5)));
+        const col=J?mixc([150,96,62],[236,222,196],t):mixc([196,170,118],[240,226,178],t); r=col[0];g=col[1];b=col[2];
+        if(J){ let dl=lon-4.2; const e=(dl*dl)/(.20*.20)+((lat+.38)*(lat+.38))/(.085*.085); if(e<1){ const k=1-e; r+=(196-r)*k;g+=(84-g)*k;b+=(56-b)*k } } }
+      else if(kind==='Uranus'){ const t=.5+.5*py; r=168+12*t;g=222+8*t;b=228 }
+      else if(kind==='Neptune'){ const w=fbm(px*3,py*9,pz*3,4),s=.5+.5*Math.sin(py*9+w*3); r=44+26*s;g=84+44*s;b=206+34*s; let dl=lon-2.2; const e=(dl*dl)/(.26*.26)+((lat+.36)*(lat+.36))/(.1*.1); if(e<1){ const k=(1-e)*.75; r*=1-k*.6;g*=1-k*.55;b*=1-k*.4 } const cs=fbm(px*10,py*40,pz*10,3); if(cs>.68&&Math.abs(lat+.25)<.2){ const k=(cs-.68)*5; r+=(255-r)*k;g+=(255-g)*k;b+=(255-b)*k } }
+      else { const h=fbm(px*2.1+3,py*2.1,pz*2.1+1,6),a=Math.abs(lat); if(h>.5){ const t=Math.min(1,(h-.5)*7),dry=fbm(px*4,py*4,pz*4+7,3); r=58+90*dry+25*t;g=104+34*dry;b=52+30*dry } else { const t=h/.5; r=10+18*t;g=38+52*t;b=92+78*t }
+        if(a>1.2+.25*(fbm(px*5,py*5,pz*5,3)-.5)){ r=g=b=236 } const cd=fbm(px*4+20,py*5,pz*4,5); if(cd>.55){ const t=Math.min(1,(cd-.55)*5)*.85; r+=(250-r)*t;g+=(250-g)*t;b+=(250-b)*t } }
+      d[o]=r;d[o+1]=g;d[o+2]=b;d[o+3]=255 } }
+  x.putImageData(im,0,0);
+  if(kind==='Mercury'||kind==='Moon'||kind==='Mars'){ const r=mulberry(kind==='Moon'?5:3), cnt=kind==='Mars'?90:kind==='Moon'?300:420; for(let n=0;n<cnt;n++){ const lat=Math.asin(r()*2-1),cx=r()*W,cy=(.5-lat/Math.PI)*H,rad=1.2+Math.pow(r(),3)*15,rx=Math.min(W/2,rad/Math.max(.12,Math.cos(lat)));
+      for(const dx of [-W,0,W]){ if(n%23===0&&kind!=='Mars'){ const g=x.createRadialGradient(cx+dx,cy,0,cx+dx,cy,rad*5); g.addColorStop(0,'rgba(255,250,235,.4)'); g.addColorStop(1,'rgba(255,250,235,0)'); x.fillStyle=g; x.beginPath(); x.ellipse(cx+dx,cy,rx*5,rad*5,0,0,6.2832); x.fill() }
+        x.beginPath(); x.ellipse(cx+dx,cy,rx,rad,0,0,6.2832); x.fillStyle='rgba(20,16,12,.22)'; x.fill(); x.lineWidth=Math.max(.6,rad*.16); x.strokeStyle='rgba(255,245,225,.2)'; x.stroke() } } }
+  return texCache[kind]=new THREE.CanvasTexture(c) }
+const tilt=new THREE.Group(); gClose.add(tilt);
+const globe=new THREE.Mesh(new THREE.SphereGeometry(1,72,40),new THREE.MeshStandardMaterial({roughness:1,metalness:0})); tilt.add(globe);
+const halo=new THREE.Mesh(new THREE.SphereGeometry(1.045,48,24),new THREE.MeshBasicMaterial({color:0x7fb4ff,transparent:true,opacity:.2,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false})); gClose.add(halo);
+let ring; { const ri=74.5,ro=137,g=new THREE.RingGeometry(ri,ro,128,1), p=g.attributes.position, uv=g.attributes.uv; for(let i=0;i<p.count;i++){ const r=Math.hypot(p.getX(i),p.getY(i)); uv.setXY(i,(r-ri)/(ro-ri),.5) }
+  const c=document.createElement('canvas'); c.width=256;c.height=4; const x=c.getContext('2d'); for(let i=0;i<256;i++){ const u=i/256,rk=ri+u*(ro-ri); let a=rk<92?.25:rk<117.5?.9:rk<122?.06:rk<136.8?.6:0; a*=.75+.25*Math.sin(i*1.9)*Math.sin(i*.37); x.fillStyle='rgba(226,208,170,'+Math.max(0,a).toFixed(3)+')'; x.fillRect(i,0,1,4) }
+  ring=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c),transparent:true,side:THREE.DoubleSide,depthWrite:false})); ring.rotation.x=-Math.PI/2; tilt.add(ring) }
+const dyn=new THREE.Group(); gClose.add(dyn);
+const craftC=sprite(craftTex,.05); gClose.add(craftC);
+
+/* BepiColombo model */
+const MD={};
+{ const std=(c,m,r,e)=>new THREE.MeshStandardMaterial({color:c,metalness:m,roughness:r,emissive:e||0,side:THREE.DoubleSide}), foil=std(0xc79a3c,.55,.45,0x2a1c05), white=std(0xe8e6df,.1,.8,0x1a1a1a), cell=std(0x1c2f66,.3,.4,0x060b1c), dark=std(0x3a3d46,.4,.6);
+  const box=(w,h,d,m)=>new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);
+  const mtm=new THREE.Group(); mtm.add(box(1.7,1.3,1.7,foil));
+  for(const s of [-1,1]){ const y=box(.5,.08,.08,dark); y.position.x=s*1.1; mtm.add(y); for(let i=0;i<5;i++){ const p=box(.76,.04,1.5,cell); p.position.x=s*(1.75+i*.8); mtm.add(p) } }
+  for(const [a,b] of [[-.4,-.4],[.4,-.4],[-.4,.4],[.4,.4]]){ const n=new THREE.Mesh(new THREE.CylinderGeometry(.14,.2,.22,16),dark); n.position.set(a,-.76,b); mtm.add(n) }
+  const mpo=new THREE.Group(); mpo.add(box(1.45,1.25,1.5,foil)); const rad=box(1.3,1.1,.07,white); rad.position.z=-.8; mpo.add(rad);
+  for(let i=0;i<3;i++){ const p=box(1.3,.04,.82,cell); p.position.set(0,.1,1.25+i*.86); p.rotation.x=.25; mpo.add(p) }
+  const dish=new THREE.Mesh(new THREE.CylinderGeometry(.48,.3,.12,24),white); dish.position.set(-1.05,.2,0); dish.rotation.z=1.2; mpo.add(dish);
+  const shield=new THREE.Mesh(new THREE.CylinderGeometry(.6,.98,1,32,1,true),white);
+  const mio=new THREE.Group(); mio.add(new THREE.Mesh(new THREE.CylinderGeometry(.56,.56,.42,8),cell)); const cap=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.06,20),white); cap.position.y=.26; mio.add(cap);
+  gModel.add(mtm,mpo,shield,mio); Object.assign(MD,{mtm,mpo,shield,mio,g1:0,g2:0,t1:0,t2:0}); gModel.rotation.z=.18 }
+function layoutModel(){ MD.mtm.position.set(0,-1.35-MD.g1,0); MD.mtm.rotation.z=-MD.g1*.05; MD.mpo.position.y=0; MD.shield.position.y=1.15+MD.g2; MD.mio.position.y=1.2+MD.g2*2.1; gModel.position.y=MD.g1*.45-.2 }
+
+/* labels */
+const labels=[];
+function addLabel(text,mode,get,cls,grp){ const el=document.createElement('div'); el.className='lbl'+(cls?' '+cls:''); el.textContent=text; $('labels').append(el); const L={el,mode,get,grp:grp||'fixed'}; labels.push(L); return L }
+function clearLabels(grp){ for(let i=labels.length-1;i>=0;i--) if(labels[i].grp===grp){ labels[i].el.remove(); labels.splice(i,1) } }
+addLabel('Mio (JAXA)','model',v=>MD.mio.getWorldPosition(v)); addLabel('Sunshield','model',v=>MD.t2>0?MD.shield.getWorldPosition(v):v.set(0,0,-1e6));
+addLabel('MPO (ESA)','model',v=>MD.mpo.getWorldPosition(v)); addLabel('Transfer module','model',v=>MD.mtm.getWorldPosition(v));
+function disposeGroup(g){ while(g.children.length){ const o=g.children.pop(); o.geometry&&o.geometry.dispose() } }
+
+/* camera */
+let mode='sys'; const C={r:4,az:.45,el:.95,min:.2,max:14}, camTw={on:false};
+function fitDist(R){ const vf=cam.fov*Math.PI/360, hf=Math.atan(Math.tan(vf)*cam.aspect); return R/Math.tan(Math.min(vf,hf))*1.08 }
+function camTo(r,az,el,min,max,instant){ C.min=min;C.max=max; if(instant||reduce){ C.r=r;C.az=az;C.el=el; camTw.on=false; return } Object.assign(camTw,{on:true,t:0,r0:C.r,a0:C.az,e0:C.el,r1:r,a1:az,e1:el}) }
+const cv=gl.domElement, ptr=new Map(); let pinch=0, touched=false;
+function touch(){ camTw.on=false; if(!touched){ touched=true; $('hint').style.opacity=0 } }
+cv.addEventListener('pointerdown',e=>{ cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId,[e.clientX,e.clientY]); pinch=0 });
+cv.addEventListener('pointermove',e=>{ const p=ptr.get(e.pointerId); if(!p) return; const dx=e.clientX-p[0],dy=e.clientY-p[1]; p[0]=e.clientX;p[1]=e.clientY; touch();
+  if(ptr.size===1){ C.az-=dx*.006; C.el=Math.max(-1.5,Math.min(1.5,C.el+dy*.006)) }
+  else if(ptr.size===2){ const a=[...ptr.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]); if(pinch) C.r=Math.max(C.min,Math.min(C.max,C.r*pinch/d)); pinch=d } });
+const pup=e=>{ptr.delete(e.pointerId);pinch=0}; cv.addEventListener('pointerup',pup); cv.addEventListener('pointercancel',pup);
+cv.addEventListener('wheel',e=>{ e.preventDefault(); touch(); C.r=Math.max(C.min,Math.min(C.max,C.r*Math.exp(e.deltaY*.0012))) },{passive:false});
+function resize(){ const w=stage.clientWidth,h=stage.clientHeight; if(!w||!h) return; gl.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix() }
+new ResizeObserver(resize).observe(stage);
+
+/* system view */
+let S=null, T=0, tw=null, closeA=null, pendingClose=null;
+function tIndex(t){ const a=X.t; let lo=0,hi=a.length-1; if(t<=a[0]) return [0,0]; if(t>=a[hi]) return [hi-1,1]; while(hi-lo>1){ const m=(lo+hi)>>1; if(a[m]<=t) lo=m; else hi=m } return [lo,(t-a[lo])/(a[lo+1]-a[lo])] }
+function seriesPos(arr,i,f,out){ const j=i+1; return out.set(arr[3*i]+(arr[3*j]-arr[3*i])*f,arr[3*i+2]+(arr[3*j+2]-arr[3*i+2])*f,-(arr[3*i+1]+(arr[3*j+1]-arr[3*i+1])*f)) }
+function bodyPos(b,t,i,f,out){ if(b.pos) return seriesPos(b.pos,i,f,out); const n=b.pts.length/3, ph=(((t/b.P)%1)+1)%1*n, k=Math.floor(ph)%n, k2=(k+1)%n, g=ph-Math.floor(ph), p=b.pts;
+  return out.set(p[3*k]+(p[3*k2]-p[3*k])*g,p[3*k+2]+(p[3*k2+2]-p[3*k+2])*g,-(p[3*k+1]+(p[3*k2+1]-p[3*k+1])*g)) }
+function chapT(c){ const end=X.t[X.t.length-1]; let t=null;
+  if(c.close!=null){ const s=X.close[c.close]; t=s.jd0+s.ca*s.step/1440-X.t0 } else if(c.date) t=JD.apply(null,c.date)-X.t0; else if(c.ev) t=X.events[c.ev]; else if(c.T==='end') t=end; else if(c.T!=null) t=c.T;
+  if(t==null) return null; return Math.max(0,Math.min(end,t+(c.dt||0))) }
+function buildSystem(){ disposeGroup(gSys); clearLabels('sys'); const km=X.unit==='km', n=X.t.length; S={km,bodies:{},pts:[],trailFit:0,dots:[]};
+  if(!X.events) X.events={}; if(X.events.maxdist==null){ let bi=0,bd=0; for(let i=0;i<n;i++){ const d=Math.hypot(X.craft[3*i],X.craft[3*i+1],X.craft[3*i+2]); if(d>bd){bd=d;bi=i} } X.events.maxdist=X.t[bi] }
+  if(km){ const e=new THREE.Mesh(new THREE.SphereGeometry(.06371,40,24),new THREE.MeshStandardMaterial({map:planetTex('Earth'),roughness:1})); e.rotation.y=2; gSys.add(e); addLabel('Earth','sys',v=>v.set(0,0,0),'','sys') }
+  else { gSys.add(sprite(sunTex,.11)); addLabel('Sun','sys',v=>v.set(0,0,0),'','sys') }
+  for(const name in X.bodies){ const b=X.bodies[name], pts=[];
+    if(b.pos){ const m=km?n:Math.min(n,{Mercury:89,Venus:226,Earth:367}[name]||n); for(let i=0;i<m;i++) pts.push(E2T(b.pos,i)); if(!km) pts.push(pts[0].clone()) } else { const m=b.pts.length/3; for(let i=0;i<m;i++) pts.push(E2T(b.pts,i)); pts.push(pts[0].clone()) }
+    gSys.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:TINT[name],transparent:true,opacity:.42})));
+    const o=new THREE.Group(); if(name==='Moon') o.add(new THREE.Mesh(new THREE.SphereGeometry(.017374,24,16),new THREE.MeshStandardMaterial({map:planetTex('Moon'),roughness:1}))); o.add(sprite(dotTex,name==='Moon'?.02:.026,TINT[name])); gSys.add(o); S.bodies[name]=o;
+    addLabel(name,'sys',v=>v.copy(o.position),'','sys') }
+  for(let i=0;i<n;i++) S.pts.push(E2T(X.craft,i));
+  S.ghost=new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:.22}); gSys.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(S.pts),S.ghost));
+  S.trail=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({color:GOLD})); gSys.add(S.trail);
+  S.craft=sprite(craftTex,.045); gSys.add(S.craft); addLabel(M.craft,'sys',v=>v.copy(S.craft.position),'craft','sys');
+  const seen=new Set(); M.ch.forEach(c=>{ if(c.close==null||c.noClose||seen.has(c.close)) return; seen.add(c.close); const t=chapT({close:c.close}), [i,f]=tIndex(t), d=sprite(dotTex,.014); seriesPos(X.craft,i,f,d.position); d.userData.t=t; gSys.add(d); S.dots.push(d) });
+  if(X.sun&&km) sunLight.position.set(X.sun[0],X.sun[2],-X.sun[1]).multiplyScalar(500) }
+function setTrail(fit){ if(Math.abs(Math.log(fit/(S.trailFit||1e-9)))<.3) return; S.trailFit=fit; S.trail.geometry.dispose(); S.trail.geometry=tube(S.pts,fit*.0045,5,new V3(0,1,0)) }
+function setMode(m){ mode=m; gSys.visible=m==='sys'; gClose.visible=m==='close'; gModel.visible=m==='model' }
+function sysCam(fit,instant){ const d=fitDist(fit); if(instant) camTo(d,.45,.95,d*.04,d*6,true); else camTo(d,C.az,C.el,d*.04,d*6,false); if(S.km) sunLight.position.set(X.sun[0],X.sun[2],-X.sun[1]).multiplyScalar(500) }
+function fadeSwap(fn){ if(reduce){ fn(); return } const f=$('fade'); f.classList.add('on'); setTimeout(()=>{ fn(); f.classList.remove('on') },360) }
+const kmPts=p=>{ const n=p.length/3,a=[]; for(let i=0;i<n;i++) a.push(new V3(p[3*i]/1000,p[3*i+2]/1000,-p[3*i+1]/1000)); return a };
+function enterClose(spec){ disposeGroup(dyn); clearLabels('close'); setMode('close'); closeA=null; const body=spec.body||spec.planet, R=RAD[body]; let fit;
+  if(spec.p){ const pts=kmPts(spec.p), n=pts.length, ca=pts[spec.ca], dca=ca.length(), fly=spec.kind==='fly';
+    fit=spec.fit||Math.max(R*2.6,dca*1.45); const up=new V3().crossVectors(pts[Math.max(0,spec.ca-Math.min(60,spec.ca))],pts[Math.min(n-1,spec.ca+60)]).normalize(); if(up.lengthSq()<.5) up.set(0,1,0);
+    dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:.3})));
+    const m=new THREE.Mesh(tube(pts,fit*.006,6,up),new THREE.MeshBasicMaterial({color:GOLD})); dyn.add(m);
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(fit*.014,12,8),new THREE.MeshBasicMaterial({color:0xffffff})); dot.position.copy(ca); dyn.add(dot);
+    addLabel(spec.label||('Closest approach, '+spec.alt.toLocaleString('en-GB')+' km'),'close',v=>v.copy(ca),'note','close');
+    if(spec.p2){ const q=kmPts(spec.p2); dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(q),new THREE.LineBasicMaterial({color:BLUE,transparent:true,opacity:.9}))); const qm=q[Math.floor(q.length*.78)]; addLabel(spec.p2name,'close',v=>v.copy(qm),'alt','close') }
+    (spec.marks||[]).forEach(k=>{ const p=new V3(k.pos[0]/1000,k.pos[2]/1000,-k.pos[1]/1000), d2=new THREE.Mesh(new THREE.SphereGeometry(fit*.011,10,8),new THREE.MeshBasicMaterial({color:BLUE})); d2.position.copy(p); dyn.add(d2); addLabel(k.name,'close',v=>v.copy(p),'alt','close') });
+    const sd=new V3(spec.sun[0],spec.sun[2],-spec.sun[1]); sunLight.position.copy(sd).multiplyScalar(500);
+    closeA={type:fly?'fly':'arr',body,pts,n,mesh:m,ca:spec.ca,R,u:0,dur:fly?11:22,jd0:spec.jd0,step:spec.step};
+    const side=new V3().crossVectors(up,ca).normalize(), dir=ca.clone().normalize().multiplyScalar(fly?.75:.3).addScaledVector(up,fly?.55:.8).addScaledVector(side,.35).normalize(); if(dir.y<0&&!fly) dir.negate(); dir.addScaledVector(sd,.75).normalize();
+    camTo(fitDist(fit),Math.atan2(dir.x,dir.z),Math.asin(Math.max(-1,Math.min(1,dir.y))),R*1.3,fitDist(fit)*8,true);
+  } else { sunLight.position.set(1,.25,.7).multiplyScalar(500); fit=R*1.55;
+    if(spec.orbits){ fit=10.5; const mk=(rp,ra,col,name)=>{ const a=(rp+ra)/2,e=(ra-rp)/(ra+rp),pts=[]; for(let i=0;i<=160;i++){ const th=i/160*6.2832,r=a*(1-e*e)/(1+e*Math.cos(th)); pts.push(new V3(0,r*Math.sin(th),r*Math.cos(th))) }
+        dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.85})));
+        const s=sprite(craftTex,.04,col); dyn.add(s); addLabel(name,'close',v=>v.copy(s.position),'note','close'); return {a,e,s,per:Math.pow(a,1.5)} };
+      closeA={type:'orb',R,o:[mk(2.92,3.94,GOLD,'MPO'),mk(3.03,14.08,BLUE,'Mio')],t:0} }
+    camTo(fitDist(fit),.9,.25,R*1.25,fitDist(fit)*5,true) }
+  globe.material.map=planetTex(body); globe.material.needsUpdate=true; globe.scale.setScalar(R); halo.scale.setScalar(R); halo.visible=body==='Earth'||body==='Venus'; halo.material.color.set(body==='Venus'?0xffe2a8:0x7fb4ff);
+  const pl=POLE[body]; if(pl) tilt.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(pl[0],pl[1],pl[2]).normalize()); else tilt.quaternion.identity(); ring.visible=body==='Saturn';
+  craftC.visible=!!closeA&&closeA.type!=='orb'; globe.rotation.y=body==='Earth'?2.2:0; updateBtn() }
+function hasClose(c){ return c.close!=null&&!c.noClose }
+function updateBtn(){ const c=M.ch[cur], b=$('viewBtn'); if(!hasClose(c)){ b.hidden=true; return } b.hidden=false; b.textContent=mode==='close'?'Show the whole route':'Show the close-up' }
+$('viewBtn').addEventListener('click',()=>{ const c=M.ch[cur]; pendingClose=null; if(mode==='close') fadeSwap(()=>{ setMode('sys'); sysCam(c.fit||M.fit,true); updateBtn() }); else fadeSwap(()=>enterClose(X.close[c.close])) });
+openMission=function(m){ M=m; X=DATA[m.id]; cur=-1; T=0; tw=null; pendingClose=null; closeA=null; buildTicks(); resize(); buildSystem(); setMode('sys'); sysCam(m.fit,true); go(0) };
+go=function(i){ if(!M||i<0||i>=M.ch.length||i===cur) return; cur=i; const c=M.ch[i], me=M; renderPanel(); pendingClose=null; tw=null;
+  S.ghost.opacity=c.ghost||.22; const ok=()=>M===me&&cur===i;
+  if(c.view&&c.view.model){ fadeSwap(()=>{ if(!ok()) return; setMode('model'); sunLight.position.set(.6,.5,.8).multiplyScalar(500); MD.t1=c.view.model===2?3.2:1.1; MD.t2=c.view.model===2?0:.8; if(reduce){MD.g1=MD.t1;MD.g2=MD.t2} camTo(fitDist(c.view.model===2?5.6:5.2),.75,.3,3,40,true); updateBtn() }); return }
+  if(c.view&&c.view.planet){ fadeSwap(()=>{ if(ok()) enterClose(c.view) }); return }
+  const fit=c.fit||M.fit, tt=chapT(c);
+  const start=()=>{ if(!ok()) return; const was=mode; setMode('sys'); setTrail(fit); sysCam(fit,was!=='sys'); updateBtn(); const close=hasClose(c);
+    if(reduce||Math.abs(tt-T)<1e-6){ T=tt; if(close) fadeSwap(()=>{ if(ok()) enterClose(X.close[c.close]) }); return }
+    const span=X.t[X.t.length-1];
+    tw={a:T,b:tt,t:0,dur:Math.max(1.4,Math.min(5,Math.abs(tt-T)/span*14)),done:close?()=>{ pendingClose=i; setTimeout(()=>{ if(pendingClose===i&&ok()) fadeSwap(()=>{ if(ok()) enterClose(X.close[c.close]) }) },450) }:null} };
+  if(mode!=='sys') fadeSwap(start); else start() };
+
+/* frame */
+const fmtD=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}), fmtDT=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'UTC'});
+const jdDate=jd=>new Date((jd-2440587.5)*864e5), num=n=>n.toLocaleString('en-GB');
+let hud1='',hud2=''; function setHud(a,b){ if(a!==hud1){hud1=a;$('hudDate').textContent=a} if(b!==hud2){hud2=b;$('hudSub').textContent=b} }
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2, clock=new THREE.Clock(), pv=new V3();
+function frame(){ requestAnimationFrame(frame); const dt=Math.min(.1,clock.getDelta()); if(!M) return;
+  if(camTw.on){ camTw.t=Math.min(1,camTw.t+dt/1.1); const e=ease(camTw.t); C.r=camTw.r0+(camTw.r1-camTw.r0)*e; C.az=camTw.a0+(camTw.a1-camTw.a0)*e; C.el=camTw.e0+(camTw.e1-camTw.e0)*e; if(camTw.t>=1) camTw.on=false }
+  const c=M.ch[cur];
+  if(mode==='sys'){
+    if(tw){ tw.t=Math.min(1,tw.t+dt/tw.dur); T=tw.a+(tw.b-tw.a)*ease(tw.t); if(tw.t>=1){ const d=tw.done; tw=null; d&&d() } }
+    const [i,f]=tIndex(T); for(const k in S.bodies) bodyPos(X.bodies[k],T,i,f,S.bodies[k].position); seriesPos(X.craft,i,f,S.craft.position);
+    if(S.trail.geometry.userData.per) S.trail.geometry.setDrawRange(0,i*S.trail.geometry.userData.per); S.dots.forEach(d=>d.visible=T>=d.userData.t-1e-4);
+    const launched=!c.pre; S.craft.visible=S.trail.visible=launched;
+    if(!launched) setHud('Before launch',S.km?'Earth and the Moon, to scale':'The planets on their orbits');
+    else { const r=S.craft.position.length(); if(S.km) setHud(fmtDT.format(jdDate(X.t0+T))+' UTC',num(Math.max(0,Math.round((r*1e5-6378)/10)*10))+' km from Earth');
+      else setHud(fmtD.format(jdDate(X.t0+T)),(r<20?r.toFixed(2):r.toFixed(1))+' AU from the Sun') }
+  } else if(mode==='close'){
+    globe.rotation.y+=dt*.02;
+    if(closeA&&closeA.type!=='orb'){ const A=closeA; if(!reduce){ A.u+=dt/A.dur; if(A.u>1.12) A.u=0 } else A.u=A.type==='fly'?A.ca/(A.n-1):.3;
+      const f=Math.min(1,A.u)*(A.n-1), i=Math.min(A.n-2,Math.floor(f)); craftC.position.lerpVectors(A.pts[i],A.pts[i+1],f-i); A.mesh.geometry.setDrawRange(0,i*A.mesh.geometry.userData.per);
+      const alt=Math.max(0,Math.round((craftC.position.length()-A.R)*1000)), sp=A.pts[i].distanceTo(A.pts[i+1])*1000/(A.step*60);
+      if(A.type==='fly'){ const m=Math.round((f-A.ca)*A.step), s=Math.abs(m), h=Math.floor(s/60); setHud((m<0?'T minus ':'T plus ')+h+'h '+String(s%60).padStart(2,'0')+'m',num(alt)+' km up, '+sp.toFixed(1)+' km/s relative to '+(A.body==='Moon'?'the Moon':A.body)) }
+      else setHud(fmtDT.format(jdDate(A.jd0+f*A.step/1440))+' UTC',num(alt)+' km above '+(A.body==='Moon'?'the Moon':A.body)) }
+    else if(closeA){ closeA.t+=reduce?0:dt*.9; for(const o of closeA.o){ const Mn=closeA.t/o.per*6.2832; let E=Mn; for(let k=0;k<6;k++) E=Mn+o.e*Math.sin(E); const th=2*Math.atan2(Math.sqrt(1+o.e)*Math.sin(E/2),Math.sqrt(1-o.e)*Math.cos(E/2)), r=o.a*(1-o.e*Math.cos(E)); o.s.position.set(0,r*Math.sin(th),r*Math.cos(th)) }
+      if(c.hud) setHud(c.hud[0],c.hud[1]) }
+    else if(c.hud) setHud(c.hud[0],c.hud[1]);
+  } else { MD.g1+=(MD.t1-MD.g1)*Math.min(1,dt*1.6); MD.g2+=(MD.t2-MD.g2)*Math.min(1,dt*1.6); layoutModel(); if(!reduce&&!ptr.size) C.az+=dt*.08; const m2=MD.t1>2; setHud(m2?'3 September 2026':'The cruise stack',m2?'The transfer module separates':'About 6.4 m tall, 4.1 tonnes at launch') }
+  const ce=Math.cos(C.el); cam.position.set(C.r*ce*Math.sin(C.az),C.r*Math.sin(C.el),C.r*ce*Math.cos(C.az)); cam.lookAt(0,0,0); cam.updateMatrixWorld();
+  const w=stage.clientWidth,h=stage.clientHeight;
+  for(const L of labels){ let show=L.mode===mode; if(show&&L.el.classList.contains('craft')) show=S.craft.visible; if(show){ L.get(pv); pv.project(cam); show=pv.z<1&&Math.abs(pv.x)<1.05&&Math.abs(pv.y)<1.05 }
+    L.el.style.display=show?'':'none'; if(show) L.el.style.transform='translate('+((pv.x*.5+.5)*w+9).toFixed(1)+'px,'+((-pv.y*.5+.5)*h-16).toFixed(1)+'px)' }
+  gl.render(scene,cam) }
+layoutModel(); window.__go=i=>go(i); route(); frame();
+})();
+</script>
+</body>
+</html>
