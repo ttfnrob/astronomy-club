@@ -52,6 +52,9 @@ button{font:inherit;color:inherit}
 .hud{position:absolute;left:14px;right:14px;top:12px;color:#f3efe6;pointer-events:none;text-shadow:0 1px 6px #000}
 #hudDate{font:700 clamp(1.25rem,4.4vw,1.9rem)/1.05 var(--disp);font-variant-numeric:tabular-nums}
 #hudSub{font-size:.86rem;color:#c9c5ba;margin-top:3px;font-variant-numeric:tabular-nums}
+.focus-control{position:absolute;z-index:2;left:12px;top:76px;display:flex;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:6px 9px;color:#f3efe6;background:rgba(20,22,32,.82);border:1px solid #5a5f73;border-radius:9px;font-size:.8rem;text-shadow:0 1px 4px #000}
+.focus-control select{max-width:min(52vw,230px);min-height:32px;padding:3px 26px 3px 8px;color:#f3efe6;background:#20222c;border:1px solid #74798a;border-radius:6px;font:500 .82rem var(--body);text-shadow:none;cursor:pointer}
+.focus-control select:hover{border-color:#ffb347}
 #viewBtn{position:absolute;right:12px;bottom:36px;font:500 .88rem var(--body);color:#f3efe6;background:rgba(20,22,32,.78);border:1px solid #5a5f73;border-radius:999px;padding:.5rem .9rem;min-height:40px;cursor:pointer}
 #viewBtn:hover{border-color:#ffb347}
 #hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#a9a69c;font-size:.8rem;pointer-events:none;transition:opacity .6s}
@@ -109,10 +112,11 @@ button{font:inherit;color:inherit}
 <div id="app" hidden>
   <div class="stage" id="stage">
     <div class="hud"><div id="hudDate"></div><div id="hudSub"></div></div>
+    <label class="focus-control" id="focusControl" for="focusSelect"><span>Rotate around</span><select id="focusSelect" aria-label="Choose the centre of rotation"></select></label>
     <button id="viewBtn" hidden></button>
     <div id="labels" aria-hidden="true"></div>
     <div id="fade"></div>
-    <div id="hint">Drag to look around, pinch or scroll to zoom</div>
+    <div id="hint">Drag to orbit; click an object or choose what to orbit around</div>
   </div>
   <section class="panel">
     <div class="top"><button id="backBtn">All missions</button><span class="brand" id="brand"></span><span id="count"></span></div>
@@ -358,7 +362,7 @@ function buildTicks(){ $('ticks').textContent=''; M.ch.forEach((c,i)=>{ const b=
 const stage=$('stage'); let gl=null;
 try{ if(window.THREE){ gl=new THREE.WebGLRenderer({antialias:true}); } }catch(e){ gl=null }
 let openMission, go;
-if(!gl){ const d=document.createElement('div'); d.id='nogl'; d.textContent='The 3D view could not start in this browser. The story and photographs still work with the buttons below.'; stage.append(d);
+if(!gl){ $('focusControl').hidden=true; const d=document.createElement('div'); d.id='nogl'; d.textContent='The 3D view could not start in this browser. The story and photographs still work with the buttons below.'; stage.append(d);
   openMission=m=>{ M=m; X=DATA[m.id]; cur=-1; buildTicks(); go(0) }; go=i=>{ if(i<0||i>=M.ch.length) return; cur=i; renderPanel() }; route(); return }
 const V3=THREE.Vector3;
 gl.setPixelRatio(Math.min(2,window.devicePixelRatio||1)); gl.setClearColor(0x06070c); stage.insertBefore(gl.domElement,stage.firstChild);
@@ -443,15 +447,43 @@ function disposeGroup(g){ while(g.children.length){ const o=g.children.pop(); o.
 
 /* camera */
 let mode='sys'; const C={r:4,az:.45,el:.95,min:.2,max:14}, camTw={on:false};
+const cameraTarget=new V3(), focusSelect=$('focusSelect'), focusRay=new THREE.Raycaster(), focusPointer=new THREE.Vector2();
+const focusModes={sys:[],close:[],model:[]}, focusByMode={sys:'origin',close:'origin',model:'origin'};
+let focusTargets=[], selectedFocus='origin', focusTween=null;
+const originFocus={id:'origin',label:'Scene centre',pick:null,get:v=>v.set(0,0,0)};
+function focusItem(id,label,pick,get){ if(pick) pick.userData.focusId=id; return {id,label,pick,get} }
+function setFocusOptions(view){
+  focusTargets=focusModes[view]||[];
+  focusSelect.replaceChildren();
+  focusTargets.forEach(f=>{ const o=document.createElement('option'); o.value=f.id; o.textContent=f.label; focusSelect.append(o) });
+  const wanted=focusTargets.some(f=>f.id===focusByMode[view])?focusByMode[view]:'origin';
+  chooseFocus(wanted,true);
+}
+function chooseFocus(id,instant){
+  const f=focusTargets.find(x=>x.id===id); if(!f) return;
+  const old=focusTargets.find(x=>x.id===selectedFocus);
+  if(old) old.get(cameraTarget);
+  selectedFocus=id; focusByMode[mode]=id; focusSelect.value=id;
+  if(instant){ f.get(cameraTarget); focusTween=null }
+  else focusTween={from:cameraTarget.clone(),t:0};
+}
+focusSelect.addEventListener('change',()=>chooseFocus(focusSelect.value,false));
+function pickFocus(e){
+  if(!focusTargets.length) return;
+  const r=cv.getBoundingClientRect(); focusPointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+  focusRay.setFromCamera(focusPointer,cam);
+  const roots=focusTargets.filter(f=>f.pick).map(f=>f.pick), hits=focusRay.intersectObjects(roots,true);
+  for(const hit of hits){ for(let o=hit.object;o&&o!==scene;o=o.parent){ const id=o.userData.focusId; if(id&&focusTargets.some(f=>f.id===id)){ chooseFocus(id,false); $('hint').textContent='Orbiting '+focusTargets.find(f=>f.id===id).label; return } } }
+}
 function fitDist(R){ const vf=cam.fov*Math.PI/360, hf=Math.atan(Math.tan(vf)*cam.aspect); return R/Math.tan(Math.min(vf,hf))*1.08 }
 function camTo(r,az,el,min,max,instant){ C.min=min;C.max=max; if(instant||reduce){ C.r=r;C.az=az;C.el=el; camTw.on=false; return } Object.assign(camTw,{on:true,t:0,r0:C.r,a0:C.az,e0:C.el,r1:r,a1:az,e1:el}) }
 const cv=gl.domElement, ptr=new Map(); let pinch=0, touched=false;
 function touch(){ camTw.on=false; if(!touched){ touched=true; $('hint').style.opacity=0 } }
-cv.addEventListener('pointerdown',e=>{ cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId,[e.clientX,e.clientY]); pinch=0 });
-cv.addEventListener('pointermove',e=>{ const p=ptr.get(e.pointerId); if(!p) return; const dx=e.clientX-p[0],dy=e.clientY-p[1]; p[0]=e.clientX;p[1]=e.clientY; touch();
+cv.addEventListener('pointerdown',e=>{ cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId,[e.clientX,e.clientY,e.clientX,e.clientY,false]); pinch=0 });
+cv.addEventListener('pointermove',e=>{ const p=ptr.get(e.pointerId); if(!p) return; const dx=e.clientX-p[0],dy=e.clientY-p[1]; p[0]=e.clientX;p[1]=e.clientY; if(Math.hypot(e.clientX-p[2],e.clientY-p[3])>6)p[4]=true; touch();
   if(ptr.size===1){ C.az-=dx*.006; C.el=Math.max(-1.5,Math.min(1.5,C.el+dy*.006)) }
   else if(ptr.size===2){ const a=[...ptr.values()],d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]); if(pinch) C.r=Math.max(C.min,Math.min(C.max,C.r*pinch/d)); pinch=d } });
-const pup=e=>{ptr.delete(e.pointerId);pinch=0}; cv.addEventListener('pointerup',pup); cv.addEventListener('pointercancel',pup);
+const pup=e=>{const p=ptr.get(e.pointerId);if(p&&!p[4]&&e.type==='pointerup')pickFocus(e);ptr.delete(e.pointerId);pinch=0}; cv.addEventListener('pointerup',pup); cv.addEventListener('pointercancel',pup);
 cv.addEventListener('wheel',e=>{ e.preventDefault(); touch(); C.r=Math.max(C.min,Math.min(C.max,C.r*Math.exp(e.deltaY*.0012))) },{passive:false});
 function resize(){ const w=stage.clientWidth,h=stage.clientHeight; if(!w||!h) return; gl.setSize(w,h,false); cam.aspect=w/h; cam.updateProjectionMatrix() }
 new ResizeObserver(resize).observe(stage);
@@ -465,35 +497,35 @@ function bodyPos(b,t,i,f,out){ if(b.pos) return seriesPos(b.pos,i,f,out); const 
 function chapT(c){ const end=X.t[X.t.length-1]; let t=null;
   if(c.close!=null){ const s=X.close[c.close]; t=s.jd0+s.ca*s.step/1440-X.t0 } else if(c.date) t=JD.apply(null,c.date)-X.t0; else if(c.ev) t=X.events[c.ev]; else if(c.T==='end') t=end; else if(c.T!=null) t=c.T;
   if(t==null) return null; return Math.max(0,Math.min(end,t+(c.dt||0))) }
-function buildSystem(){ disposeGroup(gSys); clearLabels('sys'); const km=X.unit==='km', n=X.t.length; S={km,bodies:{},pts:[],trailFit:0,dots:[]};
+function buildSystem(){ disposeGroup(gSys); clearLabels('sys'); const km=X.unit==='km', n=X.t.length; S={km,bodies:{},pts:[],trailFit:0,dots:[]}; const targets=[originFocus];
   if(!X.events) X.events={}; if(X.events.maxdist==null){ let bi=0,bd=0; for(let i=0;i<n;i++){ const d=Math.hypot(X.craft[3*i],X.craft[3*i+1],X.craft[3*i+2]); if(d>bd){bd=d;bi=i} } X.events.maxdist=X.t[bi] }
-  if(km){ const e=new THREE.Mesh(new THREE.SphereGeometry(.06371,40,24),new THREE.MeshStandardMaterial({map:planetTex('Earth'),roughness:1})); e.rotation.y=2; gSys.add(e); addLabel('Earth','sys',v=>v.set(0,0,0),'','sys') }
-  else { gSys.add(sprite(sunTex,.11)); addLabel('Sun','sys',v=>v.set(0,0,0),'','sys') }
+  if(km){ const e=new THREE.Mesh(new THREE.SphereGeometry(.06371,40,24),new THREE.MeshStandardMaterial({map:planetTex('Earth'),roughness:1})); e.rotation.y=2; gSys.add(e); targets.push(focusItem('body:Earth','Earth',e,v=>e.getWorldPosition(v))); addLabel('Earth','sys',v=>v.set(0,0,0),'','sys') }
+  else { const sun=sprite(sunTex,.11); gSys.add(sun); targets.push(focusItem('body:Sun','Sun',sun,v=>sun.getWorldPosition(v))); addLabel('Sun','sys',v=>v.set(0,0,0),'','sys') }
   for(const name in X.bodies){ const b=X.bodies[name], pts=[];
     if(b.pos){ const m=km?n:Math.min(n,{Mercury:89,Venus:226,Earth:367}[name]||n); for(let i=0;i<m;i++) pts.push(E2T(b.pos,i)); if(!km) pts.push(pts[0].clone()) } else { const m=b.pts.length/3; for(let i=0;i<m;i++) pts.push(E2T(b.pts,i)); pts.push(pts[0].clone()) }
     gSys.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:TINT[name],transparent:true,opacity:.42})));
-    const o=new THREE.Group(); if(name==='Moon') o.add(new THREE.Mesh(new THREE.SphereGeometry(.017374,24,16),new THREE.MeshStandardMaterial({map:planetTex('Moon'),roughness:1}))); o.add(sprite(dotTex,name==='Moon'?.02:.026,TINT[name])); gSys.add(o); S.bodies[name]=o;
+    const o=new THREE.Group(); if(name==='Moon') o.add(new THREE.Mesh(new THREE.SphereGeometry(.017374,24,16),new THREE.MeshStandardMaterial({map:planetTex('Moon'),roughness:1}))); o.add(sprite(dotTex,name==='Moon'?.02:.026,TINT[name])); gSys.add(o); S.bodies[name]=o; targets.push(focusItem('body:'+name,name,o,v=>o.getWorldPosition(v)));
     addLabel(name,'sys',v=>v.copy(o.position),'','sys') }
   for(let i=0;i<n;i++) S.pts.push(E2T(X.craft,i));
   S.ghost=new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:.22}); gSys.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(S.pts),S.ghost));
   S.trail=new THREE.Mesh(new THREE.BufferGeometry(),new THREE.MeshBasicMaterial({color:GOLD})); gSys.add(S.trail);
-  S.craft=sprite(craftTex,.045); gSys.add(S.craft); addLabel(M.craft,'sys',v=>v.copy(S.craft.position),'craft','sys');
+  S.craft=sprite(craftTex,.045); gSys.add(S.craft); targets.push(focusItem('craft',M.craft,S.craft,v=>S.craft.getWorldPosition(v))); addLabel(M.craft,'sys',v=>v.copy(S.craft.position),'craft','sys');
   const seen=new Set(); M.ch.forEach(c=>{ if(c.close==null||c.noClose||seen.has(c.close)) return; seen.add(c.close); const t=chapT({close:c.close}), [i,f]=tIndex(t), d=sprite(dotTex,.014); seriesPos(X.craft,i,f,d.position); d.userData.t=t; gSys.add(d); S.dots.push(d) });
-  if(X.sun&&km) sunLight.position.set(X.sun[0],X.sun[2],-X.sun[1]).multiplyScalar(500) }
+  if(X.sun&&km) sunLight.position.set(X.sun[0],X.sun[2],-X.sun[1]).multiplyScalar(500); focusModes.sys=targets }
 function setTrail(fit){ if(Math.abs(Math.log(fit/(S.trailFit||1e-9)))<.3) return; S.trailFit=fit; S.trail.geometry.dispose(); S.trail.geometry=tube(S.pts,fit*.0045,5,new V3(0,1,0)) }
-function setMode(m){ mode=m; gSys.visible=m==='sys'; gClose.visible=m==='close'; gModel.visible=m==='model' }
+function setMode(m){ mode=m; gSys.visible=m==='sys'; gClose.visible=m==='close'; gModel.visible=m==='model'; setFocusOptions(m) }
 function sysCam(fit,instant){ const d=fitDist(fit); if(instant) camTo(d,.45,.95,d*.04,d*6,true); else camTo(d,C.az,C.el,d*.04,d*6,false); if(S.km) sunLight.position.set(X.sun[0],X.sun[2],-X.sun[1]).multiplyScalar(500) }
 function fadeSwap(fn){ if(reduce){ fn(); return } const f=$('fade'); f.classList.add('on'); setTimeout(()=>{ fn(); f.classList.remove('on') },360) }
 const kmPts=p=>{ const n=p.length/3,a=[]; for(let i=0;i<n;i++) a.push(new V3(p[3*i]/1000,p[3*i+2]/1000,-p[3*i+1]/1000)); return a };
-function enterClose(spec){ disposeGroup(dyn); clearLabels('close'); setMode('close'); closeA=null; const body=spec.body||spec.planet, R=RAD[body]; let fit;
+function enterClose(spec){ disposeGroup(dyn); clearLabels('close'); closeA=null; const body=spec.body||spec.planet, R=RAD[body], targets=[originFocus]; let fit;
   if(spec.p){ const pts=kmPts(spec.p), n=pts.length, ca=pts[spec.ca], dca=ca.length(), fly=spec.kind==='fly';
     fit=spec.fit||Math.max(R*2.6,dca*1.45); const up=new V3().crossVectors(pts[Math.max(0,spec.ca-Math.min(60,spec.ca))],pts[Math.min(n-1,spec.ca+60)]).normalize(); if(up.lengthSq()<.5) up.set(0,1,0);
     dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:.3})));
     const m=new THREE.Mesh(tube(pts,fit*.006,6,up),new THREE.MeshBasicMaterial({color:GOLD})); dyn.add(m);
-    const dot=new THREE.Mesh(new THREE.SphereGeometry(fit*.014,12,8),new THREE.MeshBasicMaterial({color:0xffffff})); dot.position.copy(ca); dyn.add(dot);
+    const dot=new THREE.Mesh(new THREE.SphereGeometry(fit*.014,12,8),new THREE.MeshBasicMaterial({color:0xffffff})); dot.position.copy(ca); dyn.add(dot); targets.push(focusItem('closest','Closest approach',dot,v=>dot.getWorldPosition(v)));
     addLabel(spec.label||('Closest approach, '+spec.alt.toLocaleString('en-GB')+' km'),'close',v=>v.copy(ca),'note','close');
-    if(spec.p2){ const q=kmPts(spec.p2); dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(q),new THREE.LineBasicMaterial({color:BLUE,transparent:true,opacity:.9}))); const qm=q[Math.floor(q.length*.78)]; addLabel(spec.p2name,'close',v=>v.copy(qm),'alt','close') }
-    (spec.marks||[]).forEach(k=>{ const p=new V3(k.pos[0]/1000,k.pos[2]/1000,-k.pos[1]/1000), d2=new THREE.Mesh(new THREE.SphereGeometry(fit*.011,10,8),new THREE.MeshBasicMaterial({color:BLUE})); d2.position.copy(p); dyn.add(d2); addLabel(k.name,'close',v=>v.copy(p),'alt','close') });
+    if(spec.p2){ const q=kmPts(spec.p2); dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(q),new THREE.LineBasicMaterial({color:BLUE,transparent:true,opacity:.9}))); const qm=q[Math.floor(q.length*.78)], qdot=sprite(dotTex,.035,BLUE); qdot.position.copy(qm); dyn.add(qdot); targets.push(focusItem('craft:secondary',spec.p2name||'Other spacecraft',qdot,v=>qdot.getWorldPosition(v))); addLabel(spec.p2name,'close',v=>v.copy(qm),'alt','close') }
+    (spec.marks||[]).forEach(k=>{ const p=new V3(k.pos[0]/1000,k.pos[2]/1000,-k.pos[1]/1000), d2=new THREE.Mesh(new THREE.SphereGeometry(fit*.011,10,8),new THREE.MeshBasicMaterial({color:BLUE})); d2.position.copy(p); dyn.add(d2); targets.push(focusItem('mark:'+k.name,k.name,d2,v=>d2.getWorldPosition(v))); addLabel(k.name,'close',v=>v.copy(p),'alt','close') });
     const sd=new V3(spec.sun[0],spec.sun[2],-spec.sun[1]); sunLight.position.copy(sd).multiplyScalar(500);
     closeA={type:fly?'fly':'arr',body,pts,n,mesh:m,ca:spec.ca,R,u:0,dur:fly?11:22,jd0:spec.jd0,step:spec.step};
     const side=new V3().crossVectors(up,ca).normalize(), dir=ca.clone().normalize().multiplyScalar(fly?.75:.3).addScaledVector(up,fly?.55:.8).addScaledVector(side,.35).normalize(); if(dir.y<0&&!fly) dir.negate(); dir.addScaledVector(sd,.75).normalize();
@@ -501,19 +533,21 @@ function enterClose(spec){ disposeGroup(dyn); clearLabels('close'); setMode('clo
   } else { sunLight.position.set(1,.25,.7).multiplyScalar(500); fit=R*1.55;
     if(spec.orbits){ fit=10.5; const mk=(rp,ra,col,name)=>{ const a=(rp+ra)/2,e=(ra-rp)/(ra+rp),pts=[]; for(let i=0;i<=160;i++){ const th=i/160*6.2832,r=a*(1-e*e)/(1+e*Math.cos(th)); pts.push(new V3(0,r*Math.sin(th),r*Math.cos(th))) }
         dyn.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:col,transparent:true,opacity:.85})));
-        const s=sprite(craftTex,.04,col); dyn.add(s); addLabel(name,'close',v=>v.copy(s.position),'note','close'); return {a,e,s,per:Math.pow(a,1.5)} };
-      closeA={type:'orb',R,o:[mk(2.92,3.94,GOLD,'MPO'),mk(3.03,14.08,BLUE,'Mio')],t:0} }
+        const s=sprite(craftTex,.04,col); dyn.add(s); addLabel(name,'close',v=>v.copy(s.position),'note','close'); return {a,e,s,per:Math.pow(a,1.5),name} };
+      closeA={type:'orb',R,o:[mk(2.92,3.94,GOLD,'MPO'),mk(3.03,14.08,BLUE,'Mio')],t:0}; closeA.o.forEach(o=>targets.push(focusItem('orbiter:'+o.name,o.name,o.s,v=>o.s.getWorldPosition(v)))) }
     camTo(fitDist(fit),.9,.25,R*1.25,fitDist(fit)*5,true) }
   globe.material.map=planetTex(body); globe.material.needsUpdate=true; globe.scale.setScalar(R); halo.scale.setScalar(R); halo.visible=body==='Earth'||body==='Venus'; halo.material.color.set(body==='Venus'?0xffe2a8:0x7fb4ff);
   const pl=POLE[body]; if(pl) tilt.quaternion.setFromUnitVectors(new V3(0,1,0),new V3(pl[0],pl[1],pl[2]).normalize()); else tilt.quaternion.identity(); ring.visible=body==='Saturn';
-  craftC.visible=!!closeA&&closeA.type!=='orb'; globe.rotation.y=body==='Earth'?2.2:0; updateBtn() }
+  targets.push(focusItem('body:'+body,body,globe,v=>globe.getWorldPosition(v)));
+  if(closeA&&closeA.type!=='orb') targets.push(focusItem('craft',M.craft,craftC,v=>craftC.getWorldPosition(v)));
+  craftC.visible=!!closeA&&closeA.type!=='orb'; focusModes.close=targets; setMode('close'); globe.rotation.y=body==='Earth'?2.2:0; updateBtn() }
 function hasClose(c){ return c.close!=null&&!c.noClose }
 function updateBtn(){ const c=M.ch[cur], b=$('viewBtn'); if(!hasClose(c)){ b.hidden=true; return } b.hidden=false; b.textContent=mode==='close'?'Show the whole route':'Show the close-up' }
 $('viewBtn').addEventListener('click',()=>{ const c=M.ch[cur]; pendingClose=null; if(mode==='close') fadeSwap(()=>{ setMode('sys'); sysCam(c.fit||M.fit,true); updateBtn() }); else fadeSwap(()=>enterClose(X.close[c.close])) });
-openMission=function(m){ M=m; X=DATA[m.id]; cur=-1; T=0; tw=null; pendingClose=null; closeA=null; buildTicks(); resize(); buildSystem(); setMode('sys'); sysCam(m.fit,true); go(0) };
+openMission=function(m){ M=m; X=DATA[m.id]; cur=-1; T=0; tw=null; pendingClose=null; closeA=null; focusByMode.sys=focusByMode.close=focusByMode.model='origin'; selectedFocus='origin'; cameraTarget.set(0,0,0); focusTween=null; buildTicks(); resize(); buildSystem(); setMode('sys'); sysCam(m.fit,true); go(0) };
 go=function(i){ if(!M||i<0||i>=M.ch.length||i===cur) return; cur=i; const c=M.ch[i], me=M; renderPanel(); pendingClose=null; tw=null;
   S.ghost.opacity=c.ghost||.22; const ok=()=>M===me&&cur===i;
-  if(c.view&&c.view.model){ fadeSwap(()=>{ if(!ok()) return; setMode('model'); sunLight.position.set(.6,.5,.8).multiplyScalar(500); MD.t1=c.view.model===2?3.2:1.1; MD.t2=c.view.model===2?0:.8; if(reduce){MD.g1=MD.t1;MD.g2=MD.t2} camTo(fitDist(c.view.model===2?5.6:5.2),.75,.3,3,40,true); updateBtn() }); return }
+  if(c.view&&c.view.model){ fadeSwap(()=>{ if(!ok()) return; focusModes.model=[originFocus,focusItem('model:mtm','Transfer module',MD.mtm,v=>MD.mtm.getWorldPosition(v)),focusItem('model:mpo','MPO (ESA)',MD.mpo,v=>MD.mpo.getWorldPosition(v)),focusItem('model:shield','Sunshield',MD.shield,v=>MD.shield.getWorldPosition(v)),focusItem('model:mio','Mio (JAXA)',MD.mio,v=>MD.mio.getWorldPosition(v))]; setMode('model'); sunLight.position.set(.6,.5,.8).multiplyScalar(500); MD.t1=c.view.model===2?3.2:1.1; MD.t2=c.view.model===2?0:.8; if(reduce){MD.g1=MD.t1;MD.g2=MD.t2} camTo(fitDist(c.view.model===2?5.6:5.2),.75,.3,3,40,true); updateBtn() }); return }
   if(c.view&&c.view.planet){ fadeSwap(()=>{ if(ok()) enterClose(c.view) }); return }
   const fit=c.fit||M.fit, tt=chapT(c);
   const start=()=>{ if(!ok()) return; const was=mode; setMode('sys'); setTrail(fit); sysCam(fit,was!=='sys'); updateBtn(); const close=hasClose(c);
@@ -549,7 +583,8 @@ function frame(){ requestAnimationFrame(frame); const dt=Math.min(.1,clock.getDe
       if(c.hud) setHud(c.hud[0],c.hud[1]) }
     else if(c.hud) setHud(c.hud[0],c.hud[1]);
   } else { MD.g1+=(MD.t1-MD.g1)*Math.min(1,dt*1.6); MD.g2+=(MD.t2-MD.g2)*Math.min(1,dt*1.6); layoutModel(); if(!reduce&&!ptr.size) C.az+=dt*.08; const m2=MD.t1>2; setHud(m2?'3 September 2026':'The cruise stack',m2?'The transfer module separates':'About 6.4 m tall, 4.1 tonnes at launch') }
-  const ce=Math.cos(C.el); cam.position.set(C.r*ce*Math.sin(C.az),C.r*Math.sin(C.el),C.r*ce*Math.cos(C.az)); cam.lookAt(0,0,0); cam.updateMatrixWorld();
+  const activeFocus=focusTargets.find(f=>f.id===selectedFocus); if(activeFocus){ const desired=activeFocus.get(pv); if(focusTween){ focusTween.t=Math.min(1,focusTween.t+dt/.38); cameraTarget.lerpVectors(focusTween.from,desired,ease(focusTween.t)); if(focusTween.t>=1) focusTween=null } else cameraTarget.copy(desired) }
+  const ce=Math.cos(C.el); cam.position.set(C.r*ce*Math.sin(C.az),C.r*Math.sin(C.el),C.r*ce*Math.cos(C.el)).add(cameraTarget); cam.lookAt(cameraTarget); cam.updateMatrixWorld();
   const w=stage.clientWidth,h=stage.clientHeight;
   for(const L of labels){ let show=L.mode===mode; if(show&&L.el.classList.contains('craft')) show=S.craft.visible; if(show){ L.get(pv); pv.project(cam); show=pv.z<1&&Math.abs(pv.x)<1.05&&Math.abs(pv.y)<1.05 }
     L.el.style.display=show?'':'none'; if(show) L.el.style.transform='translate('+((pv.x*.5+.5)*w+9).toFixed(1)+'px,'+((-pv.y*.5+.5)*h-16).toFixed(1)+'px)' }

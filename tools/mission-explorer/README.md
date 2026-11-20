@@ -1,6 +1,6 @@
 # Mission Explorer
 
-A general-purpose, step-by-step 3D explorer for seven space missions: BepiColombo, Artemis II, Apollo 11, Apollo 13, Voyager 1, Voyager 2, and Beagle 2. The app opens on the mission picker; select a story to move through its chapters alongside an animated 3D trajectory, then drag/pinch/scroll to explore and open chapter photos for a larger view. The standalone club page is `index.html`.
+A general-purpose, step-by-step 3D explorer for seven space missions: BepiColombo, Artemis II, Apollo 11, Apollo 13, Voyager 1, Voyager 2, and Beagle 2. The app opens on the mission picker; select a story to move through its chapters alongside an animated 3D trajectory, then drag/pinch/scroll to explore and open chapter photos for a larger view. In any 3D view, choose an object from **Rotate around** or click it to make it the camera's orbit centre; the choices follow the objects as they move. The standalone club page is `index.html`.
 
 ## Data and limitations
 
@@ -10,7 +10,7 @@ Photos and their individual credits are embedded in the app and recorded by key 
 
 ## Data flow and privacy
 
-The trajectory JSON, mission stories, and resized JPEGs are bundled locally in `index.html`. Viewing and navigating a mission makes no request to an astronomy API and sends no visitor-entered data. The interface does not use accounts, analytics, cookies, or browser storage. For its 3D renderer it loads Three.js r128 from cdnjs; it also requests fonts from Google Fonts. With those optional network resources unavailable, the 3D view needs an internet connection to load Three.js. The static HTML can be hosted by GitHub Pages and uses no server-side code.
+The trajectory JSON, mission stories, and resized JPEGs are bundled locally in `index.html`. Viewing and navigating a mission makes no request to an astronomy API and sends no visitor-entered data. The interface does not use accounts, analytics, cookies, or browser storage. The selected orbit centre is kept only in memory while the page is open. For its 3D renderer it loads Three.js r128 from cdnjs; it also requests fonts from Google Fonts. With those optional network resources unavailable, the 3D view needs an internet connection to load Three.js. The static HTML can be hosted by GitHub Pages and uses no server-side code.
 
 ## Source and local rebuild
 
