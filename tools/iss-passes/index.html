@@ -1,0 +1,1514 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISS passes over Milton Keynes</title>
+<style>
+:root{
+  --bg:#EDF1F7; --surface:#FFFFFF; --ink:#141C33; --muted:#566079; --rule:#CDD5E3;
+  --sun:#B86C00; --sun-line:#D98A12; --sun-soft:#FBEBCF; --shade:#98A2BB;
+  --dome:#DEE6F2; --dome-edge:#AEBAD2; --ring:#C3CDDF; --focus:#2B59C3;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1631; --surface:#152043; --ink:#E8EDF8; --muted:#9AA6C6; --rule:#2B3862;
+    --sun:#F3B847; --sun-line:#F3B847; --sun-soft:#3B3422; --shade:#5A6690;
+    --dome:#0A1128; --dome-edge:#34427A; --ring:#25315C; --focus:#8FB0FF;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1631; --surface:#152043; --ink:#E8EDF8; --muted:#9AA6C6; --rule:#2B3862;
+  --sun:#F3B847; --sun-line:#F3B847; --sun-soft:#3B3422; --shade:#5A6690;
+  --dome:#0A1128; --dome-edge:#34427A; --ring:#25315C; --focus:#8FB0FF;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; font-size:1rem; line-height:1.5;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1100px; margin:0 auto; padding:0 1.25rem}
+a{color:inherit}
+button,input,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+
+/* Masthead */
+.mast{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.25rem 1.5rem; padding:1.5rem 0 1rem}
+.mast h1{margin:0; font-size:1.25rem; font-weight:700; font-stretch:115%; letter-spacing:-.005em}
+.mast .where{color:var(--muted); font-size:.9375rem}
+.mast .where strong{color:var(--ink); font-weight:600}
+
+/* Hero */
+.hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:2.5rem; align-items:center; padding:1rem 0 2.5rem; border-bottom:1px solid var(--rule)}
+.dome-big{width:100%; max-width:440px; justify-self:center}
+.dome-big svg{display:block; width:100%; height:auto}
+.dome-caption{margin:.5rem 0 0; text-align:center; color:var(--muted); font-size:.8125rem}
+.when{margin:0; color:var(--muted); font-size:1rem; font-weight:500}
+.when .count{color:var(--ink); font-weight:650}
+.bigtime{margin:.1rem 0 .4rem; font-size:clamp(3.75rem, 13vw, 6.75rem); line-height:.95; font-weight:800; font-stretch:125%; letter-spacing:-.025em}
+.bigtime .secs{font-size:.32em; font-weight:600; letter-spacing:0; color:var(--muted); vertical-align:.18em; margin-left:.12em}
+.story{margin:1.25rem 0 0; padding:0; list-style:none; display:grid; gap:.65rem}
+.story li{display:grid; grid-template-columns:1.5rem 4.25rem 1fr; gap:.6rem; align-items:baseline}
+.story svg{width:1rem; height:1rem; align-self:center}
+.story .t{font-weight:650}
+.story .d{color:var(--muted)}
+.story .d b{color:var(--ink); font-weight:600}
+.bright{display:flex; align-items:center; gap:1rem; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--rule)}
+.bright .mag{font-size:2.25rem; font-weight:750; font-stretch:110%; line-height:1}
+.bright .lab{font-weight:600}
+.bright .cmp{color:var(--muted); font-size:.875rem}
+.empty{grid-column:1/-1; padding:2rem 0}
+.empty h2{margin:0 0 .5rem; font-size:1.5rem; font-stretch:110%}
+.empty p{margin:0 0 1rem; color:var(--muted); max-width:60ch}
+
+/* Buttons */
+.btn{appearance:none; border:1px solid var(--rule); background:var(--surface); border-radius:999px; padding:.5rem 1rem; font-weight:600; font-size:.9375rem; cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.linkbtn{appearance:none; background:none; border:0; padding:0; color:var(--ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer; font-weight:600}
+
+/* Summary + filters */
+.listhead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.75rem 1.5rem; padding:2rem 0 1rem}
+.listhead h2{margin:0; font-size:1.375rem; font-weight:700; font-stretch:112%}
+.listhead p{margin:.15rem 0 0; color:var(--muted); font-size:.9375rem}
+details.filters{background:var(--surface); border:1px solid var(--rule); border-radius:14px; margin:0 0 1.5rem}
+details.filters>summary{cursor:pointer; padding:.9rem 1.1rem; font-weight:650; list-style:none; display:flex; justify-content:space-between; gap:1rem}
+details.filters>summary::-webkit-details-marker{display:none}
+details.filters>summary .sum{color:var(--muted); font-weight:400; font-size:.875rem; text-align:right}
+details.filters[open]>summary{border-bottom:1px solid var(--rule)}
+.fgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1.25rem 1.75rem; padding:1.25rem 1.1rem 1.4rem}
+fieldset{border:0; margin:0; padding:0; min-width:0}
+legend{font-weight:650; padding:0; margin-bottom:.6rem}
+.field{display:grid; gap:.25rem; margin-bottom:.75rem}
+.field label,.check{font-size:.875rem; color:var(--muted)}
+.field input,.field select{width:100%; min-width:0; padding:.5rem .65rem; border:1px solid var(--rule); border-radius:8px; background:var(--bg)}
+.row2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.6rem}
+.field{min-width:0; grid-template-columns:minmax(0,1fr)}
+.check{display:flex; gap:.55rem; align-items:flex-start; margin-bottom:.6rem; color:var(--ink)}
+.check input{margin-top:.25rem; accent-color:var(--sun)}
+.factions{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.25rem}
+.note{font-size:.8125rem; color:var(--muted); margin:.35rem 0 0}
+
+/* Pass table */
+.tablewrap{overflow-x:auto}
+table.passes{width:100%; border-collapse:collapse; font-stretch:88%}
+.passes th{font-size:.8125rem; font-weight:600; color:var(--muted); text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--rule); white-space:nowrap}
+.passes td{padding:.55rem .6rem; border-bottom:1px solid var(--rule); vertical-align:middle; white-space:nowrap}
+.passes tbody tr{cursor:pointer}
+.passes tbody tr:hover td{background:color-mix(in srgb, var(--surface) 70%, transparent)}
+.passes tbody tr[aria-selected="true"] td{background:var(--surface)}
+.passes tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 3px 0 0 var(--sun-line)}
+.passes tr.miss{opacity:.55}
+.passes .c-dome svg{width:52px; height:52px; display:block}
+.passes .date{font-weight:650}
+.passes .sub{display:block; color:var(--muted); font-size:.8125rem}
+.passes .el{font-weight:650}
+.magcell{display:flex; align-items:center; gap:.5rem}
+.magcell .m{font-weight:700; min-width:2.6em}
+.pip{display:inline-block; height:6px; border-radius:3px; background:var(--sun-line)}
+.reason{font-size:.8125rem; color:var(--muted)}
+@media (min-width: 761px){ .passes .c-date .vis{display:none} }
+
+@media (max-width: 760px){
+  .hero{grid-template-columns:1fr; gap:1.25rem; padding-top:.25rem}
+  .dome-big{max-width:340px}
+  .passes thead{display:none}
+  table.passes, .passes tbody{display:block}
+  .passes tbody tr{display:grid; grid-template-columns:60px 1fr 1fr 1fr; grid-template-areas:"dome date date mag" "dome app high dis"; column-gap:.75rem; row-gap:.35rem; padding:.85rem .25rem; border-bottom:1px solid var(--rule)}
+  .passes td{display:block; border:0; padding:0; white-space:normal}
+  .passes .c-dome{grid-area:dome; align-self:start}
+  .passes .c-date{grid-area:date}
+  .passes .c-mag{grid-area:mag; justify-self:end}
+  .passes .c-app{grid-area:app}
+  .passes .c-high{grid-area:high}
+  .passes .c-dis{grid-area:dis}
+  .passes .c-dur{display:none}
+  .passes .c-app::before,.passes .c-high::before,.passes .c-dis::before{content:attr(data-label); display:block; font-size:.75rem; color:var(--muted)}
+  .passes tbody tr[aria-selected="true"]{background:var(--surface); box-shadow:inset 3px 0 0 var(--sun-line)}
+  .passes tbody tr[aria-selected="true"] td, .passes tbody tr[aria-selected="true"] td:first-child{background:none; box-shadow:none}
+  .magcell .pip{display:none}
+  .fgrid{grid-template-columns:1fr}
+  details.filters>summary .sum{display:none}
+}
+
+/* Location picker */
+fieldset.loc{grid-column:1/-1}
+.locgrid{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:1rem 1.75rem}
+.searchrow{display:flex; gap:.5rem; margin-bottom:.5rem}
+.searchrow input{flex:1; min-width:0; padding:.5rem .75rem; border:1px solid var(--rule); border-radius:999px; background:var(--bg)}
+.results{list-style:none; margin:0 0 .5rem; padding:.25rem; border:1px solid var(--rule); border-radius:10px; background:var(--bg); max-height:12rem; overflow:auto}
+.results button{display:block; width:100%; text-align:left; background:none; border:0; padding:.45rem .6rem; border-radius:6px; cursor:pointer; font-size:.875rem}
+.results button:hover,.results button:focus-visible{background:var(--surface)}
+.results .rn{font-weight:650}
+.results .rl{display:block; color:var(--muted); font-size:.8125rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mapwrap{position:relative}
+.map{height:300px; border-radius:10px; border:1px solid var(--rule); background:var(--dome); z-index:0}
+.mapmsg{position:absolute; inset:auto .75rem .75rem .75rem; margin:0; padding:.6rem .8rem; background:var(--surface); border:1px solid var(--rule); border-radius:8px; font-size:.8125rem; z-index:500}
+.pin span{display:block; width:26px; height:26px; background:var(--sun-line); border:3px solid #fff; border-radius:50% 50% 50% 0; transform:rotate(-45deg); box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.leaflet-container{font-family:inherit}
+@media (max-width: 760px){ .locgrid{grid-template-columns:minmax(0,1fr)} .map{height:260px} }
+
+/* 3D explainer */
+.s3{padding:2.5rem 0 2rem; border-bottom:1px solid var(--rule)}
+.s3-head h2{margin:0 0 .35rem; font-size:1.375rem; font-weight:700; font-stretch:112%}
+.s3-head p{margin:0 0 1rem; color:var(--muted); max-width:66ch}
+.s3-views{display:inline-flex; flex-wrap:wrap; gap:.25rem; padding:.25rem; border:1px solid var(--rule); border-radius:999px; background:var(--surface); margin-bottom:1rem}
+.s3-views button{appearance:none; border:0; background:none; padding:.45rem .9rem; border-radius:999px; font-weight:600; font-size:.875rem; cursor:pointer; color:var(--muted)}
+.s3-views button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.s3-body{display:grid; grid-template-columns:minmax(0,1.75fr) minmax(0,1fr); gap:1.5rem; align-items:start}
+.s3-stage{position:relative; aspect-ratio:16/10; border-radius:14px; overflow:hidden; background:#02040c; cursor:grab}
+.s3-stage:active{cursor:grabbing}
+.s3-stage canvas{display:block}
+.s3-labels{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+.s3-lab{position:absolute; left:0; top:0; display:none; font-size:12px; font-weight:650; color:#E8EDF8; white-space:nowrap; text-shadow:0 1px 3px #000, 0 0 8px #000; margin:8px 0 0 8px}
+.s3-lab-iss{color:#fff; font-size:13px}
+.s3-lab-sun,.s3-lab-below{color:#F3B847}
+.s3-lab-phase{color:#fff; font-weight:500}
+.s3-lab-shadow{color:#9aa6c6; font-weight:500}
+.s3-lab-card{font-size:14px; font-weight:750; margin:-22px 0 0 -5px}
+.s3-fail{color:#9aa6c6; padding:2rem; margin:0}
+.s3-controls{display:flex; align-items:center; gap:.75rem; margin-top:.75rem}
+.s3-time{flex:1; min-width:0; accent-color:var(--sun-line)}
+.s3-clock{font-weight:650; min-width:5.2em; text-align:right}
+.s3-play{white-space:nowrap}
+.s3-rows{margin:0; display:grid; gap:.55rem}
+.s3-rows div{display:grid; grid-template-columns:9.5rem 1fr; gap:.75rem}
+.s3-rows dt{color:var(--muted); font-size:.875rem}
+.s3-rows dd{margin:0; font-weight:600}
+.s3-why{margin:1rem 0 0; padding-top:1rem; border-top:1px solid var(--rule); line-height:1.55}
+.s3-key{margin:1rem 0 0; font-size:.8125rem; color:var(--muted); line-height:2}
+.s3-key span{display:inline-block; width:22px; height:0; vertical-align:middle; margin:0 .4rem 0 .1rem; border-top:3px solid var(--sun-line)}
+.s3-key .k-you{border-top:2px dashed var(--ink)}
+.s3-key .k-arc{width:12px; height:12px; border:2px solid var(--ink); border-color:var(--ink) transparent transparent var(--ink); border-radius:50%; margin-left:1rem}
+.s3-key .k-you{margin-left:1rem}
+.s3 .note{margin-top:1rem}
+@media (max-width: 760px){
+  .s3-body{grid-template-columns:minmax(0,1fr)}
+  .s3-stage{aspect-ratio:4/5}
+  .s3-views{display:flex}
+  .s3-views button{flex:1; padding:.45rem .35rem; font-size:.8125rem}
+  .s3-rows div{grid-template-columns:8.5rem 1fr}
+}
+
+/* Orbit data + notes */
+.orbit{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:2rem; padding:2.5rem 0 1rem; border-top:1px solid var(--rule); margin-top:2rem}
+.orbit h2,.method h2{margin:0 0 .5rem; font-size:1.125rem; font-stretch:110%}
+.orbit p,.method p{margin:0 0 .75rem; color:var(--muted); max-width:62ch}
+.orbit p strong{color:var(--ink)}
+.warn{color:var(--sun)!important; font-weight:600}
+textarea{width:100%; min-height:5.5rem; padding:.6rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface); font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.75rem; line-height:1.45; resize:vertical; white-space:pre; overflow-x:auto}
+.method{padding:1rem 0 3rem}
+@media (max-width: 760px){ .orbit{grid-template-columns:1fr; gap:1rem} }
+
+/* Sky dome drawing */
+.sky-bg{fill:var(--dome); stroke:var(--dome-edge); stroke-width:1.5}
+.sky-ring{fill:none; stroke:var(--ring); stroke-width:1}
+.sky-min{fill:none; stroke:var(--sun-line); stroke-width:1; stroke-dasharray:3 4; opacity:.7}
+.sky-lab{fill:var(--muted); font-size:11px; font-family:inherit}
+.sky-card{fill:var(--ink); font-size:13px; font-weight:700; font-family:inherit}
+.trk-vis{fill:none; stroke:var(--sun-line); stroke-width:4; stroke-linecap:round; stroke-linejoin:round}
+.trk-dark{fill:none; stroke:var(--shade); stroke-width:2; stroke-dasharray:2 5; stroke-linecap:round}
+.tick{fill:var(--ink)}
+.tick-lab{fill:var(--ink); font-size:10.5px; font-weight:600; font-family:inherit}
+.mk-open{fill:var(--dome); stroke:var(--ink); stroke-width:2}
+.mk-fill{fill:var(--ink)}
+.mk-x{stroke:var(--ink); stroke-width:2.2; stroke-linecap:round}
+.live{fill:var(--sun-line); stroke:var(--surface); stroke-width:2}
+@media (prefers-reduced-motion: no-preference){
+  .live-halo{animation:halo 1.6s ease-out infinite; transform-box:fill-box; transform-origin:center}
+  @keyframes halo{from{opacity:.7; transform:scale(1)} to{opacity:0; transform:scale(2.6)}}
+}
+.live-halo{fill:var(--sun-line)}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+</style>
+<style>
+/* Leaflet 1.9.4 */
+.leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{background-image:url(images/layers.png);width:36px;height:36px}.leaflet-retina .leaflet-control-layers-toggle{background-image:url(images/layers-2x.png);background-size:26px 26px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-default-icon-path{background-image:url(images/marker-icon.png)}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto}.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <h1>ISS passes overhead</h1>
+    <div class="where">Seen from <strong id="placeName">Milton Keynes</strong> <span id="tzLabel"></span> <button type="button" class="linkbtn" id="changeLoc">Change place</button></div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div class="empty"><h2>Working out the passes…</h2><p>Loading the latest orbit for the ISS.</p></div>
+  </section>
+
+  <section class="s3" id="s3" hidden>
+    <div class="s3-head">
+      <h2>See this pass in 3D</h2>
+      <p>Why can you see the ISS after the Sun has set, and why does it vanish in the middle of the sky? Drag to turn the view, scroll or pinch to zoom, and play the pass to watch the light change.</p>
+    </div>
+    <div class="s3-views" role="group" aria-label="Viewpoint">
+      <button type="button" data-view="side" aria-pressed="true">From the side</button>
+      <button type="button" data-view="ground" aria-pressed="false">Where you stand</button>
+      <button type="button" data-view="earth" aria-pressed="false">Whole Earth</button>
+    </div>
+    <div class="s3-body">
+      <div>
+        <div class="s3-stage"><div class="s3-labels" aria-hidden="true"></div></div>
+        <div class="s3-controls">
+          <button type="button" class="btn primary s3-play">Play the pass</button>
+          <input type="range" class="s3-time" min="0" max="1000" value="500" aria-label="Moment during the pass">
+          <span class="s3-clock"></span>
+        </div>
+      </div>
+      <div class="s3-read" aria-live="polite">
+        <dl class="s3-rows"></dl>
+        <p class="s3-why"></p>
+        <p class="s3-key"><span class="k-sun"></span>Sunlight reaching the ISS <span class="k-you"></span>Reflected light reaching you <span class="k-arc"></span>Phase angle between them</p>
+      </div>
+    </div>
+    <p class="note">The ISS is drawn far bigger than life so you can see it, and the Sun is shown much closer than it really is. The dark tube behind the Earth is its shadow.</p>
+  </section>
+
+  <div class="listhead">
+    <div>
+      <h2 id="listTitle">Upcoming passes</h2>
+      <p id="listSummary"></p>
+    </div>
+  </div>
+
+  <details class="filters" id="filters">
+    <summary><span>Filters and location</span><span class="sum" id="filterSummary"></span></summary>
+    <form class="fgrid" id="settingsForm" onsubmit="return false">
+      <fieldset class="loc" id="locFieldset">
+        <legend>Where you’re watching from</legend>
+        <div class="locgrid">
+          <div class="mapcol">
+            <div class="searchrow">
+              <label class="sr" for="placeSearch">Search for a place</label>
+              <input id="placeSearch" type="search" placeholder="Search for a town, school or postcode" autocomplete="off" enterkeyhint="search">
+              <button type="button" class="btn" id="searchBtn">Search</button>
+            </div>
+            <ul class="results" id="searchResults" hidden></ul>
+            <div class="mapwrap"><div id="map" class="map"></div><p class="mapmsg" id="mapMsg" hidden></p></div>
+            <p class="note">Click or tap the map, or drag the pin, to choose a spot.</p>
+          </div>
+          <div class="fieldcol">
+            <div class="field"><label for="locName">Place name</label><input id="locName" type="text" maxlength="40"></div>
+            <div class="row2">
+              <div class="field"><label for="lat">Latitude (°N)</label><input id="lat" type="number" step="0.0001" min="-90" max="90"></div>
+              <div class="field"><label for="lon">Longitude (°E)</label><input id="lon" type="number" step="0.0001" min="-180" max="180"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="alt">Height (m)</label><input id="alt" type="number" step="1" min="-100" max="6000"></div>
+              <div class="field"><label for="tz">Show times in</label>
+                <select id="tz"><option value="Europe/London">UK time</option><option value="device">This device’s time</option><option value="UTC">UTC</option></select>
+              </div>
+            </div>
+            <div class="factions">
+              <button type="button" class="btn" id="geoBtn">Use my location</button>
+              <button type="button" class="btn" id="resetBtn">Reset to defaults</button>
+            </div>
+            <p class="note" id="geoNote"></p>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>What counts as a good pass</legend>
+        <div class="row2">
+          <div class="field"><label for="minEl">Rises above (°)</label><input id="minEl" type="number" min="0" max="85" step="1"></div>
+          <div class="field"><label for="minSecs">For at least (seconds)</label><input id="minSecs" type="number" min="0" max="600" step="10"></div>
+        </div>
+        <div class="field"><label for="maxMag">Brightness</label>
+          <select id="maxMag">
+            <option value="">Any brightness</option>
+            <option value="0">Magnitude 0 or brighter</option>
+            <option value="-1">Magnitude −1 or brighter</option>
+            <option value="-2">Magnitude −2 or brighter</option>
+            <option value="-3">Magnitude −3 or brighter</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="showAll"> <span>Also list visible passes that miss these filters</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>Visibility</legend>
+        <div class="field"><label for="sunLimit">Sky must be at least</label>
+          <select id="sunLimit">
+            <option value="-0.833">Past sunset (Sun below the horizon)</option>
+            <option value="-6">Civil twilight (Sun 6° below)</option>
+            <option value="-12">Nautical twilight (Sun 12° below)</option>
+            <option value="-18">Fully dark (Sun 18° below)</option>
+            <option value="90">Any time, including daylight</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="requireLit"> <span>Only while the ISS is lit by the Sun (it can’t be seen in Earth’s shadow)</span></label>
+        <div class="row2">
+          <div class="field"><label for="cutoff">Ignore below (°)</label><input id="cutoff" type="number" min="0" max="30" step="1"></div>
+          <div class="field"><label for="days">Days ahead</label><input id="days" type="number" min="1" max="20" step="1"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="extinction"> <span>Dim low passes for haze near the horizon</span></label>
+      </fieldset>
+    </form>
+  </details>
+
+  <div class="tablewrap">
+    <table class="passes" id="passTable">
+      <thead><tr><th><span class="sr">Sky track</span></th><th>Date</th><th>Appears</th><th>Highest</th><th>Disappears</th><th>Visible for</th><th>Brightness</th></tr></thead>
+      <tbody id="passBody"></tbody>
+    </table>
+  </div>
+
+  <section class="orbit">
+    <div>
+      <h2>Orbit data</h2>
+      <p id="tleStatus">Loading…</p>
+      <p id="nowLine"></p>
+      <button type="button" class="btn" id="refreshBtn">Check for newer orbit data</button>
+    </div>
+    <div>
+      <h2>Use your own TLE</h2>
+      <p>Paste a two-line element set for the ISS (NORAD 25544) to predict from it instead.</p>
+      <label class="sr" for="tleInput">Two-line element set</label>
+      <textarea id="tleInput" spellcheck="false" autocomplete="off" wrap="off"></textarea>
+      <div class="factions"><button type="button" class="btn" id="tleUse">Predict from this TLE</button></div>
+      <p class="note" id="tleNote"></p>
+    </div>
+  </section>
+
+  <section class="method">
+    <h2>How these are worked out</h2>
+    <p>Positions come from the SGP4 orbit model run on the latest public two-line elements for the ISS. A pass counts as visible when the ISS is in sunlight while your sky is dark enough, and it is listed if it spends long enough above your chosen elevation while visible.</p>
+    <p>Brightness is an estimate from distance and the Sun–ISS–observer angle, using a phase law fitted to standard ISS predictions, so expect it to be within about 0.3 magnitudes. Lower numbers are brighter: Sirius is −1.5, Jupiter about −2.5 and Venus about −4.</p>
+    <p>Sky charts show the sky as you see it lying on your back with your head to the north: north at the top, east on the left, the zenith in the middle. The dashed ring marks your minimum elevation. The thick line is the part you can see; the dotted line is the ISS in Earth’s shadow or in daylight.</p>
+  </section>
+</div>
+
+<!-- satellite.js 5.0.0 (MIT), three.js r128 (MIT), Leaflet 1.9.4 (BSD-2) -->
+<script src="lib/satellite.min.js"></script>
+<script src="lib/three.min.js"></script>
+<script src="lib/leaflet.min.js"></script>
+<script>
+/* ISS pass engine: SGP4 via satellite.js, low-precision Sun, conical shadow, McCants magnitude. */
+var PassEngine = (function () {
+  var DEG = Math.PI / 180, RAD = 180 / Math.PI;
+  var RE = 6378.137, RSUN = 696000, AU = 149597870.7;
+  // ISS brightness: m = M90 + 5 log10(range/1000 km) + K * (phase - 90 deg).
+  // Linear phase law fitted to published ISS predictions (residuals ~0.1 mag).
+  var M90 = -1.74, KPHASE = 0.0132;
+
+  function jd(date) { return date.getTime() / 86400000 + 2440587.5; }
+
+  // Sun position in ECI (equatorial of date), km
+  function sunEci(date) {
+    var n = jd(date) - 2451545.0;
+    var L = (280.460 + 0.9856474 * n) * DEG;
+    var g = (357.528 + 0.9856003 * n) * DEG;
+    var lam = L + (1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG;
+    var eps = (23.439 - 0.0000004 * n) * DEG;
+    var R = (1.00014 - 0.01671 * Math.cos(g) - 0.00014 * Math.cos(2 * g)) * AU;
+    return { x: R * Math.cos(lam), y: R * Math.cos(eps) * Math.sin(lam), z: R * Math.sin(eps) * Math.sin(lam) };
+  }
+  function eciToEcf(v, gmst) {
+    var c = Math.cos(gmst), s = Math.sin(gmst);
+    return { x: v.x * c + v.y * s, y: -v.x * s + v.y * c, z: v.z };
+  }
+  function sub(a, b) { return { x: a.x - b.x, y: a.y - b.y, z: a.z - b.z }; }
+  function dot(a, b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
+  function len(a) { return Math.sqrt(dot(a, a)); }
+  function ang(a, b) { var c = dot(a, b) / (len(a) * len(b)); return Math.acos(Math.max(-1, Math.min(1, c))); }
+
+  // Fraction of the solar disc visible from the satellite (0 = umbra, 1 = full sun)
+  function sunlitFraction(rSat, rSun) {
+    var d = sub(rSun, rSat);
+    var rhoE = Math.asin(Math.min(1, RE / len(rSat)));
+    var rhoS = Math.asin(RSUN / len(d));
+    var theta = ang({ x: -rSat.x, y: -rSat.y, z: -rSat.z }, d);
+    if (theta >= rhoE + rhoS) return 1;
+    if (theta <= rhoE - rhoS) return 0;
+    return (theta - (rhoE - rhoS)) / (2 * rhoS);
+  }
+
+  function airmass(elDeg) {
+    var h = Math.max(elDeg, 0.5) * DEG;
+    return 1 / (Math.sin(h) + 0.025 * Math.exp(-11 * Math.sin(h)));
+  }
+
+  function makeObserver(lat, lon, altM) {
+    var gd = { latitude: lat * DEG, longitude: lon * DEG, height: (altM || 0) / 1000 };
+    return { gd: gd, ecf: satellite.geodeticToEcf(gd) };
+  }
+
+  function parseTle(text) {
+    var lines = String(text).split(/\r?\n/).map(function (l) { return l.replace(/\s+$/, ''); });
+    var l1 = null, l2 = null, name = 'ISS (ZARYA)';
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i].replace(/^\s+/, '');
+      if (/^1 \d{5}/.test(l) && l.length >= 69 && !l1) { l1 = l.slice(0, 69); if (i > 0 && lines[i - 1].trim() && !/^[12] /.test(lines[i - 1].trim())) name = lines[i - 1].trim().replace(/^0 /, ''); }
+      else if (/^2 \d{5}/.test(l) && l.length >= 69 && l1 && !l2) l2 = l.slice(0, 69);
+    }
+    if (!l1 || !l2) throw new Error('Could not find both TLE lines (they start with "1 " and "2 ").');
+    var rec = satellite.twoline2satrec(l1, l2);
+    if (rec.error) throw new Error('TLE could not be read (SGP4 error ' + rec.error + ').');
+    var epoch = new Date((rec.jdsatepoch - 2440587.5) * 86400000);
+    return { name: name, line1: l1, line2: l2, satrec: rec, epoch: epoch, norad: parseInt(l1.slice(2, 7), 10) };
+  }
+
+  // State of the satellite and Sun for one instant
+  function sample(satrec, obs, date, opts) {
+    var pv = satellite.propagate(satrec, date);
+    if (!pv || !pv.position) return null;
+    var gmst = satellite.gstime(date);
+    var satEcf = satellite.eciToEcf(pv.position, gmst);
+    var look = satellite.ecfToLookAngles(obs.gd, satEcf);
+    var el = look.elevation * RAD;
+    var res = { t: date.getTime(), el: el, az: (look.azimuth * RAD + 360) % 360, range: look.rangeSat };
+    if (opts && opts.full) {
+      var sEcf = eciToEcf(sunEci(date), gmst);
+      var sunLook = satellite.ecfToLookAngles(obs.gd, sEcf);
+      res.sunEl = sunLook.elevation * RAD;
+      res.lit = sunlitFraction(satEcf, sEcf);
+      // phase angle at the satellite between Sun and observer
+      var toSun = sub(sEcf, satEcf), toObs = sub(obs.ecf, satEcf);
+      var phi = ang(toSun, toObs);
+      if (res.lit > 0.02) {
+        var m = M90 + 5 * Math.log10(res.range / 1000) + KPHASE * (phi * RAD - 90) - 2.5 * Math.log10(res.lit);
+        if (opts.extinction) m += 0.2 * airmass(el);
+        res.mag = m;
+      } else res.mag = null;
+      res.phase = phi * RAD;
+      if (opts.vectors) { res.sat = satEcf; res.sun = sEcf; res.obs = obs.ecf; }
+    }
+    return res;
+  }
+
+  // Earth-fixed position of the satellite in km, or null
+  function ecfAt(satrec, date) {
+    var pv = satellite.propagate(satrec, date);
+    if (!pv || !pv.position) return null;
+    return satellite.eciToEcf(pv.position, satellite.gstime(date));
+  }
+
+  function subpoint(satrec, date) {
+    var pv = satellite.propagate(satrec, date);
+    if (!pv || !pv.position) return null;
+    var g = satellite.eciToGeodetic(pv.position, satellite.gstime(date));
+    return { lat: g.latitude * RAD, lon: satellite.degreesLong(g.longitude), h: g.height };
+  }
+
+  /* settings: lat, lon, alt, days, minEl (deg), minSecs, sunLimit (deg), requireLit (bool),
+     cutoff (deg, horizon cut-off for appear/disappear), extinction (bool), maxMag (number|null) */
+  function predict(tle, s, from) {
+    var obs = makeObserver(s.lat, s.lon, s.alt);
+    var start = from ? from.getTime() : Date.now();
+    start -= 15 * 60000; // catch a pass already in progress
+    var end = start + s.days * 86400000;
+    var step = 30000, passes = [], prev = null;
+    for (var t = start; t <= end; t += step) {
+      var cur = sample(tle.satrec, obs, new Date(t));
+      if (!cur) continue;
+      if (prev && prev.el < 0 && cur.el >= 0) {
+        var p = tracePass(tle.satrec, obs, t - step, s);
+        if (p) { passes.push(p); t = Math.max(t, p.los + step); }
+      } else if (!prev && cur.el >= 0) {
+        // started mid-pass: rewind to its rise
+        var tr = t; while (tr > start - 20 * 60000) { tr -= 10000; var q = sample(tle.satrec, obs, new Date(tr)); if (!q || q.el < 0) break; }
+        var p2 = tracePass(tle.satrec, obs, tr, s);
+        if (p2) { passes.push(p2); t = Math.max(t, p2.los + step); }
+      }
+      prev = sample(tle.satrec, obs, new Date(t));
+    }
+    passes.forEach(function (p) { p.meets = qualifies(p, s); });
+    return passes;
+  }
+
+  function tracePass(satrec, obs, t0, s) {
+    var pts = [], t = t0, guard = 0, started = false;
+    var opts = { full: true, extinction: s.extinction };
+    while (guard++ < 1500) {
+      var q = sample(satrec, obs, new Date(t), opts);
+      if (!q) break;
+      if (q.el >= 0) { started = true; pts.push(q); }
+      else if (started) break;
+      t += 2000;
+    }
+    if (pts.length < 2) return null;
+    pts.forEach(function (q) { q.vis = (s.requireLit ? q.lit > 0.5 : true) && q.sunEl <= s.sunLimit; });
+    var p = { aos: pts[0].t, los: pts[pts.length - 1].t, pts: pts };
+    var top = pts.reduce(function (a, b) { return b.el > a.el ? b : a; });
+    p.culm = top;
+    var vis = pts.filter(function (q) { return q.vis && q.el >= s.cutoff; });
+    p.visible = vis.length > 0;
+    if (p.visible) {
+      p.appear = vis[0]; p.disappear = vis[vis.length - 1];
+      p.high = vis.reduce(function (a, b) { return b.el > a.el ? b : a; });
+      var mags = vis.filter(function (q) { return q.mag != null; });
+      p.peak = mags.length ? mags.reduce(function (a, b) { return b.mag < a.mag ? b : a; }) : null;
+      p.visSecs = (p.disappear.t - p.appear.t) / 1000;
+      p.aboveSecs = vis.filter(function (q) { return q.el >= s.minEl; }).length * 2;
+      p.shadowEntry = p.disappear.lit <= 0.5 && p.disappear.t < p.los - 4000;
+      p.shadowExit = p.appear.lit > 0.5 && pts.some(function (q) { return q.t < p.appear.t && q.lit <= 0.5 && q.el >= s.cutoff; });
+    }
+    return p;
+  }
+
+  function qualifies(p, s) {
+    if (!p.visible) return false;
+    if (p.aboveSecs < s.minSecs) return false;
+    if (p.high.el < s.minEl) return false;
+    if (s.maxMag != null && p.peak && p.peak.mag > s.maxMag) return false;
+    return true;
+  }
+
+  return { parseTle: parseTle, predict: predict, sample: sample, subpoint: subpoint, ecfAt: ecfAt, makeObserver: makeObserver };
+})();
+if (typeof module !== 'undefined') module.exports = PassEngine;
+</script>
+<script>
+/* Sky3D: a three.js (r128) view of one ISS pass that shows why it is visible.
+   Scene units are kilometres in the observer's local frame: x east, y up, z south.
+   Needs THREE, satellite (satellite.js) and PassEngine. */
+var Sky3D = (function () {
+  "use strict";
+  var DEG = Math.PI / 180, RAD = 180 / Math.PI, RE = 6378.137, FLAT = 1 / 298.257223563;
+  var LAND = null; // set via Sky3D.setLand(rings) before create()
+
+  function radialTexture(stops) {
+    var c = document.createElement("canvas"); c.width = c.height = 128;
+    var g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    stops.forEach(function (s) { gr.addColorStop(s[0], s[1]); });
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    var t = new THREE.CanvasTexture(c); return t;
+  }
+
+  function create(root, ctx) {
+    var api = { setPass: setPass, setObserver: setObserver, ok: false };
+    var wrap = root.querySelector(".s3-stage"), labels = root.querySelector(".s3-labels");
+    var renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+    } catch (e) {
+      wrap.innerHTML = '<p class="s3-fail">The 3D view needs WebGL, which this browser has turned off.</p>';
+      return api;
+    }
+    api.ok = true;
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    wrap.insertBefore(renderer.domElement, labels);
+    var scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 0.0005, 2e6);
+    scene.background = new THREE.Color(0x02040c);
+
+    /* ---------- observer frame ---------- */
+    var obs = null, R = new THREE.Matrix4(), E = new THREE.Vector3(), N = new THREE.Vector3(), U = new THREE.Vector3(), O = new THREE.Vector3();
+    var world = new THREE.Group(); world.matrixAutoUpdate = false; scene.add(world);
+    function toScene(p, out) {
+      out = out || new THREE.Vector3();
+      var dx = p.x - O.x, dy = p.y - O.y, dz = p.z - O.z;
+      return out.set(dx * E.x + dy * E.y + dz * E.z, dx * U.x + dy * U.y + dz * U.z, -(dx * N.x + dy * N.y + dz * N.z));
+    }
+    function dirToScene(p, out) {
+      out = out || new THREE.Vector3();
+      return out.set(p.x * E.x + p.y * E.y + p.z * E.z, p.x * U.x + p.y * U.y + p.z * U.z, -(p.x * N.x + p.y * N.y + p.z * N.z)).normalize();
+    }
+    function setObserver(lat, lon, alt) {
+      var f = lat * DEG, l = lon * DEG;
+      obs = PassEngine.makeObserver(lat, lon, alt);
+      O.set(obs.ecf.x, obs.ecf.y, obs.ecf.z);
+      E.set(-Math.sin(l), Math.cos(l), 0);
+      N.set(-Math.sin(f) * Math.cos(l), -Math.sin(f) * Math.sin(l), Math.cos(f));
+      U.set(Math.cos(f) * Math.cos(l), Math.cos(f) * Math.sin(l), Math.sin(f));
+      R.set(E.x, E.y, E.z, -E.dot(O), U.x, U.y, U.z, -U.dot(O), -N.x, -N.y, -N.z, N.dot(O), 0, 0, 0, 1);
+      world.matrix.copy(R); world.matrixWorldNeedsUpdate = true;
+    }
+
+    /* ---------- Earth ---------- */
+    var earthGeo = new THREE.SphereGeometry(RE, 160, 120); earthGeo.rotateX(Math.PI / 2); earthGeo.scale(1, 1, 1 - FLAT);
+    var earth = new THREE.Mesh(earthGeo, new THREE.MeshPhongMaterial({ color: 0x24508c, emissive: 0x060c1e, specular: 0x222222, shininess: 10 }));
+    world.add(earth);
+    function geo(latD, lonD, h) { return satellite.geodeticToEcf({ latitude: latD * DEG, longitude: lonD * DEG, height: h }); }
+    var coastPos = [];
+    (LAND || []).forEach(function (ring) {
+      for (var i = 0; i + 3 < ring.length; i += 2) {
+        var a = geo(ring[i + 1] / 10, ring[i] / 10, 2), b = geo(ring[i + 3] / 10, ring[i + 2] / 10, 2);
+        coastPos.push(a.x, a.y, a.z, b.x, b.y, b.z);
+      }
+    });
+    var gridPos = [];
+    for (var la = -75; la <= 75; la += 15) for (var lo = -180; lo < 180; lo += 3) { var a1 = geo(la, lo, 1), b1 = geo(la, lo + 3, 1); gridPos.push(a1.x, a1.y, a1.z, b1.x, b1.y, b1.z); }
+    for (var lo2 = -180; lo2 < 180; lo2 += 15) for (var la2 = -87; la2 < 87; la2 += 3) { var a2 = geo(la2, lo2, 1), b2 = geo(la2 + 3, lo2, 1); gridPos.push(a2.x, a2.y, a2.z, b2.x, b2.y, b2.z); }
+    function segs(pos, color, opacity) {
+      var g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      return new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: opacity }));
+    }
+    var coast = segs(coastPos, 0xbcd0ee, 0.7), grid = segs(gridPos, 0x6f88b8, 0.18);
+    world.add(coast); world.add(grid);
+
+    /* ---------- light ---------- */
+    var sunLight = new THREE.DirectionalLight(0xffffff, 1.15); scene.add(sunLight); scene.add(sunLight.target);
+    scene.add(new THREE.AmbientLight(0x3a4a70, 0.45));
+
+    /* ---------- Earth's shadow ---------- */
+    var SHL = 60000;
+    var shadow = new THREE.Mesh(new THREE.CylinderGeometry(RE, RE, SHL, 96, 1, true),
+      new THREE.MeshBasicMaterial({ color: 0x1b2a58, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false }));
+    scene.add(shadow);
+    var shadowEdgeGeo = new THREE.BufferGeometry();
+    var shadowEdge = new THREE.LineSegments(shadowEdgeGeo, new THREE.LineBasicMaterial({ color: 0x8090c0, transparent: true, opacity: 0.35 }));
+    scene.add(shadowEdge);
+
+    /* ---------- Sun ---------- */
+    var sunSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTexture([[0, "rgba(255,250,225,1)"], [0.18, "rgba(255,226,140,1)"], [0.45, "rgba(255,180,60,.35)"], [1, "rgba(255,160,40,0)"]]), depthWrite: false }));
+    scene.add(sunSprite);
+
+    /* ---------- sky for the ground view ---------- */
+    var skyU = { sunDir: { value: new THREE.Vector3(1, 0, 0) }, sunAlt: { value: -10 } };
+    var sky = new THREE.Mesh(new THREE.SphereGeometry(5e5, 48, 32), new THREE.ShaderMaterial({
+      uniforms: skyU, side: THREE.BackSide, depthWrite: false, depthTest: false,
+      vertexShader: "varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
+      fragmentShader: [
+        "uniform vec3 sunDir; uniform float sunAlt; varying vec3 vDir;",
+        "void main(){",
+        "  vec3 d = normalize(vDir); float up = max(d.y, 0.0);",
+        "  float tw = smoothstep(-18.0, 0.0, sunAlt); float day = smoothstep(-2.0, 8.0, sunAlt);",
+        "  vec3 night = vec3(0.012,0.02,0.055); vec3 dusk = vec3(0.10,0.17,0.36); vec3 blue = vec3(0.32,0.55,0.86);",
+        "  vec3 col = mix(night, dusk, tw * pow(1.0 - up, 1.6)); col = mix(col, blue, day * (1.0 - 0.45*up));",
+        "  vec2 h = normalize(vec2(d.x, d.z) + 1e-5); vec2 s = normalize(vec2(sunDir.x, sunDir.z) + 1e-5);",
+        "  float glow = pow(max(dot(h, s), 0.0), 3.0) * pow(1.0 - up, 4.0) * tw;",
+        "  col += vec3(0.95, 0.52, 0.22) * glow * 0.55;",
+        "  if (d.y < 0.0) col = vec3(0.02,0.025,0.03) + vec3(0.03,0.04,0.06)*tw;",
+        "  gl_FragColor = vec4(col, 1.0);",
+        "}"].join("\n")
+    }));
+    sky.renderOrder = -2; scene.add(sky);
+    var starPos = [];
+    for (var si = 0; si < 1800; si++) { var v = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(4e5); starPos.push(v.x, v.y, v.z); }
+    var starGeo = new THREE.BufferGeometry(); starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPos, 3));
+    var stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.8, depthWrite: false }));
+    stars.renderOrder = -1; scene.add(stars);
+
+    /* ---------- ground and horizon ---------- */
+    var ground = new THREE.Mesh(new THREE.CircleGeometry(4000, 96), new THREE.MeshBasicMaterial({ color: 0x0b1220 }));
+    ground.rotation.x = -Math.PI / 2; scene.add(ground);
+    var horizon = new THREE.Mesh(new THREE.CircleGeometry(1400, 96), new THREE.MeshBasicMaterial({ color: 0x7fd0a0, transparent: true, opacity: 0.13, side: THREE.DoubleSide, depthWrite: false }));
+    horizon.rotation.x = -Math.PI / 2; scene.add(horizon);
+    var ringPts = []; for (var ri = 0; ri <= 96; ri++) { var ra = ri / 96 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.sin(ra) * 1400, 0, Math.cos(ra) * 1400)); }
+    var horizonRing = new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), new THREE.LineBasicMaterial({ color: 0x7fd0a0, transparent: true, opacity: 0.45 }));
+    scene.add(horizonRing);
+    var you = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1, 16), new THREE.MeshBasicMaterial({ color: 0x7fd0a0 }));
+    you.geometry.translate(0, 0.5, 0); scene.add(you);
+
+    /* ---------- orbit and pass track ---------- */
+    var orbitLine = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({ color: 0x8fa2cc, transparent: true, opacity: 0.45 }));
+    scene.add(orbitLine);
+    var trackLit = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0xf3b847, size: 4, sizeAttenuation: false }));
+    var trackDark = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ color: 0x6a7698, size: 2.5, sizeAttenuation: false }));
+    scene.add(trackLit); scene.add(trackDark);
+
+    /* ---------- ISS ---------- */
+    var iss = new THREE.Group();
+    var panelMat = new THREE.MeshPhongMaterial({ color: 0xc99a3a, emissive: 0x000000, specular: 0xffffff, shininess: 80 });
+    var trussMat = new THREE.MeshPhongMaterial({ color: 0xdfe4ec, shininess: 30 });
+    iss.add(new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.05, 0.05), trussMat));
+    var mods = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.42), trussMat); iss.add(mods);
+    [-0.42, -0.28, 0.28, 0.42].forEach(function (x) {
+      [-0.36, 0.36].forEach(function (y) { var p = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.6, 0.01), panelMat); p.position.set(x, y, 0); iss.add(p); });
+    });
+    scene.add(iss);
+    var glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: radialTexture([[0, "rgba(255,255,255,1)"], [0.15, "rgba(255,244,214,.95)"], [0.4, "rgba(255,214,140,.3)"], [1, "rgba(255,200,120,0)"]]), depthWrite: false, sizeAttenuation: false, transparent: true }));
+    scene.add(glow);
+
+    /* ---------- light paths ---------- */
+    function line(color, dashed) {
+      var g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(1, 0, 0)]);
+      var m = dashed ? new THREE.LineDashedMaterial({ color: color, dashSize: 1, gapSize: 1, transparent: true, opacity: 0.9 }) : new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.95 });
+      var l = new THREE.Line(g, m); scene.add(l); return l;
+    }
+    var sight = line(0xffffff, true), sunRay = line(0xf3b847, false), sunFromYou = line(0xf3b847, true), arc = line(0xffffff, false);
+    sunFromYou.material.depthTest = false; sunFromYou.material.opacity = 0.6;
+    function setLine(l, a, b, dashScale) {
+      var p = l.geometry.attributes.position; p.setXYZ(0, a.x, a.y, a.z); p.setXYZ(1, b.x, b.y, b.z); p.needsUpdate = true;
+      l.geometry.computeBoundingSphere();
+      if (dashScale) { l.computeLineDistances(); l.material.dashSize = dashScale; l.material.gapSize = dashScale * 0.8; }
+    }
+    var arcGeo = new THREE.BufferGeometry().setFromPoints(new Array(33).fill(0).map(function () { return new THREE.Vector3(); }));
+    arc.geometry = arcGeo;
+
+    /* ---------- labels ---------- */
+    var L = {};
+    ["you", "iss", "sun", "shadow", "phase", "below", "N", "E", "S", "W"].forEach(function (k) {
+      var d = document.createElement("div"); d.className = "s3-lab s3-lab-" + (k.length === 1 ? "card" : k); labels.appendChild(d); L[k] = d;
+    });
+    L.N.textContent = "N"; L.E.textContent = "E"; L.S.textContent = "S"; L.W.textContent = "W";
+    var tmp = new THREE.Vector3(), fwd = new THREE.Vector3(0, 0, -1);
+    function place(el, pos, text, show) {
+      if (text != null && el._t !== text) { el.textContent = text; el._t = text; }
+      if (!show) { el.style.display = "none"; return; }
+      if (tmp.copy(pos).sub(camera.position).dot(fwd) <= 0) { el.style.display = "none"; return; }
+      tmp.copy(pos).project(camera);
+      if (tmp.z > 1 || tmp.z < -1 || Math.abs(tmp.x) > 1.1 || Math.abs(tmp.y) > 1.1) { el.style.display = "none"; return; }
+      el.style.display = "block";
+      el.style.transform = "translate(" + ((tmp.x + 1) / 2 * W).toFixed(1) + "px," + ((1 - tmp.y) / 2 * H).toFixed(1) + "px)";
+    }
+
+    /* ---------- state ---------- */
+    var pass = null, tle = null, t = 0, playing = false, mode = "side", lastFrame = 0, W = 1, H = 1, visible = true;
+    var cam = { target: new THREE.Vector3(), r: 5000, theta: 0, phi: 1.1, yaw: 180, pitch: 40, fov: 75 };
+    var S = {}, earthCentre = new THREE.Vector3(), sunDir = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+    var issPos = new THREE.Vector3(), highPos = new THREE.Vector3();
+
+    function setPass(p, theTle) {
+      pass = p; tle = theTle; if (!pass) return;
+      toScene({ x: 0, y: 0, z: 0 }, earthCentre);
+      // full ground-fixed orbit around the pass
+      var pts = [];
+      for (var tt = pass.aos - 50 * 60000; tt <= pass.los + 50 * 60000; tt += 20000) { var e = PassEngine.ecfAt(tle.satrec, new Date(tt)); if (e) pts.push(toScene(e)); }
+      orbitLine.geometry.dispose(); orbitLine.geometry = new THREE.BufferGeometry().setFromPoints(pts);
+      var lit = [], dark = [];
+      pass.pts.forEach(function (q) {
+        var e = PassEngine.ecfAt(tle.satrec, new Date(q.t)); if (!e) return;
+        var v = toScene(e); (q.vis && q.el >= ctx.cutoff() ? lit : dark).push(v);
+      });
+      trackLit.geometry.dispose(); trackLit.geometry = new THREE.BufferGeometry().setFromPoints(lit);
+      trackDark.geometry.dispose(); trackDark.geometry = new THREE.BufferGeometry().setFromPoints(dark);
+      toScene(PassEngine.ecfAt(tle.satrec, new Date(pass.high.t)), highPos);
+      t = pass.high.t; playing = false; playBtn.textContent = "Play the pass"; updateUi(true);
+      setMode(mode, true); frame(true);
+    }
+
+    function compute() {
+      S = PassEngine.sample(tle.satrec, obs, new Date(t), { full: true, vectors: true, extinction: ctx.extinction() });
+      toScene(S.sat, issPos);
+      dirToScene(S.sun, sunDir);
+    }
+
+    /* ---------- camera modes ---------- */
+    function setMode(m, keep) {
+      mode = m;
+      root.querySelectorAll("[data-view]").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.view === m)); });
+      if (!pass) return;
+      compute();
+      var side = new THREE.Vector3().crossVectors(up, sunDir); if (side.lengthSq() < 1e-6) side.set(1, 0, 0); side.normalize();
+      if (m === "ground") {
+        cam.yaw = pass.high.az; cam.pitch = Math.min(70, Math.max(20, pass.high.el * 0.75)); cam.fov = 95;
+      } else if (m === "side") {
+        cam.target.copy(highPos).multiplyScalar(0.6);
+        var dir = side.clone().multiplyScalar(0.985).addScaledVector(up, 0.12).normalize();
+        fromDir(dir, 1900 * Math.max(1, 1.3 / camera.aspect));
+      } else {
+        cam.target.copy(earthCentre);
+        var dir2 = side.clone().multiplyScalar(0.78).addScaledVector(up, 0.55).addScaledVector(sunDir, -0.3).normalize();
+        fromDir(dir2, 24000 * Math.max(1, 1.1 / camera.aspect));
+      }
+      if (!keep) frame(true);
+    }
+    function fromDir(d, r) { cam.r = r; cam.phi = Math.acos(Math.max(-1, Math.min(1, d.y))); cam.theta = Math.atan2(d.x, d.z); }
+    function applyCamera() {
+      if (mode === "ground") {
+        camera.position.set(0, 0.002, 0);
+        var a = cam.yaw * DEG, e = cam.pitch * DEG;
+        camera.up.set(0, 1, 0);
+        camera.lookAt(Math.sin(a) * Math.cos(e), 0.002 + Math.sin(e), -Math.cos(a) * Math.cos(e));
+        camera.fov = cam.fov;
+      } else {
+        camera.position.set(cam.target.x + cam.r * Math.sin(cam.phi) * Math.sin(cam.theta), cam.target.y + cam.r * Math.cos(cam.phi), cam.target.z + cam.r * Math.sin(cam.phi) * Math.cos(cam.theta));
+        camera.up.set(0, 1, 0); camera.lookAt(cam.target); camera.fov = 50;
+      }
+      camera.updateProjectionMatrix(); camera.updateMatrixWorld(); fwd.set(0, 0, -1).applyQuaternion(camera.quaternion);
+    }
+
+    /* ---------- per-frame scene update ---------- */
+    function frame(force) {
+      if (!pass || !obs) return;
+      compute(); applyCamera();
+      var ground3 = mode === "ground", camD = camera.position.distanceTo(issPos);
+      // lighting
+      sunLight.position.copy(earthCentre).addScaledVector(sunDir, 1e5); sunLight.target.position.copy(earthCentre);
+      skyU.sunDir.value.copy(sunDir); skyU.sunAlt.value = S.sunEl;
+      sky.position.copy(camera.position); stars.position.copy(camera.position);
+      sky.visible = ground3; ground.visible = ground3;
+      stars.material.opacity = ground3 ? Math.max(0, Math.min(0.85, (-S.sunEl - 4) / 10)) : 0.7;
+      earth.visible = coast.visible = grid.visible = !ground3;
+      horizon.visible = horizonRing.visible = !ground3;
+      scene.background.setHex(ground3 ? 0x02040c : 0x02040c);
+      // shadow cylinder along the anti-Sun axis
+      var axis = sunDir.clone().negate();
+      shadow.position.copy(earthCentre).addScaledVector(axis, SHL / 2);
+      shadow.quaternion.setFromUnitVectors(up, axis);
+      shadow.visible = !ground3;
+      // shadow edge lines: a few generators of the cylinder
+      var b1 = new THREE.Vector3().crossVectors(axis, up); if (b1.lengthSq() < 1e-6) b1.set(1, 0, 0); b1.normalize();
+      var b2 = new THREE.Vector3().crossVectors(axis, b1).normalize(), ep = [];
+      for (var k = 0; k < 12; k++) { var ang = k / 12 * Math.PI * 2, off = b1.clone().multiplyScalar(Math.cos(ang) * RE).addScaledVector(b2, Math.sin(ang) * RE);
+        var s0 = earthCentre.clone().add(off), s1 = s0.clone().addScaledVector(axis, SHL); ep.push(s0.x, s0.y, s0.z, s1.x, s1.y, s1.z); }
+      shadowEdgeGeo.setAttribute("position", new THREE.Float32BufferAttribute(ep, 3)); shadowEdge.visible = !ground3;
+      // Sun marker (far away, not to scale)
+      sunSprite.position.copy(earthCentre).addScaledVector(sunDir, 150000);
+      var sd = camera.position.distanceTo(sunSprite.position); sunSprite.scale.setScalar(sd * 0.09); sunSprite.visible = !ground3;
+      // ISS
+      var lit = S.lit > 0.5, mag = S.mag;
+      iss.position.copy(issPos);
+      iss.lookAt(issPos.clone().addScaledVector(sunDir, 1000));
+      iss.scale.setScalar(ground3 ? 0.0001 : camD * 0.045); iss.visible = !ground3;
+      panelMat.emissive.setHex(lit ? 0x3a2a08 : 0x000000);
+      glow.position.copy(issPos);
+      var gsz = lit && mag != null ? Math.max(0.03, Math.min(0.13, 0.045 + (-mag) * 0.018)) : 0.016;
+      glow.scale.setScalar(ground3 ? gsz : gsz * 0.7);
+      glow.material.opacity = lit ? (ground3 && S.sunEl > -1 ? 0.5 : 1) : 0.25;
+      glow.material.color.setHex(lit ? 0xffffff : 0x8090b0);
+      // you
+      you.scale.setScalar(ground3 ? 0.0001 : camera.position.length() * 0.03); you.visible = !ground3;
+      // light paths
+      var sunLen = ground3 ? 0 : camD * 0.55;
+      setLine(sunRay, issPos.clone().addScaledVector(sunDir, sunLen), issPos);
+      sunRay.visible = !ground3 && lit;
+      setLine(sight, new THREE.Vector3(), issPos, ground3 ? 0 : camD * 0.012);
+      sight.visible = !ground3 && S.el > -2;
+      setLine(sunFromYou, new THREE.Vector3(), sunDir.clone().multiplyScalar(camera.position.length() * 0.35), camera.position.length() * 0.01);
+      sunFromYou.visible = !ground3 && S.sunEl < 0;
+      // phase angle arc at the ISS
+      var toYou = issPos.clone().negate().normalize(), ar = camD * 0.09, ap = arcGeo.attributes.position;
+      for (var i = 0; i <= 32; i++) { var v = new THREE.Vector3().copy(sunDir).lerp(toYou, i / 32).normalize().multiplyScalar(ar).add(issPos); ap.setXYZ(i, v.x, v.y, v.z); }
+      ap.needsUpdate = true; arcGeo.computeBoundingSphere(); arc.visible = !ground3 && lit;
+      // labels
+      var mid = new THREE.Vector3().copy(sunDir).add(toYou).normalize().multiplyScalar(ar * 1.35).add(issPos);
+      place(L.iss, issPos, "ISS", true);
+      place(L.you, new THREE.Vector3(), "You", mode === "side");
+      L.phase.title = "Phase angle";
+      place(L.sun, sunSprite.position, "Sun (not to scale)", !ground3);
+      place(L.phase, mid, Math.round(S.phase) + "°", mode === "side" && lit);
+      place(L.shadow, earthCentre.clone().addScaledVector(axis, mode === "earth" ? 22000 : 9000).addScaledVector(b2, RE * 0.6), "Earth’s shadow", !ground3);
+      var hz = new THREE.Vector3(sunDir.x, 0, sunDir.z).normalize();
+      place(L.below, hz.clone().multiplyScalar(ground3 ? 1000 : camera.position.length() * 0.42).add(new THREE.Vector3(0, ground3 ? 0 : -camera.position.length() * 0.06, 0)), S.sunEl < 0 ? "Sun " + Math.round(-S.sunEl) + "° below your horizon" : "Sun " + Math.round(S.sunEl) + "° up", mode !== "earth");
+      [["N", 0], ["E", 90], ["S", 180], ["W", 270]].forEach(function (c) {
+        place(L[c[0]], new THREE.Vector3(Math.sin(c[1] * DEG) * 1000, 0, -Math.cos(c[1] * DEG) * 1000), null, ground3);
+      });
+      renderer.render(scene, camera);
+    }
+
+    /* ---------- readout ---------- */
+    var out = root.querySelector(".s3-read"), slider = root.querySelector(".s3-time"), tlab = root.querySelector(".s3-clock"), playBtn = root.querySelector(".s3-play");
+    var lastText = 0;
+    function updateUi(force) {
+      if (!pass) return;
+      var now = performance.now(); if (!force && now - lastText < 120) return; lastText = now;
+      slider.value = String(Math.round((t - pass.aos) / (pass.los - pass.aos) * 1000));
+      tlab.textContent = ctx.time(t);
+      compute();
+      var h = Math.round(S.sat ? Math.hypot(S.sat.x, S.sat.y, S.sat.z) - RE : 0), lit = S.lit > 0.5, dirN = ctx.dirName(S.az);
+      var rows = [
+        ["Where to look", S.el >= 0 ? Math.round(S.el) + "° up in the " + dirN : "Below your horizon"],
+        ["Distance", Math.round(S.range).toLocaleString("en-GB") + " km (" + h + " km up)"],
+        ["Sun for you", S.sunEl < 0 ? Math.round(-S.sunEl) + "° below the horizon" : Math.round(S.sunEl) + "° above the horizon"],
+        ["Sunlight on the ISS", S.lit >= 0.99 ? "Full sunlight" : S.lit <= 0.01 ? "In Earth’s shadow" : "Partly shadowed (" + Math.round(S.lit * 100) + "%)"],
+        ["Phase angle", lit ? Math.round(S.phase) + "°" : "n/a"],
+        ["Brightness", lit && S.mag != null ? ctx.mag(S.mag) : "Not lit"]
+      ];
+      out.querySelector(".s3-rows").innerHTML = rows.map(function (r) { return "<div><dt>" + r[0] + "</dt><dd>" + r[1] + "</dd></div>"; }).join("");
+      out.querySelector(".s3-why").textContent = explain(S, h, lit);
+    }
+    function explain(s, h, lit) {
+      var parts = [];
+      if (s.el < 0) return "The ISS is below your horizon at this moment. Drag the time slider to follow it across your sky.";
+      if (!lit) return "The ISS has slipped into Earth’s shadow. It is still " + Math.round(s.el) + "° up, but with no sunlight falling on it there is nothing to reflect, so it vanishes mid-sky.";
+      if (s.sunEl < -0.8) parts.push("The Sun has set for you, but from " + h + " km up the ISS can still see it over the curve of the Earth, so it shines against a dark sky.");
+      else parts.push("The Sun is still up for you, so the sky is too bright to pick the ISS out.");
+      if (s.phase < 70) parts.push("With a phase angle of " + Math.round(s.phase) + "°, the sunlight is coming from roughly behind you, so you see the sunlit faces of its solar arrays almost head-on: this is when it is brightest.");
+      else if (s.phase < 110) parts.push("The phase angle is " + Math.round(s.phase) + "°, so you see it side-lit, like a half Moon.");
+      else parts.push("The phase angle is " + Math.round(s.phase) + "°: you are looking towards the Sun’s side of it and seeing mostly the unlit backs of the arrays, so it looks fainter.");
+      if (s.range > 1000) parts.push("It is also " + Math.round(s.range).toLocaleString("en-GB") + " km away near the horizon, which dims it further.");
+      return parts.join(" ");
+    }
+
+    /* ---------- controls ---------- */
+    root.querySelectorAll("[data-view]").forEach(function (b) { b.addEventListener("click", function () { setMode(b.dataset.view); }); });
+    slider.addEventListener("input", function () { if (!pass) return; playing = false; playBtn.textContent = "Play the pass"; t = pass.aos + (+slider.value / 1000) * (pass.los - pass.aos); updateUi(true); frame(true); });
+    playBtn.addEventListener("click", function () {
+      if (!pass) return; playing = !playing;
+      if (playing && t >= pass.los - 1000) t = pass.aos;
+      playBtn.textContent = playing ? "Pause" : "Play the pass"; lastFrame = performance.now();
+    });
+    var ptrs = {}, pinch = 0;
+    var el = renderer.domElement;
+    el.style.touchAction = "none";
+    el.addEventListener("pointerdown", function (e) { el.setPointerCapture(e.pointerId); ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; });
+    el.addEventListener("pointerup", function (e) { delete ptrs[e.pointerId]; pinch = 0; });
+    el.addEventListener("pointercancel", function (e) { delete ptrs[e.pointerId]; pinch = 0; });
+    el.addEventListener("pointermove", function (e) {
+      var p = ptrs[e.pointerId]; if (!p) return;
+      var ids = Object.keys(ptrs);
+      if (ids.length === 2) {
+        var a = ptrs[ids[0]], b = ptrs[ids[1]]; p.x = e.clientX; p.y = e.clientY;
+        var d = Math.hypot(a.x - b.x, a.y - b.y); if (pinch) zoom(pinch / d); pinch = d; frame(true); return;
+      }
+      var dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+      if (mode === "ground") { cam.yaw = (cam.yaw - dx * 0.25 * cam.fov / 90 + 360) % 360; cam.pitch = Math.max(-5, Math.min(89, cam.pitch + dy * 0.25 * cam.fov / 90)); }
+      else { cam.theta -= dx * 0.006; cam.phi = Math.max(0.05, Math.min(Math.PI - 0.05, cam.phi - dy * 0.006)); }
+      frame(true);
+    });
+    el.addEventListener("wheel", function (e) { e.preventDefault(); zoom(e.deltaY > 0 ? 1.12 : 1 / 1.12); frame(true); }, { passive: false });
+    function zoom(f) {
+      if (mode === "ground") cam.fov = Math.max(25, Math.min(120, cam.fov * f));
+      else cam.r = Math.max(mode === "earth" ? 9000 : 600, Math.min(120000, cam.r * f));
+    }
+
+    /* ---------- sizing and loop ---------- */
+    function resize() {
+      W = wrap.clientWidth; H = wrap.clientHeight || Math.round(W * 0.62);
+      renderer.setSize(W, H, false); renderer.domElement.style.width = W + "px"; renderer.domElement.style.height = H + "px";
+      camera.aspect = W / H; camera.updateProjectionMatrix(); frame(true);
+    }
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(wrap); else window.addEventListener("resize", resize);
+    if (window.IntersectionObserver) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(wrap);
+    function loop(now) {
+      requestAnimationFrame(loop);
+      if (!visible || !pass) return;
+      if (playing) {
+        t += (now - lastFrame) * 20; lastFrame = now;
+        if (t > pass.los) { t = pass.los; playing = false; playBtn.textContent = "Play the pass"; }
+        updateUi(); frame();
+      }
+    }
+    requestAnimationFrame(loop);
+    resize();
+    return api;
+  }
+
+  return { create: create, setLand: function (r) { LAND = r; } };
+})();
+</script>
+<script>
+/* LocationMap: OpenStreetMap picker (Leaflet) with Nominatim search and reverse lookup.
+   OSM tile and Nominatim usage policies apply: keep attribution, search only on request. */
+var LocationMap = (function () {
+  "use strict";
+  var NOMINATIM = "https://nominatim.openstreetmap.org/";
+  function wrapLon(l) { return ((l + 540) % 360) - 180; }
+  function shortName(r) {
+    var a = r.address || {};
+    return r.name || a.suburb || a.village || a.town || a.hamlet || a.city || a.municipality || a.county || (r.display_name || "").split(",")[0] || "Chosen spot";
+  }
+  var lastCall = 0;
+  function nominatim(path) {
+    var wait = Math.max(0, lastCall + 1100 - Date.now()); lastCall = Date.now() + wait; // at most one request a second
+    return new Promise(function (res) { setTimeout(res, wait); }).then(function () {
+      return fetch(NOMINATIM + path, { headers: { "Accept": "application/json" } });
+    }).then(function (r) { if (!r.ok) throw new Error("Search replied " + r.status); return r.json(); });
+  }
+  function search(q) {
+    return nominatim("search?format=jsonv2&addressdetails=1&limit=6&accept-language=en-GB&q=" + encodeURIComponent(q)).then(function (list) {
+      return list.map(function (r) { return { lat: +r.lat, lon: +r.lon, name: shortName(r), label: r.display_name }; });
+    });
+  }
+  function reverse(lat, lon) {
+    return nominatim("reverse?format=jsonv2&zoom=14&accept-language=en-GB&lat=" + lat + "&lon=" + lon).then(function (r) { return r && !r.error ? shortName(r) : null; });
+  }
+  function create(el, opts) {
+    var map = L.map(el, { scrollWheelZoom: false, worldCopyJump: true }).setView([opts.lat, opts.lon], 11);
+    var tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    var loaded = 0, failed = 0, warned = false;
+    tiles.on("tileload", function () { loaded++; });
+    tiles.on("tileerror", function () { failed++; if (!loaded && failed >= 3 && !warned) { warned = true; opts.onTilesFailed && opts.onTilesFailed(); } });
+    map.on("focus", function () { map.scrollWheelZoom.enable(); });
+    map.on("blur", function () { map.scrollWheelZoom.disable(); });
+    var icon = L.divIcon({ className: "pin", html: "<span></span>", iconSize: [26, 34], iconAnchor: [13, 32] });
+    var marker = L.marker([opts.lat, opts.lon], { icon: icon, draggable: true, title: "Where you’re watching from", alt: "Viewing location" }).addTo(map);
+    function pick(ll) { var lat = +ll.lat.toFixed(4), lon = +wrapLon(ll.lng).toFixed(4); marker.setLatLng([lat, lon]); opts.onPick(lat, lon); }
+    map.on("click", function (e) { pick(e.latlng); });
+    marker.on("dragend", function () { pick(marker.getLatLng()); });
+    return {
+      set: function (lat, lon, zoom) { marker.setLatLng([lat, lon]); map.setView([lat, lon], zoom || map.getZoom()); },
+      refresh: function () { map.invalidateSize(); }
+    };
+  }
+  return { create: create, search: search, reverse: reverse };
+})();
+</script>
+<script>
+/* Coastlines: Natural Earth 1:110m land (public domain), lon/lat x10 */
+var LAND_RINGS = [[-596,-800,-599,-805,-602,-810,-623,-809,-645,-809,-657,-806,-657,-805,-663,-803,-640,-803,-619,-804,-611,-800,-606,-796,-596,-800],[-1592,-795,-1611,-796,-1624,-793,-1630,-789,-1631,-789,-1637,-786,-1631,-782,-1612,-784,-1602,-787,-1595,-790,-1592,-795],[-452,-780,-439,-785,-435,-791,-434,-795,-433,-800,-449,-803,-465,-806,-484,-808,-505,-810,-529,-810,-542,-806,-540,-802,-519,-799,-510,-796,-504,-792,-499,-788,-493,-785,-487,-780,-482,-780,-467,-778,-452,-780],[-1212,-735,-1199,-737,-1187,-735,-1193,-738,-1202,-741,-1216,-740,-1226,-737,-1224,-733,-1212,-735],[-1256,-735,-1240,-739,-1246,-738,-1259,-737,-1273,-735,-1266,-732,-1256,-735],[-990,-719,-979,-721,-968,-720,-962,-725,-970,-724,-982,-725,-994,-724,-1008,-725,-1018,-723,-1023,-719,-1017,-717,-1004,-719,-990,-719],[-685,-710,-683,-714,-685,-718,-688,-722,-700,-723,-711,-725,-724,-725,-719,-721,-731,-722,-742,-724,-750,-721,-750,-717,-739,-713,-732,-712,-721,-712,-718,-707,-717,-703,-717,-695,-712,-690,-703,-689,-697,-693,-695,-696,-691,-701,-687,-705,-685,-710],[-586,-642,-590,-644,-598,-642,-606,-643,-613,-645,-620,-648,-625,-651,-626,-655,-626,-659,-621,-662,-628,-664,-637,-665,-643,-668,-649,-672,-655,-676,-657,-680,-653,-684,-648,-687,-640,-689,-632,-692,-628,-696,-626,-700,-623,-704,-618,-707,-615,-711,-614,-720,-611,-724,-610,-728,-607,-732,-608,-737,-614,-741,-620,-744,-633,-746,-637,-749,-644,-753,-659,-756,-672,-758,-684,-760,-698,-762,-706,-766,-722,-767,-740,-766,-756,-767,-772,-767,-769,-771,-754,-773,-743,-776,-737,-779,-748,-782,-765,-781,-779,-784,-780,-788,-780,-792,-768,-795,-766,-799,-754,-803,-732,-804,-714,-807,-700,-810,-682,-813,-657,-815,-633,-817,-616,-820,-597,-824,-587,-828,-582,-832,-570,-829,-554,-826,-536,-823,-515,-820,-498,-817,-473,-817,-448,-818,-428,-821,-422,-817,-408,-814,-382,-813,-363,-811,-344,-809,-323,-808,-301,-806,-285,-803,-293,-800,-297,-796,-297,-793,-316,-793,-337,-795,-356,-795,-359,-791,-358,-783,-353,-781,-339,-779,-322,-777,-310,-774,-298,-771,-289,-767,-275,-765,-262,-764,-255,-763,-239,-762,-225,-761,-212,-759,-200,-757,-189,-754,-175,-751,-166,-748,-157,-745,-154,-741,-165,-739,-161,-735,-154,-731,-144,-730,-133,-727,-123,-724,-115,-720,-110,-715,-103,-713,-91,-713,-86,-717,-74,-717,-74,-713,-69,-709,-58,-710,-55,-714,-43,-715,-30,-713,-18,-712,-7,-712,-2,-716,9,-713,19,-711,30,-710,41,-709,52,-706,63,-705,71,-702,77,-699,85,-701,95,-700,102,-705,108,-708,120,-706,124,-702,134,-700,147,-700,151,-704,159,-700,170,-699,182,-699,193,-699,204,-700,215,-701,219,-704,226,-707,237,-705,248,-705,260,-705,271,-705,281,-703,292,-702,300,-699,310,-698,320,-697,328,-694,333,-688,339,-685,349,-687,353,-690,362,-692,372,-692,379,-695,386,-698,397,-695,400,-691,409,-689,420,-686,429,-685,441,-683,449,-681,457,-678,465,-676,474,-677,483,-674,490,-671,499,-671,508,-669,509,-665,518,-662,526,-661,536,-659,545,-658,554,-659,564,-660,572,-662,573,-667,581,-670,587,-673,599,-674,606,-677,614,-680,624,-680,632,-678,641,-674,650,-676,660,-677,669,-679,679,-679,689,-679,697,-690,697,-692,696,-697,686,-699,678,-703,679,-707,691,-707,689,-711,684,-714,679,-719,687,-722,699,-723,710,-721,716,-717,719,-713,725,-710,731,-707,733,-704,739,-699,745,-698,756,-697,766,-696,776,-695,781,-691,784,-687,791,-683,801,-681,809,-679,815,-675,821,-674,828,-672,838,-673,847,-672,857,-671,868,-672,875,-669,880,-662,884,-665,888,-670,897,-672,906,-672,916,-671,926,-672,935,-672,942,-671,950,-672,958,-674,967,-672,978,-672,987,-671,997,-672,1004,-669,1009,-666,1016,-663,1028,-656,1035,-657,1042,-660,1049,-663,1062,-669,1072,-670,1081,-670,1092,-668,1102,-667,1111,-664,1117,-661,1129,-661,1136,-659,1144,-661,1149,-664,1156,-667,1167,-667,1174,-669,1186,-672,1198,-673,1209,-672,1217,-669,1223,-666,1232,-665,1241,-666,1252,-667,1261,-666,1270,-666,1279,-667,1288,-668,1297,-666,1308,-664,1318,-664,1329,-664,1339,-663,1348,-662,1350,-657,1351,-653,1357,-656,1359,-660,1362,-664,1366,-668,1375,-670,1386,-669,1399,-669,1408,-668,1421,-668,1431,-668,1444,-668,1455,-669,1462,-672,1460,-676,1466,-679,1477,-681,1488,-684,1501,-686,1515,-687,1525,-689,1536,-689,1543,-686,1552,-688,1559,-691,1568,-694,1580,-695,1592,-696,1597,-700,1608,-702,1616,-706,1627,-707,1638,-707,1649,-708,1661,-708,1673,-708,1684,-710,1695,-712,1705,-714,1712,-717,1711,-721,1706,-724,1701,-729,1698,-732,1693,-737,1680,-738,1674,-742,1661,-744,1656,-748,1650,-751,1642,-755,1638,-759,1636,-762,1635,-767,1635,-771,1641,-775,1643,-778,1647,-782,1666,-783,1670,-788,1652,-789,1637,-791,1618,-792,1609,-797,1607,-802,1603,-806,1598,-809,1611,-813,1616,-817,1625,-821,1637,-824,1651,-827,1666,-830,1689,-833,1694,-838,1723,-840,1725,-841,1732,-844,1760,-842,1783,-845,1800,-847,1800,-900,-1800,-900,-1800,-847,-1799,-847,-1791,-841,-1773,-845,-1771,-844,-1769,-843,-1765,-842,-1762,-841,-1761,-841,-1759,-841,-1758,-841,-1744,-845,-1731,-841,-1729,-841,-1700,-839,-1690,-841,-1685,-842,-1670,-846,-1642,-848,-1619,-851,-1581,-854,-1552,-851,-1509,-853,-1485,-856,-1459,-853,-1431,-850,-1429,-846,-1468,-845,-1501,-843,-1509,-839,-1536,-837,-1534,-832,-1530,-828,-1527,-825,-1529,-820,-1545,-818,-1553,-814,-1568,-811,-1544,-812,-1521,-810,-1506,-813,-1489,-810,-1472,-807,-1464,-803,-1468,-799,-1481,-797,-1495,-794,-1516,-793,-1534,-792,-1553,-791,-1560,-787,-1573,-784,-1581,-780,-1584,-769,-1579,-770,-1570,-773,-1553,-772,-1537,-771,-1529,-775,-1513,-774,-1500,-772,-1487,-769,-1476,-766,-1461,-765,-1461,-761,-1465,-757,-1462,-754,-1449,-752,-1443,-755,-1428,-753,-1416,-751,-1402,-751,-1389,-750,-1375,-747,-1364,-745,-1352,-743,-1344,-744,-1337,-744,-1323,-743,-1309,-745,-1296,-745,-1282,-743,-1269,-744,-1254,-745,-1240,-745,-1226,-745,-1211,-745,-1197,-745,-1187,-742,-1175,-740,-1162,-742,-1150,-741,-1139,-737,-1133,-740,-1129,-744,-1123,-747,-1113,-744,-1101,-748,-1087,-749,-1076,-752,-1061,-751,-1049,-749,-1034,-750,-1020,-751,-1006,-753,-1001,-749,-1008,-745,-1013,-742,-1025,-741,-1031,-737,-1033,-734,-1037,-726,-1029,-728,-1016,-728,-1003,-728,-991,-729,-981,-732,-977,-736,-963,-736,-950,-735,-937,-733,-924,-732,-914,-734,-901,-733,-892,-726,-884,-730,-873,-732,-860,-731,-852,-735,-839,-735,-827,-736,-815,-739,-807,-735,-803,-731,-793,-735,-779,-734,-769,-736,-762,-740,-749,-739,-739,-737,-728,-734,-716,-733,-702,-731,-689,-730,-680,-728,-674,-725,-671,-720,-673,-716,-676,-712,-679,-709,-682,-705,-685,-701,-685,-697,-684,-693,-680,-690,-676,-685,-674,-681,-676,-677,-677,-673,-673,-669,-667,-666,-661,-662,-654,-659,-646,-656,-642,-652,-636,-649,-630,-646,-620,-646,-614,-643,-607,-641,-599,-640,-592,-637,-586,-634,-578,-633,-572,-635,-576,-639,-586,-642],[-678,-538,-664,-544,-650,-547,-655,-552,-664,-552,-670,-549,-673,-553,-681,-556,-692,-555,-700,-552,-710,-551,-723,-545,-733,-540,-747,-528,-738,-530,-724,-537,-711,-541,-706,-536,-703,-529,-693,-525,-686,-526,-682,-531,-678,-538],[-586,-511,-578,-516,-580,-519,-594,-522,-598,-518,-607,-523,-612,-518,-600,-512,-592,-515,-586,-511],[703,-497,687,-498,687,-492,689,-488,689,-486,696,-489,705,-491,706,-493,703,-497],[1454,-408,1464,-411,1469,-410,1477,-408,1483,-409,1484,-421,1480,-424,1479,-432,1476,-429,1469,-436,1467,-436,1460,-435,1454,-427,1453,-420,1447,-412,1447,-407,1454,-408],[1730,-409,1732,-413,1740,-409,1742,-413,1742,-418,1739,-422,1732,-430,1727,-434,1731,-439,1723,-439,1715,-442,1712,-449,1706,-459,1698,-464,1693,-466,1684,-466,1678,-463,1667,-462,1665,-459,1670,-451,1683,-441,1689,-439,1697,-436,1705,-430,1711,-425,1716,-418,1719,-415,1721,-410,1728,-405,1730,-409],[1746,-362,1753,-372,1754,-365,1758,-368,1760,-376,1768,-379,1774,-380,1780,-376,1785,-377,1783,-386,1780,-392,1772,-391,1769,-394,1770,-399,1769,-401,1765,-406,1760,-413,1752,-417,1751,-414,1747,-413,1752,-405,1749,-399,1738,-395,1739,-391,1746,-388,1747,-380,1747,-374,1743,-367,1743,-365,1738,-361,1731,-352,1726,-345,1730,-345,1736,-350,1743,-353,1746,-362],[1671,-222,1667,-224,1662,-221,1655,-217,1648,-211,1642,-204,1640,-201,1645,-201,1650,-205,1655,-208,1658,-211,1666,-217,1671,-222],[1784,-173,1787,-176,1786,-182,1779,-183,1774,-182,1773,-177,1777,-174,1781,-175,1784,-173],[1794,-168,1787,-170,1786,-166,1791,-164,1794,-164,1800,-161,1800,-166,1794,-168],[-1799,-165,-1800,-166,-1800,-161,-1798,-160,-1799,-165],[1678,-165,1675,-166,1672,-162,1672,-159,1678,-165],[1671,-149,1673,-157,1670,-156,1668,-157,1666,-154,1666,-146,1671,-149],[501,-136,502,-148,505,-152,504,-157,502,-160,499,-154,497,-157,499,-165,498,-169,495,-171,494,-180,490,-191,485,-205,479,-224,475,-238,471,-249,463,-252,454,-256,448,-253,440,-250,438,-245,437,-236,433,-228,433,-221,434,-213,439,-212,439,-208,444,-201,445,-194,442,-190,440,-183,440,-174,443,-169,444,-162,449,-162,455,-160,459,-158,463,-158,469,-152,477,-146,480,-141,479,-137,483,-138,488,-131,489,-125,492,-120,495,-125,498,-129,501,-136],[1436,-138,1439,-145,1446,-142,1449,-146,1454,-150,1453,-154,1455,-163,1456,-168,1459,-169,1462,-178,1461,-183,1464,-190,1475,-195,1482,-200,1488,-204,1487,-206,1493,-213,1497,-223,1501,-221,1505,-226,1507,-224,1509,-235,1516,-241,1521,-245,1529,-253,1531,-261,1532,-266,1531,-273,1536,-281,1535,-290,1533,-295,1531,-304,1531,-309,1529,-316,1525,-326,1517,-330,1513,-338,1510,-343,1507,-352,1503,-357,1501,-364,1499,-371,1500,-374,1494,-378,1483,-378,1474,-382,1469,-386,1463,-390,1455,-386,1449,-384,1450,-379,1445,-381,1436,-388,1427,-385,1422,-384,1416,-383,1406,-380,1400,-374,1398,-366,1396,-361,1391,-357,1381,-356,1384,-351,1382,-344,1377,-351,1368,-353,1374,-347,1375,-341,1379,-336,1378,-329,1370,-338,1364,-341,1360,-349,1352,-345,1352,-339,1346,-332,1341,-328,1343,-326,1330,-320,1323,-320,1313,-315,1295,-316,1282,-319,1271,-323,1261,-322,1251,-327,1242,-330,1240,-335,1237,-339,1228,-339,1222,-340,1213,-338,1206,-339,1199,-340,1193,-345,1190,-345,1185,-347,1180,-351,1173,-350,1166,-350,1156,-344,1150,-342,1150,-336,1155,-335,1157,-333,1157,-329,1158,-322,1157,-316,1152,-306,1150,-300,1150,-295,1146,-288,1146,-285,1142,-281,1140,-273,1135,-265,1133,-261,1138,-265,1134,-256,1139,-259,1142,-263,1142,-258,1137,-250,1136,-247,1134,-244,1135,-238,1137,-236,1138,-231,1137,-225,1141,-218,1142,-225,1146,-218,1155,-215,1159,-211,1167,-207,1172,-206,1174,-207,1182,-204,1188,-203,1190,-200,1193,-200,1198,-200,1209,-197,1214,-192,1217,-187,1222,-182,1223,-178,1223,-173,1230,-164,1234,-173,1239,-171,1235,-166,1238,-161,1243,-163,1244,-156,1249,-151,1252,-147,1257,-145,1257,-142,1261,-143,1261,-141,1266,-140,1271,-138,1278,-143,1284,-149,1290,-149,1296,-150,1294,-144,1299,-136,1303,-134,1302,-131,1306,-125,1312,-122,1317,-123,1326,-121,1326,-116,1318,-113,1324,-111,1330,-114,1336,-118,1344,-120,1347,-119,1353,-122,1359,-120,1363,-120,1365,-119,1370,-124,1367,-129,1363,-133,1360,-133,1361,-137,1358,-142,1354,-147,1355,-150,1363,-156,1371,-159,1376,-162,1383,-168,1386,-168,1391,-171,1393,-174,1402,-177,1409,-174,1411,-168,1413,-164,1414,-158,1417,-150,1416,-146,1416,-143,1415,-137,1417,-129,1418,-127,1417,-124,1419,-119,1421,-113,1421,-110,1425,-107,1428,-112,1429,-118,1431,-119,1432,-123,1435,-128,1436,-134,1436,-138],[1621,-105,1624,-108,1617,-108,1613,-102,1619,-104,1621,-105],[1207,-102,1203,-103,1190,-96,1199,-94,1204,-97,1208,-100,1207,-102],[1609,-99,1605,-99,1598,-98,1596,-96,1597,-92,1604,-94,1607,-96,1609,-99],[1617,-96,1615,-98,1608,-89,1606,-83,1609,-83,1613,-91,1617,-96],[1244,-101,1236,-104,1235,-102,1236,-99,1240,-93,1250,-89,1251,-87,1259,-84,1266,-84,1270,-83,1273,-84,1270,-87,1259,-91,1251,-94,1244,-101],[1179,-81,1183,-84,1189,-83,1191,-87,1180,-89,1173,-90,1167,-90,1171,-85,1176,-84,1179,-81],[1229,-81,1228,-86,1213,-89,1199,-88,1199,-84,1207,-82,1213,-85,1220,-85,1229,-81],[1599,-83,1599,-85,1591,-81,1586,-78,1582,-74,1584,-73,1588,-76,1596,-80,1599,-83],[1575,-73,1573,-74,1569,-72,1565,-68,1565,-66,1571,-70,1575,-73],[1086,-68,1105,-69,1108,-65,1126,-69,1130,-76,1145,-78,1157,-84,1146,-88,1135,-83,1126,-84,1115,-83,1106,-81,1094,-77,1087,-76,1083,-78,1065,-74,1063,-69,1054,-69,1061,-59,1073,-60,1081,-63,1085,-64,1086,-68],[1347,-62,1342,-69,1341,-61,1343,-58,1345,-54,1347,-57,1347,-62],[1559,-68,1556,-69,1552,-65,1547,-59,1545,-51,1547,-50,1548,-53,1551,-56,1555,-62,1560,-65,1559,-68],[1520,-55,1515,-56,1513,-58,1508,-61,1502,-63,1497,-63,1489,-60,1483,-57,1484,-54,1493,-56,1498,-55,1500,-50,1501,-50,1502,-55,1508,-55,1511,-51,1516,-48,1515,-42,1521,-41,1523,-43,1523,-49,1520,-55],[1272,-35,1269,-38,1262,-36,1260,-32,1270,-31,1272,-35],[1305,-31,1308,-39,1300,-34,1292,-34,1286,-34,1279,-34,1281,-28,1294,-28,1305,-31],[1531,-45,1528,-48,1526,-42,1524,-38,1520,-35,1514,-30,1507,-27,1509,-25,1515,-28,1518,-30,1522,-32,1526,-37,1530,-40,1531,-45],[1341,-12,1344,-28,1355,-34,1363,-23,1374,-17,1383,-17,1392,-21,1399,-24,1410,-26,1427,-33,1446,-39,1453,-44,1458,-49,1460,-55,1476,-61,1479,-66,1470,-67,1472,-74,1481,-80,1487,-91,1493,-91,1493,-95,1500,-97,1497,-99,1508,-103,1507,-106,1500,-107,1498,-104,1489,-103,1479,-101,1471,-95,1466,-89,1460,-81,1447,-76,1439,-79,1433,-82,1434,-90,1426,-93,1421,-92,1410,-91,1401,-83,1391,-81,1389,-84,1376,-84,1380,-76,1387,-73,1384,-62,1379,-54,1360,-45,1352,-45,1337,-35,1334,-40,1330,-41,1328,-37,1328,-33,1320,-28,1331,-25,1338,-25,1337,-22,1322,-22,1318,-16,1309,-14,1305,-9,1319,-7,1324,-4,1340,-8,1341,-12],[1252,14,1244,4,1237,2,1227,4,1211,4,1202,2,1200,-5,1209,-14,1215,-10,1233,-6,1233,-11,1228,-9,1224,-15,1215,-19,1225,-32,1223,-35,1232,-47,1232,-53,1226,-56,1222,-53,1227,-45,1217,-49,1215,-46,1216,-42,1209,-36,1210,-26,1203,-29,1204,-41,1204,-55,1198,-57,1194,-54,1197,-45,1195,-35,1191,-35,1188,-28,1192,-21,1193,-14,1198,2,1200,6,1209,13,1217,10,1229,9,1241,9,1251,16,1252,14],[1287,11,1286,3,1281,4,1280,-3,1284,-8,1281,-9,1277,-3,1274,10,1276,18,1279,22,1280,16,1286,15,1287,11],[1058,-59,1047,-59,1039,-50,1026,-42,1022,-36,1014,-28,1009,-21,1001,-7,993,2,990,10,986,18,977,25,972,33,964,39,954,50,953,55,959,54,975,52,984,43,991,36,997,32,1006,21,1017,21,1025,14,1031,6,1038,1,1034,-7,1040,-11,1044,-11,1045,-18,1049,-23,1056,-24,1061,-31,1059,-43,1058,-59],[1179,18,1190,9,1178,8,1175,1,1175,-8,1166,-15,1165,-25,1161,-40,1160,-37,1149,-41,1145,-35,1138,-34,1133,-31,1121,-35,1117,-30,1110,-30,1102,-29,1101,-16,1096,-13,1091,-5,1090,4,1091,13,1097,20,1104,17,1112,19,1114,27,1118,29,1130,31,1137,39,1142,45,1146,49,1155,54,1162,61,1167,69,1171,69,1176,64,1177,60,1183,57,1192,54,1191,50,1184,50,1186,45,1179,41,1173,32,1180,23,1179,18],[1264,84,1265,78,1265,72,1262,63,1258,73,1254,68,1257,60,1254,56,1242,62,1239,69,1242,74,1236,78,1233,74,1228,75,1221,69,1219,72,1223,80,1229,83,1235,87,1238,82,1246,85,1248,90,1255,90,1254,98,1262,93,1263,88,1264,84],[812,62,803,60,799,68,797,82,801,98,808,93,813,86,818,75,816,65,812,62],[-609,101,-618,100,-620,101,-617,104,-617,108,-611,109,-609,109,-609,101],[1240,103,1236,100,1233,93,1230,90,1224,97,1226,100,1228,103,1229,109,1235,109,1233,103,1241,112,1240,103],[1185,93,1172,84,1177,91,1184,97,1190,104,1195,114,1197,106,1190,100,1185,93],[1219,119,1225,116,1231,116,1231,112,1226,107,1220,104,1220,109,1220,114,1219,119],[1255,122,1258,110,1250,113,1250,110,1253,104,1248,101,1248,108,1245,109,1243,115,1249,114,1249,118,1243,126,1252,125,1255,122],[1215,131,1213,122,1208,127,1203,135,1212,134,1215,131],[1213,185,1219,182,1222,185,1223,182,1222,178,1225,171,1223,163,1217,159,1215,151,1217,143,1223,142,1227,143,1240,138,1239,132,1242,130,1241,125,1233,130,1229,136,1227,132,1220,138,1211,136,1206,139,1207,143,1210,145,1207,148,1206,144,1201,150,1199,154,1199,164,1203,160,1204,176,1207,185,1213,185],[-656,182,-658,180,-666,180,-672,179,-672,184,-671,185,-663,185,-658,184,-656,182],[-769,179,-772,177,-778,179,-783,182,-782,185,-778,185,-776,185,-769,184,-764,182,-762,179,-769,179],[-726,199,-717,197,-716,199,-708,199,-702,196,-700,196,-698,193,-692,193,-693,190,-688,190,-683,186,-687,182,-692,184,-696,184,-700,184,-701,182,-705,182,-707,184,-710,183,-714,176,-717,178,-717,180,-724,182,-728,181,-735,182,-739,180,-745,183,-744,187,-734,185,-727,184,-723,187,-728,191,-728,195,-734,196,-732,199,-726,199],[1103,187,1095,182,1087,185,1086,194,1091,198,1102,201,1108,201,1110,197,1106,193,1103,187],[-1555,191,-1557,189,-1559,191,-1559,193,-1561,197,-1560,198,-1559,200,-1559,202,-1559,203,-1558,202,-1554,201,-1552,200,-1551,199,-1548,195,-1552,192,-1555,191],[-1561,206,-1564,206,-1566,208,-1567,209,-1566,210,-1563,209,-1560,208,-1561,206],[-1568,212,-1568,211,-1573,211,-1573,212,-1568,212],[-1577,213,-1578,213,-1581,213,-1583,215,-1583,216,-1580,217,-1579,217,-1577,213],[-1593,220,-1595,219,-1598,221,-1597,221,-1596,222,-1594,222,-1593,220],[-797,228,-793,224,-783,225,-780,223,-771,217,-765,212,-762,212,-756,210,-757,207,-749,207,-742,203,-743,201,-750,199,-756,199,-763,200,-778,199,-771,204,-775,207,-781,207,-785,210,-787,216,-793,216,-802,218,-805,220,-818,222,-822,224,-818,226,-828,227,-835,222,-839,222,-841,219,-845,218,-850,219,-844,222,-842,226,-838,228,-833,230,-825,231,-823,232,-814,231,-806,231,-797,228],[-775,238,-778,237,-780,243,-784,246,-782,252,-779,252,-775,243,-775,238],[1212,228,1207,220,1202,228,1201,236,1207,245,1215,253,1220,250,1218,244,1212,228],[-778,266,-789,264,-790,268,-785,269,-778,268,-778,266],[-770,266,-772,259,-774,260,-773,265,-778,269,-778,270,-770,266],[1346,341,1348,338,1342,332,1338,335,1333,333,1330,327,1324,330,1324,335,1329,341,1335,339,1339,344,1346,341],[346,357,339,352,340,351,340,350,330,346,325,347,323,351,327,351,328,351,329,354,337,354,346,357],[237,357,242,354,250,354,258,354,257,352,263,353,262,350,247,349,247,351,235,353,237,357],[155,382,152,374,153,371,151,366,143,370,138,371,124,376,126,381,137,380,148,381,155,382],[92,412,98,405,97,392,92,392,88,389,84,392,84,404,82,410,87,409,92,412],[1410,371,1406,363,1408,358,1403,351,1390,347,1372,346,1358,335,1351,338,1351,346,1333,344,1322,339,1310,339,1320,331,1313,315,1307,310,1302,314,1304,323,1298,326,1294,333,1304,336,1309,342,1319,347,1326,354,1346,357,1357,355,1367,373,1374,368,1389,378,1394,382,1401,394,1399,406,1403,412,1414,414,1419,400,1419,392,1410,382,1410,371],[96,422,92,414,88,416,85,423,87,426,94,430,96,422],[1439,442,1446,440,1453,444,1455,433,1441,430,1432,420,1416,427,1411,416,1400,416,1398,426,1403,433,1414,434,1417,448,1420,456,1431,445,1439,442],[-637,466,-629,464,-620,464,-625,460,-629,460,-641,464,-644,467,-640,470,-637,466],[-618,491,-623,491,-636,494,-645,499,-642,500,-629,497,-618,493,-618,491],[-1235,485,-1240,484,-1257,488,-1260,492,-1269,495,-1270,498,-1281,500,-1284,505,-1284,508,-1273,506,-1267,504,-1258,503,-1254,500,-1249,495,-1239,491,-1235,485],[-561,507,-568,498,-561,502,-555,499,-558,496,-549,493,-545,496,-535,492,-538,485,-531,487,-530,482,-526,475,-531,467,-535,466,-542,468,-540,476,-542,478,-554,469,-560,469,-553,474,-563,476,-573,476,-593,476,-594,479,-588,483,-592,485,-584,491,-574,507,-567,513,-559,516,-554,516,-556,513,-561,507],[-1327,540,-1317,541,-1320,530,-1312,522,-1316,522,-1322,526,-1325,531,-1331,534,-1332,539,-1332,542,-1327,540],[1436,507,1447,490,1432,493,1426,479,1435,468,1435,461,1427,467,1421,460,1419,468,1420,478,1419,489,1421,496,1422,510,1416,519,1417,533,1426,538,1422,542,1427,544,1429,537,1433,527,1432,518,1436,507],[-68,523,-86,517,-100,518,-92,529,-97,539,-83,547,-76,551,-67,552,-57,546,-62,539,-60,532,-68,523],[127,556,121,548,110,554,109,558,124,561,127,556],[-1530,571,-1540,567,-1545,570,-1547,575,-1538,578,-1532,580,-1526,579,-1521,576,-1530,571],[-30,586,-41,576,-31,577,-20,577,-22,569,-31,560,-21,559,-11,546,-4,545,2,533,5,529,17,527,16,521,11,518,14,513,6,508,-8,508,-25,505,-30,507,-36,502,-45,503,-52,500,-58,502,-43,512,-34,514,-50,516,-53,520,-42,523,-48,528,-46,535,-31,534,-29,540,-36,546,-48,548,-51,551,-47,555,-50,558,-56,553,-56,563,-61,568,-58,578,-50,586,-42,586,-30,586],[-1656,599,-1662,598,-1668,599,-1675,602,-1665,604,-1657,603,-1656,599],[-793,622,-797,616,-801,617,-804,620,-803,621,-799,624,-795,624,-793,622],[-819,627,-831,622,-838,622,-840,625,-833,629,-819,629,-819,627],[-1717,638,-1711,636,-1705,637,-1697,634,-1687,633,-1688,632,-1695,630,-1703,632,-1707,634,-1716,633,-1718,634,-1717,638],[-852,657,-850,652,-845,654,-839,651,-828,648,-816,645,-816,640,-808,641,-801,637,-810,634,-825,637,-831,641,-841,636,-855,631,-859,636,-872,635,-864,640,-862,648,-859,657,-852,657],[-145,665,-147,658,-136,651,-149,644,-178,637,-187,635,-200,636,-228,640,-218,644,-240,649,-222,651,-222,654,-243,656,-237,663,-221,664,-206,657,-191,663,-178,660,-162,665,-145,665],[-759,671,-770,671,-772,676,-768,681,-759,683,-751,680,-751,676,-752,674,-759,671],[-1750,666,-1743,663,-1746,671,-1719,669,-1699,660,-1709,655,-1725,654,-1726,645,-1730,643,-1739,643,-1747,646,-1760,649,-1762,654,-1772,655,-1784,654,-1789,657,-1787,661,-1799,659,-1794,654,-1800,650,-1800,690,-1776,682,-1749,672,-1750,666],[-956,691,-963,688,-976,691,-984,690,-998,694,-989,697,-982,701,-972,699,-966,697,-963,695,-956,691],[1800,708,1789,708,1787,711,1800,715,1800,708],[-1787,709,-1800,708,-1800,715,-1799,716,-1790,716,-1776,713,-1777,711,-1787,709],[-905,695,-906,685,-892,693,-880,686,-883,679,-874,672,-863,679,-856,688,-855,699,-841,698,-826,697,-813,692,-812,687,-820,681,-813,676,-814,671,-833,664,-847,663,-858,666,-861,661,-870,652,-873,648,-885,641,-899,640,-907,636,-908,630,-919,628,-932,620,-942,609,-946,601,-947,589,-932,588,-928,578,-923,571,-909,573,-890,569,-880,565,-873,560,-861,557,-850,553,-834,552,-823,551,-824,543,-821,533,-814,522,-799,512,-791,515,-786,526,-791,541,-798,547,-782,551,-771,558,-765,565,-766,572,-773,581,-785,588,-773,599,-778,608,-781,623,-774,626,-757,623,-747,622,-738,624,-729,621,-717,615,-714,611,-696,611,-696,602,-693,590,-684,588,-676,582,-662,588,-652,599,-646,603,-638,594,-625,582,-614,570,-618,563,-605,558,-596,552,-580,549,-573,546,-569,538,-562,536,-558,533,-557,521,-564,518,-571,514,-588,511,-600,502,-617,501,-639,503,-654,503,-664,502,-672,495,-685,491,-700,477,-711,468,-703,470,-687,483,-666,491,-651,492,-642,487,-651,481,-648,470,-645,462,-632,457,-615,459,-605,470,-604,463,-598,459,-610,453,-633,447,-642,443,-654,435,-661,436,-662,445,-644,453,-660,453,-671,451,-670,448,-680,443,-691,440,-701,437,-707,430,-708,429,-708,423,-705,418,-701,418,-702,421,-699,419,-700,416,-706,415,-711,415,-719,413,-723,413,-729,412,-737,409,-722,411,-719,409,-733,406,-740,406,-740,408,-743,405,-740,404,-742,397,-749,389,-750,392,-752,392,-755,395,-753,390,-751,388,-751,384,-754,380,-759,372,-760,373,-757,379,-762,383,-763,392,-765,387,-763,381,-770,382,-763,379,-763,370,-760,369,-759,366,-757,356,-764,348,-774,345,-781,339,-786,339,-791,335,-792,332,-803,325,-809,320,-813,314,-815,307,-813,300,-810,292,-805,285,-805,280,-801,269,-801,262,-801,258,-804,252,-807,251,-812,252,-813,256,-817,259,-822,267,-827,275,-829,279,-827,286,-829,291,-837,299,-841,301,-851,296,-853,297,-858,302,-864,304,-875,303,-884,304,-892,303,-896,302,-894,299,-894,295,-892,293,-894,292,-898,293,-902,291,-909,291,-916,297,-925,296,-932,298,-938,297,-947,295,-956,287,-966,283,-971,278,-974,274,-974,267,-973,262,-971,259,-975,250,-977,243,-978,229,-979,224,-977,219,-974,214,-972,206,-965,199,-963,193,-959,188,-948,186,-944,181,-935,184,-928,185,-920,187,-914,189,-908,193,-905,199,-905,207,-903,210,-896,213,-885,215,-877,215,-871,215,-868,213,-868,208,-874,203,-876,196,-874,195,-876,190,-878,183,-881,185,-883,185,-883,184,-881,183,-881,181,-883,176,-882,175,-883,171,-882,170,-884,165,-886,163,-887,162,-889,159,-886,157,-885,159,-882,157,-881,157,-879,159,-876,159,-875,158,-874,158,-869,158,-864,158,-861,159,-860,160,-857,160,-854,159,-852,159,-850,160,-845,159,-844,158,-841,156,-838,154,-834,153,-831,150,-832,149,-833,147,-832,143,-834,140,-835,136,-836,131,-835,129,-835,124,-836,123,-837,119,-837,116,-839,114,-838,111,-837,109,-834,104,-830,100,-825,96,-822,92,-822,90,-818,90,-817,90,-814,88,-809,89,-805,91,-799,93,-796,96,-790,96,-791,95,-785,94,-781,92,-777,89,-774,87,-768,86,-761,93,-757,94,-757,98,-755,106,-749,111,-743,111,-742,113,-734,112,-726,117,-722,120,-718,124,-714,124,-711,121,-713,118,-714,115,-719,114,-716,110,-716,104,-721,99,-717,91,-713,91,-710,99,-714,102,-714,110,-702,114,-703,118,-699,122,-696,115,-689,114,-682,109,-682,106,-673,105,-662,106,-657,102,-649,101,-643,104,-643,106,-631,107,-619,107,-627,104,-624,99,-616,99,-608,94,-607,86,-602,86,-598,84,-591,80,-585,73,-585,68,-581,68,-575,63,-571,60,-559,58,-558,60,-550,60,-540,58,-536,56,-529,54,-518,46,-517,42,-513,42,-511,37,-505,19,-500,17,-499,10,-507,2,-504,-1,-486,-2,-486,-12,-478,-6,-466,-9,-449,-16,-444,-21,-446,-27,-434,-24,-415,-29,-400,-29,-385,-37,-372,-48,-365,-51,-356,-51,-352,-55,-349,-67,-347,-73,-351,-90,-356,-96,-370,-110,-377,-122,-384,-130,-387,-131,-390,-138,-389,-157,-392,-172,-393,-179,-396,-183,-398,-196,-408,-209,-409,-219,-418,-224,-420,-230,-431,-230,-446,-234,-454,-238,-465,-241,-476,-249,-485,-259,-486,-266,-485,-272,-487,-282,-489,-287,-496,-292,-507,-310,-516,-318,-523,-322,-527,-332,-534,-338,-538,-344,-549,-350,-557,-348,-562,-349,-571,-344,-578,-345,-584,-339,-585,-344,-572,-353,-574,-360,-567,-364,-568,-369,-577,-382,-592,-387,-612,-389,-623,-388,-621,-394,-623,-402,-621,-407,-627,-410,-638,-412,-647,-408,-651,-411,-650,-421,-643,-424,-638,-420,-635,-426,-644,-429,-652,-435,-653,-445,-656,-450,-665,-450,-673,-456,-676,-463,-666,-470,-656,-472,-660,-481,-672,-487,-678,-499,-687,-503,-691,-507,-688,-518,-682,-523,-686,-523,-695,-523,-699,-525,-708,-529,-710,-538,-714,-539,-726,-535,-737,-528,-749,-523,-753,-516,-750,-510,-755,-504,-756,-487,-752,-477,-741,-469,-756,-466,-747,-458,-744,-441,-732,-445,-727,-424,-734,-421,-737,-434,-743,-432,-740,-418,-737,-399,-732,-393,-735,-383,-736,-372,-732,-371,-726,-355,-719,-339,-714,-324,-717,-309,-714,-301,-715,-289,-709,-276,-707,-257,-704,-236,-701,-214,-702,-198,-704,-183,-714,-178,-715,-174,-734,-164,-752,-153,-760,-146,-764,-138,-763,-135,-771,-122,-781,-104,-790,-84,-794,-79,-798,-72,-805,-65,-812,-61,-809,-57,-814,-47,-811,-40,-803,-34,-798,-27,-800,-22,-804,-27,-810,-22,-808,-20,-809,-11,-806,-9,-804,-3,-800,4,-801,8,-795,10,-789,14,-790,17,-786,18,-787,23,-784,26,-779,27,-775,33,-771,38,-775,41,-773,47,-775,56,-773,58,-775,67,-779,72,-782,75,-784,81,-782,83,-784,84,-786,87,-791,90,-796,89,-798,86,-802,83,-804,83,-805,81,-800,75,-803,74,-804,73,-809,72,-811,78,-812,76,-815,77,-817,81,-821,82,-824,83,-828,83,-829,81,-830,82,-835,84,-837,87,-836,88,-836,91,-839,93,-843,95,-846,96,-847,99,-850,101,-849,98,-851,96,-853,98,-857,99,-858,101,-858,104,-857,108,-859,109,-857,111,-861,114,-865,118,-867,121,-872,125,-877,129,-876,131,-874,129,-873,130,-875,133,-878,134,-879,131,-885,132,-888,133,-893,135,-898,135,-901,137,-906,139,-912,139,-917,141,-922,145,-934,156,-939,159,-947,162,-953,161,-961,158,-966,157,-973,159,-980,161,-989,166,-997,167,-1008,172,-1017,176,-1019,179,-1025,180,-1035,183,-1039,187,-1050,193,-1055,199,-1057,204,-1054,205,-1055,208,-1053,211,-1053,214,-1056,219,-1057,223,-1060,228,-1069,238,-1079,245,-1084,252,-1093,256,-1094,258,-1093,264,-1098,267,-1104,272,-1106,279,-1112,279,-1118,285,-1122,290,-1123,293,-1128,300,-1132,308,-1131,312,-1139,316,-1142,315,-1148,318,-1149,314,-1148,309,-1147,302,-1143,298,-1136,291,-1134,288,-1133,288,-1131,284,-1130,284,-1128,278,-1125,275,-1122,272,-1116,267,-1113,257,-1110,253,-1107,248,-1107,243,-1102,243,-1098,238,-1094,234,-1094,232,-1099,228,-1100,228,-1103,234,-1109,240,-1117,245,-1122,247,-1121,255,-1123,260,-1128,263,-1135,268,-1136,266,-1138,269,-1145,271,-1151,277,-1150,278,-1146,277,-1142,281,-1142,286,-1149,293,-1155,296,-1159,302,-1163,308,-1167,316,-1171,325,-1173,330,-1179,336,-1184,337,-1185,340,-1191,341,-1194,343,-1204,344,-1206,346,-1207,352,-1217,362,-1225,376,-1225,378,-1230,381,-1237,390,-1239,398,-1244,403,-1242,411,-1242,420,-1245,428,-1241,437,-1239,455,-1241,469,-1244,477,-1247,482,-1246,484,-1231,480,-1226,471,-1223,474,-1225,482,-1228,490,-1230,490,-1249,500,-1256,504,-1274,508,-1280,517,-1279,523,-1291,528,-1293,536,-1305,543,-1305,548,-1311,552,-1320,555,-1322,564,-1335,572,-1341,581,-1350,582,-1366,582,-1378,585,-1399,595,-1408,597,-1426,601,-1440,600,-1459,605,-1471,609,-1482,607,-1480,600,-1486,599,-1497,597,-1506,594,-1517,592,-1519,597,-1514,607,-1503,610,-1506,613,-1519,607,-1526,601,-1540,594,-1533,589,-1542,581,-1553,577,-1563,574,-1566,570,-1581,565,-1584,560,-1596,556,-1603,556,-1612,554,-1622,550,-1631,547,-1648,544,-1649,546,-1638,550,-1629,553,-1618,559,-1606,560,-1601,564,-1587,570,-1585,572,-1577,576,-1576,583,-1570,589,-1582,586,-1585,588,-1591,584,-1597,589,-1600,586,-1604,591,-1614,587,-1620,587,-1621,593,-1619,596,-1625,600,-1638,598,-1647,603,-1653,605,-1654,611,-1661,615,-1657,621,-1649,626,-1646,631,-1638,632,-1631,631,-1623,635,-1615,635,-1608,638,-1610,642,-1615,644,-1608,648,-1614,648,-1625,646,-1628,643,-1635,646,-1650,644,-1664,647,-1668,651,-1681,657,-1667,661,-1645,666,-1637,666,-1638,661,-1617,661,-1625,667,-1637,671,-1644,676,-1654,680,-1668,684,-1662,689,-1644,689,-1632,694,-1629,699,-1619,703,-1609,704,-1590,709,-1581,708,-1566,714,-1551,711,-1543,707,-1539,709,-1522,708,-1523,706,-1507,704,-1497,705,-1476,702,-1457,701,-1449,700,-1436,702,-1421,699,-1410,697,-1391,695,-1375,690,-1365,689,-1356,693,-1344,696,-1329,695,-1314,699,-1298,702,-1291,698,-1284,700,-1281,705,-1274,704,-1258,695,-1244,702,-1243,694,-1231,696,-1227,699,-1215,698,-1199,694,-1176,690,-1162,688,-1152,689,-1139,684,-1153,679,-1135,677,-1108,678,-1099,680,-1089,674,-1078,679,-1088,683,-1082,687,-1070,687,-1062,688,-1053,686,-1043,680,-1032,681,-1015,676,-999,678,-984,678,-986,684,-977,686,-961,682,-961,673,-955,681,-947,681,-942,691,-953,697,-965,701,-964,712,-952,719,-939,718,-929,713,-915,702,-924,697,-905,695],[-1142,731,-1147,727,-1124,730,-1111,725,-1099,730,-1090,726,-1082,717,-1077,721,-1084,731,-1075,732,-1065,731,-1054,727,-1048,717,-1045,710,-1028,705,-1010,700,-1011,696,-1027,695,-1021,691,-1024,688,-1042,689,-1060,692,-1071,691,-1090,688,-1120,686,-1133,685,-1139,690,-1152,693,-1161,692,-1173,700,-1167,701,-1151,702,-1137,702,-1124,704,-1144,706,-1165,705,-1179,705,-1184,709,-1161,713,-1177,713,-1194,716,-1186,723,-1179,727,-1152,733,-1142,731],[-1045,734,-1054,728,-1069,735,-1066,736,-1053,736,-1045,734],[-763,731,-763,728,-773,729,-784,729,-795,727,-798,728,-809,733,-808,737,-804,738,-781,737,-763,731],[-866,732,-858,725,-849,733,-823,738,-806,727,-807,721,-788,724,-778,727,-756,722,-742,718,-741,713,-722,716,-712,709,-688,705,-679,701,-670,692,-688,687,-664,681,-649,678,-634,669,-619,669,-622,662,-639,650,-651,654,-667,664,-680,663,-681,657,-671,651,-657,646,-653,644,-647,634,-650,627,-663,629,-688,637,-674,629,-663,623,-662,619,-689,623,-710,629,-722,634,-719,637,-734,642,-748,647,-748,644,-777,642,-786,646,-779,653,-760,653,-740,655,-743,658,-739,663,-727,673,-729,677,-733,681,-748,686,-769,689,-762,691,-773,698,-782,698,-790,702,-795,699,-813,697,-849,700,-871,703,-887,704,-895,708,-885,712,-899,712,-902,722,-894,731,-884,735,-858,738,-866,732],[-1004,738,-992,736,-974,738,-971,735,-981,730,-965,726,-967,717,-984,713,-993,714,-1000,717,-1025,725,-1025,728,-1004,727,-1015,734,-1004,738],[1436,732,1421,732,1400,733,1399,734,1408,738,1421,739,1435,735,1436,732],[-932,728,-943,720,-954,721,-960,729,-960,734,-955,739,-945,741,-924,741,-905,739,-920,730,-932,728],[-1205,714,-1231,709,-1236,713,-1259,719,-1256,722,-1248,730,-1239,737,-1249,743,-1215,744,-1201,742,-1176,742,-1166,739,-1155,735,-1168,732,-1192,725,-1205,718,-1205,714],[1507,751,1496,747,1480,748,1461,752,1464,755,1482,753,1507,751],[-936,750,-942,746,-956,747,-968,749,-963,754,-949,756,-940,753,-936,750],[1451,756,1443,748,1406,748,1390,746,1370,753,1375,759,1388,761,1415,761,1451,756],[-985,767,-977,763,-977,757,-982,750,-998,749,-1009,751,-1009,756,-1025,756,-1026,763,-1015,763,-1000,766,-986,766,-985,767],[-1082,762,-1078,758,-1069,760,-1059,760,-1057,755,-1063,750,-1097,748,-1122,744,-1137,744,-1139,747,-1118,752,-1163,750,-1177,752,-1163,762,-1154,765,-1126,761,-1108,755,-1091,755,-1105,764,-1096,768,-1085,767,-1082,762],[575,707,569,706,537,708,534,712,516,715,515,720,525,722,524,728,544,736,535,737,559,746,556,751,579,756,612,763,645,764,662,768,682,769,689,765,682,762,646,757,616,753,585,743,570,733,554,724,556,715,575,707],[-947,771,-936,768,-916,768,-907,764,-910,761,-898,758,-892,756,-878,756,-864,755,-848,757,-828,758,-811,757,-801,753,-798,749,-805,747,-819,744,-832,746,-861,744,-882,744,-898,745,-924,748,-928,754,-929,759,-939,763,-960,764,-971,768,-967,772,-947,771],[-1162,776,-1163,769,-1171,765,-1180,765,-1199,761,-1215,759,-1229,761,-1212,769,-1191,775,-1176,775,-1162,776],[1070,770,1072,765,1082,767,1111,767,1133,762,1141,758,1139,753,1128,750,1102,745,1094,742,1106,740,1121,738,1130,740,1135,733,1140,736,1156,738,1188,736,1190,731,1232,730,1233,737,1254,736,1270,736,1286,730,1291,724,1285,720,1297,712,1313,708,1323,718,1339,714,1356,717,1375,713,1382,716,1399,715,1391,724,1405,728,1495,722,1504,716,1530,708,1570,710,1590,709,1598,705,1597,697,1609,694,1623,696,1641,697,1659,695,1678,696,1696,687,1708,690,1700,697,1705,701,1736,698,1757,699,1786,694,1800,690,1800,650,1787,645,1774,646,1783,641,1789,633,1794,630,1795,626,1792,623,1774,625,1746,618,1737,617,1722,610,1707,603,1703,599,1689,606,1663,598,1658,602,1649,597,1635,599,1632,592,1620,582,1621,578,1632,576,1631,562,1621,561,1617,553,1621,549,1604,543,1600,532,1585,530,1582,519,1568,510,1564,517,1560,532,1554,554,1559,568,1568,574,1568,578,1584,581,1602,593,1619,603,1637,611,1645,626,1633,625,1627,616,1601,605,1593,618,1567,614,1542,598,1550,591,1528,589,1513,588,1513,595,1498,597,1485,592,1455,593,1422,590,1390,571,1351,547,1367,546,1372,540,1382,538,1388,543,1399,542,1413,531,1414,522,1406,512,1405,500,1401,484,1386,470,1382,463,1369,451,1355,440,1349,434,1335,428,1329,428,1323,433,1309,426,1308,422,1304,423,1300,419,1297,416,1297,409,1292,407,1290,405,1286,402,1280,400,1275,398,1275,393,1274,392,1278,391,1283,386,1292,374,1295,368,1295,356,1291,351,1282,349,1274,345,1265,344,1264,349,1266,357,1261,367,1269,369,1262,377,1257,379,1256,378,1253,377,1252,379,1250,379,1247,381,1250,385,1252,387,1251,388,1254,394,1253,396,1247,397,1243,399,1229,396,1221,392,1211,389,1216,394,1214,398,1222,404,1216,409,1208,406,1196,399,1190,393,1180,392,1175,387,1181,381,1189,379,1189,374,1197,372,1208,379,1217,375,1224,375,1225,369,1211,367,1206,361,1197,356,1192,349,1202,344,1206,334,1212,325,1219,317,1219,309,1213,307,1215,301,1221,298,1219,290,1217,282,1211,281,1204,271,1196,257,1187,245,1173,236,1159,228,1148,227,1142,222,1138,225,1132,221,1118,216,1108,214,1104,203,1099,203,1096,210,1099,214,1085,217,1081,216,1067,207,1059,198,1057,191,1064,180,1074,167,1083,161,1089,153,1093,134,1092,117,1084,110,1072,104,1064,95,1052,86,1048,92,1051,99,1043,105,1035,106,1031,112,1026,122,1017,126,1008,126,1010,134,1001,134,1000,123,995,108,992,100,992,92,999,92,1003,83,1005,74,1010,69,1016,67,1021,62,1024,61,1030,55,1034,49,1034,42,1033,37,1034,34,1035,28,1039,25,1042,16,1042,13,1035,12,1026,20,1014,28,1013,33,1007,39,1006,48,1002,53,1003,60,1001,65,997,68,995,73,990,79,985,84,983,78,982,84,983,90,986,99,985,107,988,114,984,120,985,131,981,136,978,148,976,161,972,169,965,164,954,157,948,158,942,160,945,173,943,182,935,194,937,197,931,199,924,207,921,212,920,217,918,222,914,228,905,228,906,224,903,218,898,220,897,219,894,220,890,221,889,217,882,217,870,215,870,207,865,202,851,195,839,183,832,177,822,170,822,166,817,163,808,160,803,159,800,151,802,138,803,130,799,121,799,104,793,103,789,95,792,92,783,89,779,83,775,80,766,89,761,103,757,113,754,118,749,127,746,140,744,146,735,160,731,179,728,192,728,204,726,214,712,208,705,209,692,221,696,225,693,228,682,237,674,239,671,247,664,254,645,252,629,252,615,251,596,254,585,256,574,257,570,270,565,271,557,270,547,265,535,268,525,276,515,279,509,288,501,301,496,300,489,303,486,299,480,300,482,295,481,293,484,286,488,277,493,275,495,271,502,267,502,263,501,259,502,256,505,253,507,250,508,248,507,255,510,260,513,261,516,258,516,252,514,246,516,242,518,243,518,240,526,242,534,242,540,241,547,248,554,254,561,261,564,264,565,263,564,259,563,257,564,249,568,242,574,239,581,237,587,236,592,230,595,227,598,225,598,223,594,217,593,214,589,211,585,204,580,205,578,202,577,197,578,191,577,189,572,189,566,186,565,181,563,179,557,179,553,176,553,172,548,170,542,170,536,167,531,167,524,164,522,159,522,156,512,152,496,147,487,140,482,139,479,140,474,136,467,134,459,133,456,133,454,130,451,130,450,127,445,127,442,126,435,126,432,132,433,138,431,141,429,148,426,152,428,153,427,157,428,159,428,163,426,168,423,171,423,175,418,178,412,187,409,195,402,202,398,203,391,213,390,220,391,226,385,237,380,241,375,243,372,249,372,251,369,256,366,258,362,266,356,274,351,281,346,281,348,286,348,290,350,294,349,295,346,291,344,283,342,278,339,276,336,280,331,284,324,299,323,298,327,287,333,277,341,261,345,256,348,250,357,239,355,238,355,231,367,222,369,220,372,210,370,208,371,198,375,186,379,184,384,180,390,168,393,159,398,154,412,145,417,139,423,133,426,130,431,127,433,124,433,120,427,117,431,115,435,113,437,109,441,104,446,104,456,107,466,108,475,111,480,112,484,114,489,114,493,114,497,116,503,117,507,120,511,120,511,117,510,112,510,106,508,103,506,92,501,81,495,68,486,53,477,42,466,29,456,20,441,11,431,3,420,-9,418,-14,416,-17,409,-21,406,-25,403,-26,401,-33,398,-37,396,-43,392,-47,387,-59,388,-65,394,-68,395,-71,392,-77,393,-80,392,-85,395,-91,399,-101,403,-103,405,-108,404,-118,406,-126,406,-142,408,-147,405,-154,401,-161,395,-167,385,-171,374,-176,363,-187,359,-188,352,-196,348,-198,347,-205,352,-213,354,-218,354,-221,356,-221,355,-231,354,-235,356,-237,355,-241,350,-245,342,-248,330,-254,326,-257,327,-261,329,-262,328,-267,326,-275,325,-283,322,-288,315,-293,313,-294,309,-299,306,-304,301,-311,289,-322,282,-328,275,-332,264,-336,259,-337,258,-339,252,-338,247,-340,236,-338,230,-339,226,-339,215,-343,207,-344,201,-348,196,-348,192,-345,189,-344,184,-340,184,-341,182,-339,183,-333,179,-326,182,-324,182,-317,176,-307,171,-299,163,-286,156,-278,152,-271,150,-261,147,-254,144,-239,144,-227,143,-221,139,-217,134,-209,128,-197,126,-190,118,-181,117,-173,116,-167,118,-158,121,-149,122,-144,125,-135,127,-131,133,-125,136,-120,137,-113,137,-107,134,-104,131,-98,129,-92,129,-90,132,-86,129,-76,127,-69,122,-63,123,-61,122,-58,119,-50,111,-40,101,-30,94,-21,88,-11,88,-8,90,-5,93,3,95,10,93,12,96,23,98,31,94,37,89,39,87,44,85,45,85,48,75,44,71,45,67,42,59,43,54,49,50,56,43,63,36,63,27,63,19,61,11,59,-5,53,-11,50,-20,47,-29,50,-33,50,-40,52,-46,52,-58,50,-65,47,-75,43,-77,44,-80,44,-90,48,-99,56,-108,61,-114,68,-117,69,-124,73,-129,78,-131,82,-132,89,-137,95,-141,99,-143,100,-146,102,-147,107,-148,109,-151,110,-157,115,-161,115,-163,118,-163,120,-166,122,-167,124,-168,132,-167,136,-171,144,-176,147,-172,149,-167,156,-165,161,-165,167,-163,172,-161,181,-163,191,-164,196,-163,201,-165,206,-171,210,-170,214,-170,219,-166,222,-163,227,-163,230,-160,237,-154,244,-151,245,-148,251,-148,256,-144,263,-138,266,-131,276,-126,280,-117,281,-109,288,-104,291,-96,299,-98,312,-94,320,-93,326,-87,332,-77,337,-69,341,-62,351,-59,358,-52,358,-46,353,-36,354,-26,352,-22,352,-12,357,-1,359,5,363,15,366,32,368,48,369,53,367,63,371,73,371,77,369,84,369,95,374,102,372,102,367,110,371,111,369,106,364,106,359,109,357,108,348,101,343,103,338,109,338,111,333,115,331,127,328,131,329,139,327,152,323,157,314,166,312,180,308,191,303,196,305,201,310,198,318,201,322,209,327,215,328,229,326,232,322,236,322,239,320,249,319,252,316,265,316,275,313,285,310,289,309,297,312,301,315,310,316,317,314,320,309,322,313,330,310,338,310,343,312,346,315,345,316,348,321,350,328,351,331,355,339,360,346,359,354,361,358,358,363,362,367,356,366,347,368,340,362,325,361,317,366,306,367,304,363,297,361,287,367,276,367,270,377,263,382,268,390,262,395,273,404,288,405,292,412,311,411,323,417,335,420,352,420,369,413,383,409,395,411,404,410,416,415,417,420,415,426,409,430,403,431,400,434,387,443,375,447,367,452,374,454,382,462,377,466,391,470,391,473,382,471,374,470,368,467,358,466,350,463,350,457,355,454,365,455,363,451,352,449,339,444,333,446,335,450,325,453,326,455,336,459,333,461,317,463,317,467,307,466,304,460,296,453,296,450,291,448,288,449,286,437,280,433,277,426,280,420,281,416,290,413,288,411,276,410,272,407,264,402,260,406,261,408,254,409,249,409,237,407,244,401,239,400,233,400,228,405,226,403,228,397,234,392,230,390,235,385,240,382,240,377,231,379,234,374,228,373,232,364,225,364,217,368,213,376,211,383,207,388,202,393,202,396,200,397,200,399,194,403,193,407,194,414,195,417,194,419,192,420,189,423,185,425,175,429,169,432,160,435,152,442,154,443,149,447,149,451,143,452,140,448,137,451,137,455,139,456,131,457,123,454,124,449,123,446,126,441,135,436,140,428,151,420,159,420,162,417,159,415,168,412,175,409,184,404,185,402,183,398,177,403,169,404,164,398,172,394,171,389,166,388,161,380,157,379,157,382,159,388,161,390,157,395,154,400,150,402,147,406,141,408,136,412,129,413,121,417,112,424,105,429,102,439,97,440,89,444,84,442,79,438,74,437,65,431,46,434,31,431,30,425,30,419,21,412,8,410,7,407,1,401,-3,393,1,387,-5,383,-7,376,-14,374,-21,367,-34,367,-44,367,-50,363,-54,359,-59,360,-62,364,-65,369,-75,371,-79,368,-84,370,-89,369,-87,377,-88,383,-93,384,-95,387,-94,394,-90,398,-90,402,-88,408,-88,412,-90,415,-90,419,-90,426,-94,430,-80,437,-68,436,-54,436,-43,434,-35,435,-19,434,-14,440,-12,460,-22,471,-30,476,-45,480,-46,487,-33,489,-16,486,-19,498,-10,493,13,501,16,509,25,511,33,513,38,516,47,531,61,535,69,535,71,537,79,537,81,535,88,540,86,544,85,550,81,555,81,565,83,568,85,571,94,572,98,574,106,577,105,572,103,569,104,566,109,565,107,561,104,562,97,555,99,550,99,546,110,544,109,540,120,542,125,545,136,541,141,538,148,541,164,545,176,549,186,547,187,544,197,544,199,549,213,552,211,560,211,568,216,574,225,578,233,570,241,570,243,578,244,584,241,583,234,586,233,592,246,595,259,596,269,594,280,595,291,600,281,605,263,604,245,601,229,598,223,604,213,607,215,617,211,626,215,632,224,638,247,649,254,651,253,655,239,660,222,657,212,650,214,644,198,636,178,627,171,613,178,606,188,601,179,590,168,587,164,570,159,561,147,562,141,554,129,554,126,563,118,574,110,589,104,595,84,583,70,581,57,586,53,597,50,620,59,626,86,635,105,645,124,659,148,678,164,686,192,698,214,703,230,702,245,710,264,710,282,712,313,705,300,702,311,696,321,699,338,693,365,691,403,679,411,675,411,668,400,663,384,660,339,668,332,666,348,659,349,644,362,641,370,638,371,643,365,648,372,651,396,645,404,648,398,655,421,665,430,664,439,661,445,668,437,674,442,680,435,686,463,683,468,677,456,676,456,670,463,667,479,669,481,675,502,680,537,689,545,688,535,682,547,681,554,684,573,685,588,689,599,683,611,689,600,695,606,699,635,695,649,692,685,681,692,686,682,691,681,694,669,695,673,699,667,707,667,710,685,719,692,728,699,730,726,728,728,722,718,714,725,711,728,704,726,690,737,684,732,677,713,663,724,662,728,665,739,668,742,673,751,678,745,683,749,690,738,691,736,696,744,706,731,714,749,721,747,728,752,729,757,723,753,713,764,712,759,719,776,723,797,723,815,718,806,726,805,736,823,739,847,738,868,739,860,745,872,751,883,751,903,756,929,758,932,760,959,761,967,759,989,764,1008,764,1010,769,1020,773,1044,777,1061,774,1047,771,1070,770],[-938,775,-943,775,-962,776,-964,778,-944,778,-937,776,-938,775],[-1102,777,-1121,774,-1135,777,-1127,781,-1113,782,-1099,780,-1102,777],[247,779,225,774,207,777,214,779,208,783,229,785,233,781,247,779],[-1097,786,-1109,784,-1125,784,-1125,786,-1115,788,-1110,788,-1097,786],[-958,781,-973,779,-981,781,-986,785,-986,789,-973,788,-968,788,-956,784,-958,781],[-1001,783,-997,779,-1013,780,-1029,783,-1052,784,-1042,787,-1054,789,-1055,793,-1035,792,-1008,788,-1001,783],[1051,783,994,779,1013,792,1021,793,1028,793,1054,787,1051,783],[183,797,215,790,190,786,185,778,176,776,171,768,159,768,138,774,147,777,132,780,112,789,104,797,132,800,137,797,151,797,155,800,170,801,183,797],[254,804,274,801,259,795,230,794,201,796,199,798,185,799,174,803,205,806,219,804,229,807,254,804],[511,805,498,804,489,803,488,802,476,800,465,802,471,806,448,806,468,808,483,808,485,805,491,808,500,809,515,807,511,805],[999,789,978,788,950,790,933,794,925,801,912,803,938,810,959,813,979,807,1002,798,999,789],[-870,797,-858,793,-872,790,-890,783,-908,782,-929,783,-940,788,-939,791,-931,794,-950,794,-961,797,-967,802,-960,806,-953,809,-943,810,-947,812,-924,813,-911,807,-894,805,-878,803,-870,797],[-685,831,-658,830,-637,829,-618,826,-619,824,-643,819,-668,817,-677,815,-655,815,-678,809,-695,806,-712,798,-732,796,-739,794,-769,793,-755,792,-762,790,-754,785,-763,782,-779,779,-784,775,-798,772,-796,770,-779,770,-779,768,-806,762,-832,765,-861,763,-876,764,-895,765,-896,770,-878,772,-883,779,-876,780,-850,775,-863,782,-880,784,-872,788,-854,790,-851,793,-865,797,-869,803,-842,802,-834,801,-818,805,-841,806,-876,805,-894,809,-902,813,-914,816,-916,819,-901,821,-889,821,-870,823,-855,827,-843,826,-832,823,-824,829,-811,830,-793,831,-762,832,-757,831,-728,832,-707,832,-685,831],[-271,835,-208,827,-227,823,-265,823,-319,822,-314,820,-279,821,-248,818,-229,821,-221,817,-232,812,-206,815,-158,819,-128,817,-122,813,-163,806,-168,804,-200,802,-177,801,-189,794,-197,788,-197,776,-185,770,-200,769,-217,766,-198,761,-196,752,-207,752,-194,743,-216,742,-204,738,-208,735,-222,733,-236,733,-223,726,-223,722,-243,726,-248,723,-234,721,-221,715,-218,707,-235,705,-243,709,-255,714,-252,708,-264,702,-237,702,-223,701,-250,693,-277,685,-307,681,-318,681,-328,677,-342,667,-364,660,-370,659,-384,657,-398,655,-407,648,-407,641,-412,635,-428,627,-424,619,-429,611,-434,601,-448,600,-463,609,-483,609,-492,614,-499,624,-516,636,-521,643,-523,652,-537,661,-533,668,-540,672,-530,684,-515,687,-511,691,-509,699,-520,696,-526,694,-535,693,-547,696,-548,703,-544,708,-534,708,-514,706,-531,712,-540,715,-550,714,-558,717,-547,726,-553,730,-561,736,-573,747,-586,751,-586,755,-613,761,-634,762,-661,761,-685,761,-697,764,-714,770,-688,773,-668,774,-710,776,-733,780,-732,784,-694,789,-657,794,-653,798,-680,801,-672,805,-637,812,-622,813,-627,818,-603,820,-572,822,-541,822,-530,819,-504,824,-480,821,-466,820,-445,817,-469,822,-468,826,-434,832,-399,832,-386,835,-351,836,-271,835]];
+</script>
+<script>
+(function(){
+"use strict";
+var SNAPSHOT = "ISS (ZARYA)\n1 25544U 98067A   26323.84989825  .00011830  00000+0  21862-3 0  9993\n2 25544  51.6318 249.7702 0007428  44.2199 315.9382 15.49496274595884";
+/* ===================== CONFIGURATION =====================
+   Edit these to suit your site. See README.md for details. */
+var CONFIG = {
+  // Tried in order until one returns a TLE for NORAD 25544.
+  // Put a same-site copy first (e.g. "data/iss.tle" kept fresh by tools/update-tle.sh)
+  // to spare CelesTrak and keep working if it is unreachable.
+  tleSources: [
+    "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE"
+  ],
+  // A visitor's browser re-downloads the TLE at most this often (CelesTrak updates ISS data a few times a day).
+  refetchAfterHours: 2,
+  // Default location and filters. Any of these can also be set by URL parameters (see README).
+  defaults: {name:"Milton Keynes", lat:52.0406, lon:-0.7594, alt:90, minEl:20, minSecs:60, sunLimit:-6, requireLit:true,
+             maxMag:null, days:10, cutoff:10, extinction:false, tz:"Europe/London", showAll:false}
+};
+/* ========================================================== */
+var CELESTRAK = "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE";
+var DEFAULTS = urlDefaults(CONFIG.defaults);
+function urlDefaults(base){
+  var d = Object.assign({}, base), q;
+  try{ q = new URLSearchParams(location.search); }catch(e){ return d; }
+  function num(k, key, lo, hi){ var v = q.get(k); if (v !== null && v !== "" && !isNaN(+v)) d[key] = Math.min(hi, Math.max(lo, +v)); }
+  function bool(k, key){ var v = q.get(k); if (v !== null) d[key] = !/^(0|false|no|off)$/i.test(v); }
+  if (q.get("name")) d.name = q.get("name").slice(0, 40);
+  num("lat","lat",-90,90); num("lon","lon",-180,180); num("alt","alt",-100,6000);
+  num("minEl","minEl",0,85); num("minSecs","minSecs",0,600); num("sun","sunLimit",-18,90);
+  num("days","days",1,20); num("cutoff","cutoff",0,30);
+  if (q.get("mag") !== null) d.maxMag = q.get("mag") === "" || isNaN(+q.get("mag")) ? null : +q.get("mag");
+  bool("lit","requireLit"); bool("haze","extinction"); bool("all","showAll");
+  var tz = q.get("tz"); if (tz === "UTC" || tz === "device" || tz === "Europe/London") d.tz = tz;
+  return d;
+}
+var SKEY = "iss-passes-settings-v1", TKEY = "iss-passes-tle-v1", RKEY = "iss-passes-tle-attempt-v1";
+var DIRS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+var DIRNAMES = {N:"north",NNE:"north-northeast",NE:"northeast",ENE:"east-northeast",E:"east",ESE:"east-southeast",SE:"southeast",SSE:"south-southeast",S:"south",SSW:"south-southwest",SW:"southwest",WSW:"west-southwest",W:"west",WNW:"west-northwest",NW:"northwest",NNW:"north-northwest"};
+
+var S = load(SKEY) || {};
+S = Object.assign({}, DEFAULTS, S);
+var tle = null, tleSource = "", passes = [], selected = null, timer = null, lastCompute = 0;
+
+function load(k){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+function dir(az){ return DIRS[Math.round(az/22.5)%16]; }
+function minus(n, dp){ var s = Math.abs(n).toFixed(dp==null?1:dp); return (n < 0 && parseFloat(s) !== 0 ? "\u2212" : "") + s; }
+
+/* ---------- time formatting ---------- */
+function tzOpt(){ return S.tz === "device" ? undefined : S.tz; }
+function fmt(t, o){ o = Object.assign({}, o); if (tzOpt()) o.timeZone = tzOpt(); return new Intl.DateTimeFormat("en-GB", o).format(new Date(t)); }
+function hm(t){ return fmt(t,{hour:"2-digit",minute:"2-digit",hour12:false}); }
+function hms(t){ return fmt(t,{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}); }
+function day(t){ return fmt(t,{weekday:"short",day:"numeric",month:"short"}); }
+function longDay(t){ return fmt(t,{weekday:"long",day:"numeric",month:"long"}); }
+function dayKey(t){ return fmt(t,{year:"numeric",month:"2-digit",day:"2-digit"}); }
+function tzName(){ return S.tz === "UTC" ? "UTC" : S.tz === "device" ? "your device’s time" : "UK time"; }
+function relDay(t){
+  var k = dayKey(t), now = Date.now(), am = +fmt(t,{hour:"2-digit",hour12:false}) < 12;
+  if (k === dayKey(now)) return am ? "This morning" : "Tonight";
+  if (k === dayKey(now + 86400000)) return am ? "Tomorrow morning" : "Tomorrow evening";
+  return longDay(t);
+}
+function dur(sec){ sec = Math.round(sec); var m = Math.floor(sec/60), s = sec%60; return m ? (m + " min" + (s ? " " + s + " s" : "")) : (s + " s"); }
+function countdown(ms){
+  var s = Math.round(ms/1000); if (s < 60) return "in " + s + " s";
+  var m = Math.round(s/60); if (m < 60) return "in " + m + " min";
+  var h = Math.floor(m/60), mm = m%60; if (h < 24) return "in " + h + " h " + mm + " min";
+  var d = Math.floor(h/24), hh = h%24; return "in " + d + (d===1?" day ":" days ") + hh + " h";
+}
+function ago(ms){ var h = ms/3600000; if (h < 1) return Math.max(1,Math.round(ms/60000)) + " min old"; if (h < 48) return Math.round(h) + " hours old"; return Math.round(h/24) + " days old"; }
+
+/* ---------- brightness wording ---------- */
+function brightWord(m){
+  if (m == null) return "Not lit";
+  if (m <= -3.5) return "Dazzling";
+  if (m <= -2.5) return "Very bright";
+  if (m <= -1.5) return "Bright";
+  if (m <= 0) return "Easy to see";
+  if (m <= 2) return "Fairly faint";
+  return "Faint";
+}
+function brightCompare(m){
+  if (m == null) return "";
+  if (m <= -3.9) return "As bright as Venus, far brighter than any star.";
+  if (m <= -2.5) return "Brighter than Jupiter and any star.";
+  if (m <= -1.5) return "Brighter than Sirius, the brightest star.";
+  if (m <= 0.5) return "Similar to the brightest stars.";
+  return "Look for a steady moving star; harder to pick out in town.";
+}
+
+/* ---------- sky dome SVG ---------- */
+function xy(az, el, R, c){ var r = R*(90-Math.max(el,0))/90, a = az*Math.PI/180; return [c - r*Math.sin(a), c - r*Math.cos(a)]; }
+function pathFrom(pts){ return pts.map(function(p,i){ return (i?"L":"M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(""); }
+function glyph(kind, x, y, s){
+  s = s || 6;
+  if (kind === "appear") return '<circle class="mk-open" cx="'+x+'" cy="'+y+'" r="'+s+'"/>';
+  if (kind === "high") return '<circle class="mk-fill" cx="'+x+'" cy="'+y+'" r="'+s+'"/>';
+  return '<path class="mk-x" d="M'+(x-s)+' '+(y-s)+'L'+(x+s)+' '+(y+s)+'M'+(x+s)+' '+(y-s)+'L'+(x-s)+' '+(y+s)+'"/>';
+}
+function iconSvg(kind){ return '<svg viewBox="0 0 16 16" aria-hidden="true">' + glyph(kind, 8, 8, 5.2) + '</svg>'; }
+
+function domeSvg(p, big, nowPt){
+  var size = big ? 400 : 60, c = size/2, R = big ? 168 : 27, out = [];
+  out.push('<svg viewBox="0 0 '+size+' '+size+'" role="img" aria-label="Sky track: '+esc(trackText(p))+'">');
+  out.push('<circle class="sky-bg" cx="'+c+'" cy="'+c+'" r="'+R+'"/>');
+  if (big){
+    [30,60].forEach(function(e){ out.push('<circle class="sky-ring" cx="'+c+'" cy="'+c+'" r="'+(R*(90-e)/90)+'"/>'); });
+    out.push('<path class="sky-ring" d="M'+(c-R)+' '+c+'H'+(c+R)+'M'+c+' '+(c-R)+'V'+(c+R)+'"/>');
+    if (S.minEl > 0 && S.minEl < 90) out.push('<circle class="sky-min" cx="'+c+'" cy="'+c+'" r="'+(R*(90-S.minEl)/90)+'"/>');
+    out.push('<text class="sky-lab" x="'+(c+4)+'" y="'+(c-R*60/90+12)+'">30°</text><text class="sky-lab" x="'+(c+4)+'" y="'+(c-R*30/90+12)+'">60°</text>');
+    var cd = R + 16;
+    out.push('<text class="sky-card" x="'+c+'" y="'+(c-cd+4)+'" text-anchor="middle">N</text>');
+    out.push('<text class="sky-card" x="'+c+'" y="'+(c+cd+5)+'" text-anchor="middle">S</text>');
+    out.push('<text class="sky-card" x="'+(c-cd)+'" y="'+(c+5)+'" text-anchor="middle">E</text>');
+    out.push('<text class="sky-card" x="'+(c+cd)+'" y="'+(c+5)+'" text-anchor="middle">W</text>');
+  } else if (S.minEl > 0 && S.minEl < 90){
+    out.push('<circle class="sky-ring" cx="'+c+'" cy="'+c+'" r="'+(R*(90-S.minEl)/90)+'"/>');
+  }
+  // split track into seen / unseen runs, sampling every 10 s
+  var runs = [], cur = null, step = big ? 3 : 5;
+  for (var i = 0; i < p.pts.length; i++){
+    if (i % step && i !== p.pts.length-1) continue;
+    var q = p.pts[i], v = q.vis && q.el >= S.cutoff;
+    if (!cur || cur.v !== v){ var last = cur && cur.pts[cur.pts.length-1]; cur = {v:v, pts: last ? [last] : []}; runs.push(cur); }
+    cur.pts.push(xy(q.az, q.el, R, c));
+  }
+  runs.filter(function(r){return !r.v;}).forEach(function(r){ out.push('<path class="trk-dark" d="'+pathFrom(r.pts)+'"'+(big?'':' style="stroke-width:1.2;stroke-dasharray:1 3"')+'/>'); });
+  runs.filter(function(r){return r.v;}).forEach(function(r){ out.push('<path class="trk-vis" d="'+pathFrom(r.pts)+'"'+(big?'':' style="stroke-width:2.6"')+'/>'); });
+  if (p.visible){
+    if (big){
+      // minute ticks along the visible run; skip labels that would collide
+      var placed = [p.appear, p.disappear, p.high].map(function(q){ return xy(q.az,q.el,R,c); });
+      var first = Math.ceil(p.appear.t/60000)*60000;
+      for (var t = first; t < p.disappear.t; t += 60000){
+        var idx = Math.round((t - p.pts[0].t)/2000), q2 = p.pts[idx];
+        if (!q2 || Math.abs(t - p.appear.t) < 25000 || Math.abs(t - p.disappear.t) < 25000) continue;
+        var pt = xy(q2.az, q2.el, R, c);
+        out.push('<circle class="tick" cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="2.4"/>');
+        var dx = pt[0] - c, dy = pt[1] - c, dl = Math.hypot(dx,dy) || 1, off = 14;
+        var lx = pt[0]+dx/dl*off, ly = pt[1]+dy/dl*off;
+        if (placed.some(function(o){ return Math.abs(o[0]-lx) < 26 && Math.abs(o[1]-ly) < 13; })) continue;
+        placed.push([lx, ly]);
+        out.push('<text class="tick-lab" x="'+(pt[0]+dx/dl*off).toFixed(1)+'" y="'+(pt[1]+dy/dl*off+3.5).toFixed(1)+'" text-anchor="middle">'+hm(t)+'</text>');
+      }
+    }
+    var gs = big ? 6.5 : 3.2, a = xy(p.appear.az,p.appear.el,R,c), h = xy(p.high.az,p.high.el,R,c), d = xy(p.disappear.az,p.disappear.el,R,c);
+    out.push(glyph("dis", d[0], d[1], big ? 6 : 3));
+    if (p.high.t !== p.disappear.t) out.push(glyph("high", h[0], h[1], gs));
+    out.push(glyph("appear", a[0], a[1], gs));
+  }
+  if (nowPt && nowPt.el >= 0){
+    var np = xy(nowPt.az, nowPt.el, R, c), lr = big ? 7 : 3.5;
+    out.push('<circle class="live-halo" cx="'+np[0]+'" cy="'+np[1]+'" r="'+lr+'"/><circle class="live" cx="'+np[0]+'" cy="'+np[1]+'" r="'+lr+'"/>');
+  }
+  out.push('</svg>');
+  return out.join("");
+}
+function trackText(p){
+  if (!p.visible) return "not visible";
+  return "appears " + dir(p.appear.az) + ", highest " + Math.round(p.high.el) + " degrees " + dir(p.high.az) + ", disappears " + dir(p.disappear.az);
+}
+
+/* ---------- compute ---------- */
+function settingsForEngine(){
+  return {lat:+S.lat, lon:+S.lon, alt:+S.alt||0, days:Math.min(20,Math.max(1,+S.days||10)), minEl:+S.minEl||0, minSecs:+S.minSecs||0,
+          sunLimit:+S.sunLimit, requireLit:!!S.requireLit, cutoff:Math.max(0,+S.cutoff||0), extinction:!!S.extinction,
+          maxMag: (S.maxMag === null || S.maxMag === "" || isNaN(+S.maxMag)) ? null : +S.maxMag};
+}
+function compute(){
+  if (!tle) return;
+  var es = settingsForEngine();
+  passes = PassEngine.predict(tle, es, new Date()).filter(function(p){ return p.visible; });
+  lastCompute = Date.now();
+  var now = Date.now();
+  if (!selected || !passes.some(function(p){ return p.aos === selected; })) selected = null;
+  if (selected === null){
+    var nxt = passes.find(function(p){ return p.meets && p.disappear.t > now; });
+    selected = nxt ? nxt.aos : null;
+  }
+  render();
+}
+
+/* ---------- render ---------- */
+function render(){
+  $("placeName").textContent = S.name || "your location";
+  $("tzLabel").textContent = "(times in " + tzName() + ")";
+  document.title = "ISS passes over " + (S.name || "your location");
+  renderHero(); renderList(); renderFilterSummary();
+}
+function nowPoint(p){
+  var t = Date.now(); if (!p || t < p.aos || t > p.los) return null;
+  return PassEngine.sample(tle.satrec, PassEngine.makeObserver(+S.lat,+S.lon,+S.alt||0), new Date(t));
+}
+function renderHero(){
+  var hero = $("hero"), p = passes.find(function(x){ return x.aos === selected; });
+  if (!p){
+    var any = passes.length;
+    hero.innerHTML = '<div class="empty"><h2>No passes match in the next ' + settingsForEngine().days + ' days</h2><p>' +
+      (any ? "There are " + any + " visible passes, but none rise above " + S.minEl + "° for " + dur(S.minSecs) + " with your current filters. Lowering the elevation or brightness limit will bring some back." :
+             "The ISS isn’t visible from here at night in this period. This happens for a few weeks at a time as its orbit and the seasons shift; try more days ahead.") +
+      '</p>' + (any ? '<button type="button" class="btn primary" id="showMissBtn">Show all visible passes</button>' : '') + '</div>';
+    var b = $("showMissBtn"); if (b) b.onclick = function(){ S.showAll = true; $("showAll").checked = true; save(SKEY,S); renderList(); };
+    update3d(null);
+    return;
+  }
+  update3d(p);
+  var now = Date.now(), live = now >= p.aos && now <= p.los;
+  var when = live ? '<span class="count">Passing now</span>' :
+             (p.appear.t > now ? relDay(p.appear.t) + ', <span class="count">' + countdown(p.appear.t - now) + '</span>' : relDay(p.appear.t) + ', <span class="count">already passed</span>');
+  var hiDiffers = p.high.t !== p.disappear.t;
+  var disWord = p.shadowEntry ? "Fades into Earth’s shadow" : "Sinks below " + Math.round(settingsForEngine().cutoff) + "°";
+  var steps = [
+    ["appear", p.appear.t, (p.shadowExit ? "Comes out of shadow" : "Appears") + ' in the <b>' + DIRNAMES[dir(p.appear.az)] + '</b>, ' + Math.round(p.appear.el) + '° up'],
+  ];
+  if (hiDiffers) steps.push(["high", p.high.t, 'Highest at <b>' + Math.round(p.high.el) + '°</b> in the ' + DIRNAMES[dir(p.high.az)]]);
+  steps.push(["dis", p.disappear.t, (hiDiffers ? disWord : disWord + " at its highest point") + ' in the <b>' + DIRNAMES[dir(p.disappear.az)] + '</b>' + (p.shadowEntry ? ', ' + Math.round(p.disappear.el) + '° up' : '')]);
+  var t0 = hms(p.appear.t);
+  hero.innerHTML =
+    '<div class="dome-big">' + domeSvg(p, true, nowPoint(p)) + '<p class="dome-caption">Lie back with your head to the north</p></div>' +
+    '<div class="info">' +
+      '<p class="when">' + when + '</p>' +
+      '<p class="bigtime" aria-label="Appears at ' + t0 + '">' + t0.slice(0,5) + '<span class="secs">:' + t0.slice(6) + '</span></p>' +
+      '<ul class="story">' + steps.map(function(s){ return '<li>' + iconSvg(s[0]) + '<span class="t">' + hms(s[1]) + '</span><span class="d">' + s[2] + '</span></li>'; }).join("") + '</ul>' +
+      '<div class="bright"><div class="mag">' + (p.peak ? minus(p.peak.mag) : "?") + '</div><div><div class="lab">' + brightWord(p.peak && p.peak.mag) + ', visible for ' + dur(p.visSecs) + '</div><div class="cmp">' + brightCompare(p.peak && p.peak.mag) + '</div></div></div>' +
+    '</div>';
+}
+function missReason(p, es){
+  if (p.high.el < es.minEl) return "Only reaches " + Math.round(p.high.el) + "°";
+  if (p.aboveSecs < es.minSecs) return "Above " + es.minEl + "° for " + dur(p.aboveSecs);
+  if (es.maxMag != null && p.peak && p.peak.mag > es.maxMag) return "Fainter than your limit";
+  return "";
+}
+function renderList(){
+  var es = settingsForEngine(), now = Date.now();
+  var future = passes.filter(function(p){ return p.disappear.t > now - 60000; });
+  var good = future.filter(function(p){ return p.meets; });
+  var shown = S.showAll ? future : good;
+  $("listSummary").textContent = good.length + " of " + future.length + " visible passes in the next " + es.days + " days meet your filters" + (S.showAll ? "; the rest are faded." : ".");
+  var body = $("passBody");
+  if (!shown.length){ body.innerHTML = '<tr><td colspan="7" style="padding:1.25rem .6rem;color:var(--muted)">Nothing to list with these filters.</td></tr>'; return; }
+  var maxPip = 54;
+  body.innerHTML = shown.map(function(p){
+    var m = p.peak ? p.peak.mag : null, pip = m == null ? 0 : Math.max(6, Math.min(maxPip, (2 - m) / 6 * maxPip));
+    var r = p.meets ? "" : missReason(p, es);
+    var hiSame = p.high.t === p.disappear.t;
+    return '<tr tabindex="0" data-id="' + p.aos + '" class="' + (p.meets ? "" : "miss") + '" aria-selected="' + (p.aos === selected) + '">' +
+      '<td class="c-dome">' + domeSvg(p, false, null) + '</td>' +
+      '<td class="c-date"><span class="date">' + day(p.appear.t) + '</span>' + (r ? '<span class="sub reason">' + r + '</span>' : '<span class="sub vis">' + dur(p.visSecs) + ' visible</span>') + '</td>' +
+      '<td class="c-app" data-label="Appears">' + hm(p.appear.t) + ' <span class="sub">' + dir(p.appear.az) + ', ' + Math.round(p.appear.el) + '°</span></td>' +
+      '<td class="c-high" data-label="Highest">' + hm(p.high.t) + ' <span class="sub"><span class="el">' + Math.round(p.high.el) + '°</span> ' + dir(p.high.az) + '</span></td>' +
+      '<td class="c-dis" data-label="Disappears">' + hm(p.disappear.t) + ' <span class="sub">' + dir(p.disappear.az) + ', ' + Math.round(p.disappear.el) + '°' + (p.shadowEntry && !hiSame ? ', shadow' : '') + '</span></td>' +
+      '<td class="c-dur">' + dur(p.visSecs) + '</td>' +
+      '<td class="c-mag"><div class="magcell"><span class="m">' + (m == null ? "?" : minus(m)) + '</span><span class="pip" style="width:' + pip.toFixed(0) + 'px"></span></div><span class="sub">' + brightWord(m) + '</span></td>' +
+    '</tr>';
+  }).join("");
+}
+function renderFilterSummary(){
+  var es = settingsForEngine(), sky = {"-0.833":"after sunset","-6":"after civil twilight","-12":"after nautical twilight","-18":"fully dark","90":"day or night"}[String(S.sunLimit)] || "";
+  $("filterSummary").textContent = "Above " + es.minEl + "° for " + dur(es.minSecs) + ", " + sky + (es.requireLit ? ", sunlit" : "") + (es.maxMag != null ? ", magnitude " + minus(es.maxMag,0) + " or brighter" : "");
+}
+
+/* ---------- interaction ---------- */
+$("passBody").addEventListener("click", function(e){ var tr = e.target.closest("tr[data-id]"); if (tr) pick(+tr.dataset.id); });
+$("passBody").addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ var tr = e.target.closest("tr[data-id]"); if (tr){ e.preventDefault(); pick(+tr.dataset.id); } } });
+function pick(id){
+  selected = id; renderHero(); renderList();
+  var h = $("hero"), r = h.getBoundingClientRect();
+  if (r.top < 0 || r.top > window.innerHeight * .5) h.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+}
+
+var fields = ["minEl","minSecs","maxMag","sunLimit","cutoff","days","locName","lat","lon","alt","tz"];
+var checks = ["requireLit","extinction","showAll"];
+function fillForm(){
+  fields.forEach(function(f){ var k = f === "locName" ? "name" : f; $(f).value = S[k] === null ? "" : S[k]; });
+  checks.forEach(function(f){ $(f).checked = !!S[f]; });
+}
+var deb = null;
+function readForm(){
+  fields.forEach(function(f){ var k = f === "locName" ? "name" : f, v = $(f).value;
+    if (k === "name" || k === "tz") S[k] = v;
+    else if (k === "maxMag") S[k] = v === "" ? null : +v;
+    else if (v !== "" && !isNaN(+v)) S[k] = +v; });
+  checks.forEach(function(f){ S[f] = $(f).checked; });
+  save(SKEY, S);
+}
+$("settingsForm").addEventListener("input", function(e){
+  if (fields.indexOf(e.target.id) < 0 && checks.indexOf(e.target.id) < 0) return;
+  readForm();
+  if ((e.target.id === "lat" || e.target.id === "lon") && locMap) locMap.set(+S.lat, +S.lon);
+  if (e.target.id === "showAll" || e.target.id === "tz" || e.target.id === "locName"){ render(); return; }
+  clearTimeout(deb); deb = setTimeout(function(){ selected = null; compute(); }, 250);
+});
+$("settingsForm").addEventListener("change", function(e){ if (fields.indexOf(e.target.id) >= 0 || checks.indexOf(e.target.id) >= 0) readForm(); });
+$("resetBtn").onclick = function(){ S = Object.assign({}, DEFAULTS); save(SKEY,S); fillForm(); selected = null; compute(); $("geoNote").textContent = ""; if (locMap) locMap.set(+S.lat, +S.lon, 11); };
+$("geoBtn").onclick = function(){
+  var note = $("geoNote");
+  if (!navigator.geolocation){ note.textContent = "This browser can’t share its location. Type your latitude and longitude instead."; return; }
+  note.textContent = "Finding you…";
+  navigator.geolocation.getCurrentPosition(function(pos){
+    S.lat = +pos.coords.latitude.toFixed(4); S.lon = +pos.coords.longitude.toFixed(4);
+    if (pos.coords.altitude != null) S.alt = Math.round(pos.coords.altitude);
+    S.name = "My location"; save(SKEY,S); fillForm(); selected = null; compute();
+    if (locMap) locMap.set(S.lat, S.lon, 12);
+    note.textContent = "Using " + S.lat + "°, " + S.lon + "°.";
+  }, function(err){
+    note.textContent = err && err.code === 1 ? "Location access was blocked. Type your latitude and longitude instead." : "Couldn’t get your location. Type your latitude and longitude instead.";
+  }, {timeout:10000, maximumAge:600000});
+};
+
+/* ---------- orbit data ---------- */
+function useTle(text, source, opts){
+  var t = PassEngine.parseTle(text);
+  if (t.norad !== 25544 && !(opts && opts.allowOther)) throw new Error("That TLE is for NORAD " + t.norad + ", not the ISS (25544).");
+  if (tle && opts && opts.onlyIfNewer && t.epoch < tle.epoch){ renderTle(); return false; }
+  tle = t; tleSource = source;
+  if (opts && opts.provider) save(TKEY, {text: t.name + "\n" + t.line1 + "\n" + t.line2, provider: opts.provider, fetched: Date.now()});
+  $("tleInput").value = t.name + "\n" + t.line1 + "\n" + t.line2;
+  renderTle(); compute(); return true;
+}
+var tleMsg = "";
+function renderTle(extra){
+  if (extra !== undefined) tleMsg = extra;
+  if (!tle){ $("tleStatus").textContent = "No orbit data yet."; return; }
+  var age = Date.now() - tle.epoch.getTime();
+  var html = "Predicting from <strong>" + esc(tleSource) + "</strong>. The element set’s epoch is " + esc(day(tle.epoch) + " at " + hm(tle.epoch)) + " (" + ago(age) + ").";
+  if (age > 7 * 86400000) html += ' <span class="warn">That’s more than a week old, so times may be out by a minute or more.</span>';
+  if (tleMsg) html += " " + tleMsg;
+  $("tleStatus").innerHTML = html;
+}
+function fetchOne(url){
+  var ctl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var to = setTimeout(function(){ if (ctl) ctl.abort(); }, 8000);
+  return fetch(url, {cache:"no-cache", signal: ctl ? ctl.signal : undefined}).then(function(r){
+    clearTimeout(to); if (!r.ok) throw new Error(url + " replied " + r.status); return r.text();
+  }).then(function(txt){ if (!/^1 25544/m.test(txt)) throw new Error(url + " sent no ISS TLE"); return txt; });
+}
+function sourceName(url){ return /celestrak\.org/.test(url) ? "CelesTrak" : "this website"; }
+function fetchLatest(){
+  var list = CONFIG.tleSources.slice(), i = 0;
+  function next(){
+    if (i >= list.length) return Promise.reject(new Error("no source"));
+    var url = list[i++];
+    return fetchOne(url).then(function(txt){ return {txt: txt, name: sourceName(url)}; }, next);
+  }
+  return next();
+}
+var refreshing = false;
+function refreshTle(manual){
+  if (refreshing) return;
+  var now = Date.now(), lastAttempt = +load(RKEY) || 0;
+  if (!manual && lastAttempt && now - lastAttempt >= 0 && now - lastAttempt < CONFIG.refetchAfterHours * 3600000) return;
+  save(RKEY, now);
+  var c = load(TKEY);
+  if (!manual && c && c.provider && now - c.fetched < CONFIG.refetchAfterHours * 3600000 && tleSource.indexOf("a saved") === 0) return;
+  refreshing = true;
+  var btn = $("refreshBtn"); btn.disabled = true; btn.textContent = "Checking…";
+  function done(msg){ refreshing = false; btn.disabled = false; btn.textContent = "Check for newer orbit data"; renderTle(msg); }
+  fetchLatest().then(function(r){
+    useTle(r.txt, "the latest TLE from " + r.name, {onlyIfNewer: !manual, provider: r.name});
+    done(manual ? "Checked just now." : "");
+  }).catch(function(){
+    done("The latest orbit couldn’t be downloaded just now. To update it by hand, open the <a href=\"" + CELESTRAK + "\" target=\"_blank\" rel=\"noopener\">CelesTrak ISS TLE</a> and paste it below.");
+  });
+}
+$("refreshBtn").onclick = function(){ refreshTle(true); };
+$("tleUse").onclick = function(){
+  try{ useTle($("tleInput").value, "your pasted TLE"); $("tleNote").textContent = "Predicting from your TLE."; }
+  catch(e){ $("tleNote").textContent = e.message; }
+};
+
+/* ---------- live clock ---------- */
+function tick(){
+  var now = Date.now();
+  if (!tle) return;
+  var p = passes.find(function(x){ return x.aos === selected; });
+  if (p){
+    if (now >= p.aos - 2000 && now <= p.los + 2000) renderHero();
+    else { var c = document.querySelector("#hero .count"); if (c && p.appear.t > now) c.textContent = countdown(p.appear.t - now); }
+    if (now > p.los + 60000){ selected = null; compute(); return; }
+  }
+  if (now - lastCompute > 30 * 60000) compute();
+  var sp = PassEngine.subpoint(tle.satrec, new Date(now));
+  if (sp){
+    var look = PassEngine.sample(tle.satrec, PassEngine.makeObserver(+S.lat,+S.lon,+S.alt||0), new Date(now));
+    $("nowLine").textContent = "Right now the ISS is " + Math.round(sp.h) + " km up over " + Math.abs(sp.lat).toFixed(1) + "°" + (sp.lat >= 0 ? "N" : "S") + " " + Math.abs(sp.lon).toFixed(1) + "°" + (sp.lon >= 0 ? "E" : "W") +
+      (look && look.el >= 0 ? ", " + Math.round(look.el) + "° above your " + DIRNAMES[dir(look.az)] + " horizon." : ", below your horizon.");
+  }
+}
+
+/* ---------- 3D view ---------- */
+var sky3d = null, last3d = "";
+function update3d(p){
+  var box = $("s3");
+  if (!p || !tle){ box.hidden = true; return; }
+  box.hidden = false;
+  if (!sky3d){
+    if (typeof THREE === "undefined" || typeof Sky3D === "undefined") { box.hidden = true; return; }
+    Sky3D.setLand(LAND_RINGS);
+    sky3d = Sky3D.create(box, {
+      cutoff: function(){ return settingsForEngine().cutoff; },
+      extinction: function(){ return !!S.extinction; },
+      time: function(t){ return hms(t); },
+      dirName: function(az){ return DIRNAMES[dir(az)]; },
+      mag: function(m){ return minus(m) + " (" + brightWord(m).toLowerCase() + ")"; }
+    });
+  }
+  if (!sky3d.ok) return;
+  var key = [p.aos, tle.line1, S.lat, S.lon, S.alt, S.cutoff, S.extinction, S.tz].join("|");
+  if (key === last3d) return;
+  last3d = key;
+  sky3d.setObserver(+S.lat, +S.lon, +S.alt || 0);
+  sky3d.setPass(p, tle);
+}
+
+/* ---------- location picker ---------- */
+var locMap = null;
+function openLocation(focusSearch){
+  var d = $("filters"); d.open = true; initMap();
+  $("locFieldset").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+  if (focusSearch) setTimeout(function(){ $("placeSearch").focus({preventScroll:true}); }, 350);
+}
+function initMap(){
+  if (locMap){ locMap.refresh(); return; }
+  if (typeof L === "undefined" || typeof LocationMap === "undefined"){ showMapMsg("The map couldn’t load. You can still type a latitude and longitude."); return; }
+  locMap = LocationMap.create($("map"), {lat:+S.lat, lon:+S.lon, onPick: chooseSpot,
+    onTilesFailed: function(){ showMapMsg("Map tiles couldn’t load here. Place search and typed coordinates still work."); }});
+  setTimeout(function(){ locMap.refresh(); }, 50);
+}
+function showMapMsg(m){ var e = $("mapMsg"); e.textContent = m; e.hidden = false; }
+var pickSeq = 0;
+function setPlace(lat, lon, name){
+  S.lat = lat; S.lon = lon; S.name = name; save(SKEY, S); fillForm(); selected = null; compute();
+}
+function chooseSpot(lat, lon){
+  var seq = ++pickSeq;
+  setPlace(lat, lon, "Chosen spot");
+  LocationMap.reverse(lat, lon).then(function(name){
+    if (seq !== pickSeq || !name) return;
+    S.name = name.slice(0, 40); save(SKEY, S); fillForm(); render();
+  }).catch(function(){});
+}
+function runSearch(){
+  var q = $("placeSearch").value.trim(), list = $("searchResults");
+  if (!q) return;
+  list.hidden = false; list.innerHTML = '<li class="note">Searching…</li>';
+  LocationMap.search(q).then(function(rs){
+    if (!rs.length){ list.innerHTML = '<li class="note">No places found. Try a town name or postcode.</li>'; return; }
+    list.innerHTML = rs.map(function(r, i){ return '<li><button type="button" data-i="' + i + '"><span class="rn">' + esc(r.name) + '</span><span class="rl">' + esc(r.label) + '</span></button></li>'; }).join("");
+    list.querySelectorAll("button").forEach(function(b){ b.onclick = function(){
+      var r = rs[+b.dataset.i]; list.hidden = true; list.innerHTML = "";
+      pickSeq++; setPlace(+r.lat.toFixed(4), +r.lon.toFixed(4), r.name.slice(0, 40));
+      if (locMap) locMap.set(S.lat, S.lon, 12);
+    }; });
+  }).catch(function(){
+    list.innerHTML = '<li class="note">Place search couldn’t be reached from here. Click the map or type coordinates instead.</li>';
+  });
+}
+$("searchBtn").onclick = runSearch;
+$("placeSearch").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); runSearch(); } });
+$("changeLoc").onclick = function(){ openLocation(true); };
+$("filters").addEventListener("toggle", function(){ if ($("filters").open) initMap(); });
+
+/* ---------- start ---------- */
+fillForm();
+var cached = load(TKEY);
+try{
+  if (cached && cached.text){
+    var snap = PassEngine.parseTle(SNAPSHOT), mine = PassEngine.parseTle(cached.text);
+    if (mine.epoch >= snap.epoch && cached.provider) useTle(cached.text, "a saved TLE from " + cached.provider + ", fetched " + day(cached.fetched) + " at " + hm(cached.fetched));
+    else useTle(SNAPSHOT, "the built-in TLE");
+  } else useTle(SNAPSHOT, "the built-in TLE");
+}catch(e){ useTle(SNAPSHOT, "the built-in TLE"); }
+refreshTle(false);
+setInterval(tick, 1000); tick();
+})();
+</script>
+</body>
+</html>

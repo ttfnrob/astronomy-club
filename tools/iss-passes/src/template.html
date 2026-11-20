@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISS passes over Milton Keynes</title>
+<style>
+:root{
+  --bg:#EDF1F7; --surface:#FFFFFF; --ink:#141C33; --muted:#566079; --rule:#CDD5E3;
+  --sun:#B86C00; --sun-line:#D98A12; --sun-soft:#FBEBCF; --shade:#98A2BB;
+  --dome:#DEE6F2; --dome-edge:#AEBAD2; --ring:#C3CDDF; --focus:#2B59C3;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1631; --surface:#152043; --ink:#E8EDF8; --muted:#9AA6C6; --rule:#2B3862;
+    --sun:#F3B847; --sun-line:#F3B847; --sun-soft:#3B3422; --shade:#5A6690;
+    --dome:#0A1128; --dome-edge:#34427A; --ring:#25315C; --focus:#8FB0FF;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1631; --surface:#152043; --ink:#E8EDF8; --muted:#9AA6C6; --rule:#2B3862;
+  --sun:#F3B847; --sun-line:#F3B847; --sun-soft:#3B3422; --shade:#5A6690;
+  --dome:#0A1128; --dome-edge:#34427A; --ring:#25315C; --focus:#8FB0FF;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; font-size:1rem; line-height:1.5;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1100px; margin:0 auto; padding:0 1.25rem}
+a{color:inherit}
+button,input,select,textarea{font:inherit; color:inherit}
+:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+
+/* Masthead */
+.mast{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.25rem 1.5rem; padding:1.5rem 0 1rem}
+.mast h1{margin:0; font-size:1.25rem; font-weight:700; font-stretch:115%; letter-spacing:-.005em}
+.mast .where{color:var(--muted); font-size:.9375rem}
+.mast .where strong{color:var(--ink); font-weight:600}
+
+/* Hero */
+.hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:2.5rem; align-items:center; padding:1rem 0 2.5rem; border-bottom:1px solid var(--rule)}
+.dome-big{width:100%; max-width:440px; justify-self:center}
+.dome-big svg{display:block; width:100%; height:auto}
+.dome-caption{margin:.5rem 0 0; text-align:center; color:var(--muted); font-size:.8125rem}
+.when{margin:0; color:var(--muted); font-size:1rem; font-weight:500}
+.when .count{color:var(--ink); font-weight:650}
+.bigtime{margin:.1rem 0 .4rem; font-size:clamp(3.75rem, 13vw, 6.75rem); line-height:.95; font-weight:800; font-stretch:125%; letter-spacing:-.025em}
+.bigtime .secs{font-size:.32em; font-weight:600; letter-spacing:0; color:var(--muted); vertical-align:.18em; margin-left:.12em}
+.story{margin:1.25rem 0 0; padding:0; list-style:none; display:grid; gap:.65rem}
+.story li{display:grid; grid-template-columns:1.5rem 4.25rem 1fr; gap:.6rem; align-items:baseline}
+.story svg{width:1rem; height:1rem; align-self:center}
+.story .t{font-weight:650}
+.story .d{color:var(--muted)}
+.story .d b{color:var(--ink); font-weight:600}
+.bright{display:flex; align-items:center; gap:1rem; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--rule)}
+.bright .mag{font-size:2.25rem; font-weight:750; font-stretch:110%; line-height:1}
+.bright .lab{font-weight:600}
+.bright .cmp{color:var(--muted); font-size:.875rem}
+.empty{grid-column:1/-1; padding:2rem 0}
+.empty h2{margin:0 0 .5rem; font-size:1.5rem; font-stretch:110%}
+.empty p{margin:0 0 1rem; color:var(--muted); max-width:60ch}
+
+/* Buttons */
+.btn{appearance:none; border:1px solid var(--rule); background:var(--surface); border-radius:999px; padding:.5rem 1rem; font-weight:600; font-size:.9375rem; cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.linkbtn{appearance:none; background:none; border:0; padding:0; color:var(--ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer; font-weight:600}
+
+/* Summary + filters */
+.listhead{display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.75rem 1.5rem; padding:2rem 0 1rem}
+.listhead h2{margin:0; font-size:1.375rem; font-weight:700; font-stretch:112%}
+.listhead p{margin:.15rem 0 0; color:var(--muted); font-size:.9375rem}
+details.filters{background:var(--surface); border:1px solid var(--rule); border-radius:14px; margin:0 0 1.5rem}
+details.filters>summary{cursor:pointer; padding:.9rem 1.1rem; font-weight:650; list-style:none; display:flex; justify-content:space-between; gap:1rem}
+details.filters>summary::-webkit-details-marker{display:none}
+details.filters>summary .sum{color:var(--muted); font-weight:400; font-size:.875rem; text-align:right}
+details.filters[open]>summary{border-bottom:1px solid var(--rule)}
+.fgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(15rem,1fr)); gap:1.25rem 1.75rem; padding:1.25rem 1.1rem 1.4rem}
+fieldset{border:0; margin:0; padding:0; min-width:0}
+legend{font-weight:650; padding:0; margin-bottom:.6rem}
+.field{display:grid; gap:.25rem; margin-bottom:.75rem}
+.field label,.check{font-size:.875rem; color:var(--muted)}
+.field input,.field select{width:100%; min-width:0; padding:.5rem .65rem; border:1px solid var(--rule); border-radius:8px; background:var(--bg)}
+.row2{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:.6rem}
+.field{min-width:0; grid-template-columns:minmax(0,1fr)}
+.check{display:flex; gap:.55rem; align-items:flex-start; margin-bottom:.6rem; color:var(--ink)}
+.check input{margin-top:.25rem; accent-color:var(--sun)}
+.factions{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.25rem}
+.note{font-size:.8125rem; color:var(--muted); margin:.35rem 0 0}
+
+/* Pass table */
+.tablewrap{overflow-x:auto}
+table.passes{width:100%; border-collapse:collapse; font-stretch:88%}
+.passes th{font-size:.8125rem; font-weight:600; color:var(--muted); text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--rule); white-space:nowrap}
+.passes td{padding:.55rem .6rem; border-bottom:1px solid var(--rule); vertical-align:middle; white-space:nowrap}
+.passes tbody tr{cursor:pointer}
+.passes tbody tr:hover td{background:color-mix(in srgb, var(--surface) 70%, transparent)}
+.passes tbody tr[aria-selected="true"] td{background:var(--surface)}
+.passes tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 3px 0 0 var(--sun-line)}
+.passes tr.miss{opacity:.55}
+.passes .c-dome svg{width:52px; height:52px; display:block}
+.passes .date{font-weight:650}
+.passes .sub{display:block; color:var(--muted); font-size:.8125rem}
+.passes .el{font-weight:650}
+.magcell{display:flex; align-items:center; gap:.5rem}
+.magcell .m{font-weight:700; min-width:2.6em}
+.pip{display:inline-block; height:6px; border-radius:3px; background:var(--sun-line)}
+.reason{font-size:.8125rem; color:var(--muted)}
+@media (min-width: 761px){ .passes .c-date .vis{display:none} }
+
+@media (max-width: 760px){
+  .hero{grid-template-columns:1fr; gap:1.25rem; padding-top:.25rem}
+  .dome-big{max-width:340px}
+  .passes thead{display:none}
+  table.passes, .passes tbody{display:block}
+  .passes tbody tr{display:grid; grid-template-columns:60px 1fr 1fr 1fr; grid-template-areas:"dome date date mag" "dome app high dis"; column-gap:.75rem; row-gap:.35rem; padding:.85rem .25rem; border-bottom:1px solid var(--rule)}
+  .passes td{display:block; border:0; padding:0; white-space:normal}
+  .passes .c-dome{grid-area:dome; align-self:start}
+  .passes .c-date{grid-area:date}
+  .passes .c-mag{grid-area:mag; justify-self:end}
+  .passes .c-app{grid-area:app}
+  .passes .c-high{grid-area:high}
+  .passes .c-dis{grid-area:dis}
+  .passes .c-dur{display:none}
+  .passes .c-app::before,.passes .c-high::before,.passes .c-dis::before{content:attr(data-label); display:block; font-size:.75rem; color:var(--muted)}
+  .passes tbody tr[aria-selected="true"]{background:var(--surface); box-shadow:inset 3px 0 0 var(--sun-line)}
+  .passes tbody tr[aria-selected="true"] td, .passes tbody tr[aria-selected="true"] td:first-child{background:none; box-shadow:none}
+  .magcell .pip{display:none}
+  .fgrid{grid-template-columns:1fr}
+  details.filters>summary .sum{display:none}
+}
+
+/* Location picker */
+fieldset.loc{grid-column:1/-1}
+.locgrid{display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:1rem 1.75rem}
+.searchrow{display:flex; gap:.5rem; margin-bottom:.5rem}
+.searchrow input{flex:1; min-width:0; padding:.5rem .75rem; border:1px solid var(--rule); border-radius:999px; background:var(--bg)}
+.results{list-style:none; margin:0 0 .5rem; padding:.25rem; border:1px solid var(--rule); border-radius:10px; background:var(--bg); max-height:12rem; overflow:auto}
+.results button{display:block; width:100%; text-align:left; background:none; border:0; padding:.45rem .6rem; border-radius:6px; cursor:pointer; font-size:.875rem}
+.results button:hover,.results button:focus-visible{background:var(--surface)}
+.results .rn{font-weight:650}
+.results .rl{display:block; color:var(--muted); font-size:.8125rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.mapwrap{position:relative}
+.map{height:300px; border-radius:10px; border:1px solid var(--rule); background:var(--dome); z-index:0}
+.mapmsg{position:absolute; inset:auto .75rem .75rem .75rem; margin:0; padding:.6rem .8rem; background:var(--surface); border:1px solid var(--rule); border-radius:8px; font-size:.8125rem; z-index:500}
+.pin span{display:block; width:26px; height:26px; background:var(--sun-line); border:3px solid #fff; border-radius:50% 50% 50% 0; transform:rotate(-45deg); box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.leaflet-container{font-family:inherit}
+@media (max-width: 760px){ .locgrid{grid-template-columns:minmax(0,1fr)} .map{height:260px} }
+
+/* 3D explainer */
+.s3{padding:2.5rem 0 2rem; border-bottom:1px solid var(--rule)}
+.s3-head h2{margin:0 0 .35rem; font-size:1.375rem; font-weight:700; font-stretch:112%}
+.s3-head p{margin:0 0 1rem; color:var(--muted); max-width:66ch}
+.s3-views{display:inline-flex; flex-wrap:wrap; gap:.25rem; padding:.25rem; border:1px solid var(--rule); border-radius:999px; background:var(--surface); margin-bottom:1rem}
+.s3-views button{appearance:none; border:0; background:none; padding:.45rem .9rem; border-radius:999px; font-weight:600; font-size:.875rem; cursor:pointer; color:var(--muted)}
+.s3-views button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.s3-body{display:grid; grid-template-columns:minmax(0,1.75fr) minmax(0,1fr); gap:1.5rem; align-items:start}
+.s3-stage{position:relative; aspect-ratio:16/10; border-radius:14px; overflow:hidden; background:#02040c; cursor:grab}
+.s3-stage:active{cursor:grabbing}
+.s3-stage canvas{display:block}
+.s3-labels{position:absolute; inset:0; pointer-events:none; overflow:hidden}
+.s3-lab{position:absolute; left:0; top:0; display:none; font-size:12px; font-weight:650; color:#E8EDF8; white-space:nowrap; text-shadow:0 1px 3px #000, 0 0 8px #000; margin:8px 0 0 8px}
+.s3-lab-iss{color:#fff; font-size:13px}
+.s3-lab-sun,.s3-lab-below{color:#F3B847}
+.s3-lab-phase{color:#fff; font-weight:500}
+.s3-lab-shadow{color:#9aa6c6; font-weight:500}
+.s3-lab-card{font-size:14px; font-weight:750; margin:-22px 0 0 -5px}
+.s3-fail{color:#9aa6c6; padding:2rem; margin:0}
+.s3-controls{display:flex; align-items:center; gap:.75rem; margin-top:.75rem}
+.s3-time{flex:1; min-width:0; accent-color:var(--sun-line)}
+.s3-clock{font-weight:650; min-width:5.2em; text-align:right}
+.s3-play{white-space:nowrap}
+.s3-rows{margin:0; display:grid; gap:.55rem}
+.s3-rows div{display:grid; grid-template-columns:9.5rem 1fr; gap:.75rem}
+.s3-rows dt{color:var(--muted); font-size:.875rem}
+.s3-rows dd{margin:0; font-weight:600}
+.s3-why{margin:1rem 0 0; padding-top:1rem; border-top:1px solid var(--rule); line-height:1.55}
+.s3-key{margin:1rem 0 0; font-size:.8125rem; color:var(--muted); line-height:2}
+.s3-key span{display:inline-block; width:22px; height:0; vertical-align:middle; margin:0 .4rem 0 .1rem; border-top:3px solid var(--sun-line)}
+.s3-key .k-you{border-top:2px dashed var(--ink)}
+.s3-key .k-arc{width:12px; height:12px; border:2px solid var(--ink); border-color:var(--ink) transparent transparent var(--ink); border-radius:50%; margin-left:1rem}
+.s3-key .k-you{margin-left:1rem}
+.s3 .note{margin-top:1rem}
+@media (max-width: 760px){
+  .s3-body{grid-template-columns:minmax(0,1fr)}
+  .s3-stage{aspect-ratio:4/5}
+  .s3-views{display:flex}
+  .s3-views button{flex:1; padding:.45rem .35rem; font-size:.8125rem}
+  .s3-rows div{grid-template-columns:8.5rem 1fr}
+}
+
+/* Orbit data + notes */
+.orbit{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:2rem; padding:2.5rem 0 1rem; border-top:1px solid var(--rule); margin-top:2rem}
+.orbit h2,.method h2{margin:0 0 .5rem; font-size:1.125rem; font-stretch:110%}
+.orbit p,.method p{margin:0 0 .75rem; color:var(--muted); max-width:62ch}
+.orbit p strong{color:var(--ink)}
+.warn{color:var(--sun)!important; font-weight:600}
+textarea{width:100%; min-height:5.5rem; padding:.6rem; border:1px solid var(--rule); border-radius:8px; background:var(--surface); font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; font-size:.75rem; line-height:1.45; resize:vertical; white-space:pre; overflow-x:auto}
+.method{padding:1rem 0 3rem}
+@media (max-width: 760px){ .orbit{grid-template-columns:1fr; gap:1rem} }
+
+/* Sky dome drawing */
+.sky-bg{fill:var(--dome); stroke:var(--dome-edge); stroke-width:1.5}
+.sky-ring{fill:none; stroke:var(--ring); stroke-width:1}
+.sky-min{fill:none; stroke:var(--sun-line); stroke-width:1; stroke-dasharray:3 4; opacity:.7}
+.sky-lab{fill:var(--muted); font-size:11px; font-family:inherit}
+.sky-card{fill:var(--ink); font-size:13px; font-weight:700; font-family:inherit}
+.trk-vis{fill:none; stroke:var(--sun-line); stroke-width:4; stroke-linecap:round; stroke-linejoin:round}
+.trk-dark{fill:none; stroke:var(--shade); stroke-width:2; stroke-dasharray:2 5; stroke-linecap:round}
+.tick{fill:var(--ink)}
+.tick-lab{fill:var(--ink); font-size:10.5px; font-weight:600; font-family:inherit}
+.mk-open{fill:var(--dome); stroke:var(--ink); stroke-width:2}
+.mk-fill{fill:var(--ink)}
+.mk-x{stroke:var(--ink); stroke-width:2.2; stroke-linecap:round}
+.live{fill:var(--sun-line); stroke:var(--surface); stroke-width:2}
+@media (prefers-reduced-motion: no-preference){
+  .live-halo{animation:halo 1.6s ease-out infinite; transform-box:fill-box; transform-origin:center}
+  @keyframes halo{from{opacity:.7; transform:scale(1)} to{opacity:0; transform:scale(2.6)}}
+}
+.live-halo{fill:var(--sun-line)}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <h1>ISS passes overhead</h1>
+    <div class="where">Seen from <strong id="placeName">Milton Keynes</strong> <span id="tzLabel"></span> <button type="button" class="linkbtn" id="changeLoc">Change place</button></div>
+  </header>
+
+  <section class="hero" id="hero" aria-live="polite">
+    <div class="empty"><h2>Working out the passes…</h2><p>Loading the latest orbit for the ISS.</p></div>
+  </section>
+
+  <section class="s3" id="s3" hidden>
+    <div class="s3-head">
+      <h2>See this pass in 3D</h2>
+      <p>Why can you see the ISS after the Sun has set, and why does it vanish in the middle of the sky? Drag to turn the view, scroll or pinch to zoom, and play the pass to watch the light change.</p>
+    </div>
+    <div class="s3-views" role="group" aria-label="Viewpoint">
+      <button type="button" data-view="side" aria-pressed="true">From the side</button>
+      <button type="button" data-view="ground" aria-pressed="false">Where you stand</button>
+      <button type="button" data-view="earth" aria-pressed="false">Whole Earth</button>
+    </div>
+    <div class="s3-body">
+      <div>
+        <div class="s3-stage"><div class="s3-labels" aria-hidden="true"></div></div>
+        <div class="s3-controls">
+          <button type="button" class="btn primary s3-play">Play the pass</button>
+          <input type="range" class="s3-time" min="0" max="1000" value="500" aria-label="Moment during the pass">
+          <span class="s3-clock"></span>
+        </div>
+      </div>
+      <div class="s3-read" aria-live="polite">
+        <dl class="s3-rows"></dl>
+        <p class="s3-why"></p>
+        <p class="s3-key"><span class="k-sun"></span>Sunlight reaching the ISS <span class="k-you"></span>Reflected light reaching you <span class="k-arc"></span>Phase angle between them</p>
+      </div>
+    </div>
+    <p class="note">The ISS is drawn far bigger than life so you can see it, and the Sun is shown much closer than it really is. The dark tube behind the Earth is its shadow.</p>
+  </section>
+
+  <div class="listhead">
+    <div>
+      <h2 id="listTitle">Upcoming passes</h2>
+      <p id="listSummary"></p>
+    </div>
+  </div>
+
+  <details class="filters" id="filters">
+    <summary><span>Filters and location</span><span class="sum" id="filterSummary"></span></summary>
+    <form class="fgrid" id="settingsForm" onsubmit="return false">
+      <fieldset class="loc" id="locFieldset">
+        <legend>Where you’re watching from</legend>
+        <div class="locgrid">
+          <div class="mapcol">
+            <div class="searchrow">
+              <label class="sr" for="placeSearch">Search for a place</label>
+              <input id="placeSearch" type="search" placeholder="Search for a town, school or postcode" autocomplete="off" enterkeyhint="search">
+              <button type="button" class="btn" id="searchBtn">Search</button>
+            </div>
+            <ul class="results" id="searchResults" hidden></ul>
+            <div class="mapwrap"><div id="map" class="map"></div><p class="mapmsg" id="mapMsg" hidden></p></div>
+            <p class="note">Click or tap the map, or drag the pin, to choose a spot.</p>
+          </div>
+          <div class="fieldcol">
+            <div class="field"><label for="locName">Place name</label><input id="locName" type="text" maxlength="40"></div>
+            <div class="row2">
+              <div class="field"><label for="lat">Latitude (°N)</label><input id="lat" type="number" step="0.0001" min="-90" max="90"></div>
+              <div class="field"><label for="lon">Longitude (°E)</label><input id="lon" type="number" step="0.0001" min="-180" max="180"></div>
+            </div>
+            <div class="row2">
+              <div class="field"><label for="alt">Height (m)</label><input id="alt" type="number" step="1" min="-100" max="6000"></div>
+              <div class="field"><label for="tz">Show times in</label>
+                <select id="tz"><option value="Europe/London">UK time</option><option value="device">This device’s time</option><option value="UTC">UTC</option></select>
+              </div>
+            </div>
+            <div class="factions">
+              <button type="button" class="btn" id="geoBtn">Use my location</button>
+              <button type="button" class="btn" id="resetBtn">Reset to defaults</button>
+            </div>
+            <p class="note" id="geoNote"></p>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>What counts as a good pass</legend>
+        <div class="row2">
+          <div class="field"><label for="minEl">Rises above (°)</label><input id="minEl" type="number" min="0" max="85" step="1"></div>
+          <div class="field"><label for="minSecs">For at least (seconds)</label><input id="minSecs" type="number" min="0" max="600" step="10"></div>
+        </div>
+        <div class="field"><label for="maxMag">Brightness</label>
+          <select id="maxMag">
+            <option value="">Any brightness</option>
+            <option value="0">Magnitude 0 or brighter</option>
+            <option value="-1">Magnitude −1 or brighter</option>
+            <option value="-2">Magnitude −2 or brighter</option>
+            <option value="-3">Magnitude −3 or brighter</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="showAll"> <span>Also list visible passes that miss these filters</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>Visibility</legend>
+        <div class="field"><label for="sunLimit">Sky must be at least</label>
+          <select id="sunLimit">
+            <option value="-0.833">Past sunset (Sun below the horizon)</option>
+            <option value="-6">Civil twilight (Sun 6° below)</option>
+            <option value="-12">Nautical twilight (Sun 12° below)</option>
+            <option value="-18">Fully dark (Sun 18° below)</option>
+            <option value="90">Any time, including daylight</option>
+          </select>
+        </div>
+        <label class="check"><input type="checkbox" id="requireLit"> <span>Only while the ISS is lit by the Sun (it can’t be seen in Earth’s shadow)</span></label>
+        <div class="row2">
+          <div class="field"><label for="cutoff">Ignore below (°)</label><input id="cutoff" type="number" min="0" max="30" step="1"></div>
+          <div class="field"><label for="days">Days ahead</label><input id="days" type="number" min="1" max="20" step="1"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="extinction"> <span>Dim low passes for haze near the horizon</span></label>
+      </fieldset>
+    </form>
+  </details>
+
+  <div class="tablewrap">
+    <table class="passes" id="passTable">
+      <thead><tr><th><span class="sr">Sky track</span></th><th>Date</th><th>Appears</th><th>Highest</th><th>Disappears</th><th>Visible for</th><th>Brightness</th></tr></thead>
+      <tbody id="passBody"></tbody>
+    </table>
+  </div>
+
+  <section class="orbit">
+    <div>
+      <h2>Orbit data</h2>
+      <p id="tleStatus">Loading…</p>
+      <p id="nowLine"></p>
+      <button type="button" class="btn" id="refreshBtn">Check for newer orbit data</button>
+    </div>
+    <div>
+      <h2>Use your own TLE</h2>
+      <p>Paste a two-line element set for the ISS (NORAD 25544) to predict from it instead.</p>
+      <label class="sr" for="tleInput">Two-line element set</label>
+      <textarea id="tleInput" spellcheck="false" autocomplete="off" wrap="off"></textarea>
+      <div class="factions"><button type="button" class="btn" id="tleUse">Predict from this TLE</button></div>
+      <p class="note" id="tleNote"></p>
+    </div>
+  </section>
+
+  <section class="method">
+    <h2>How these are worked out</h2>
+    <p>Positions come from the SGP4 orbit model run on the latest public two-line elements for the ISS. A pass counts as visible when the ISS is in sunlight while your sky is dark enough, and it is listed if it spends long enough above your chosen elevation while visible.</p>
+    <p>Brightness is an estimate from distance and the Sun–ISS–observer angle, using a phase law fitted to standard ISS predictions, so expect it to be within about 0.3 magnitudes. Lower numbers are brighter: Sirius is −1.5, Jupiter about −2.5 and Venus about −4.</p>
+    <p>Sky charts show the sky as you see it lying on your back with your head to the north: north at the top, east on the left, the zenith in the middle. The dashed ring marks your minimum elevation. The thick line is the part you can see; the dotted line is the ISS in Earth’s shadow or in daylight.</p>
+  </section>
+</div>
+
+{{SCRIPTS}}
+</body>
+</html>
