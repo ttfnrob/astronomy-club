@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The scale of the universe</title>
+<style>
+:root{
+  --bg:#e8eef4; --ink:#13283f; --muted:#55677c; --accent:#8f6210; --on-accent:#ffffff;
+  --panel:#f8fafc; --line:rgba(19,40,63,.18); --track:rgba(19,40,63,.2); --shade:rgba(19,40,63,.34);
+  --serif:Georgia, "Times New Roman", serif;
+  --sans:system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1c2e; --ink:#e5ebf2; --muted:#a0b2c6; --accent:#e2b85e; --on-accent:#1b1404;
+    --panel:#15253a; --line:rgba(229,235,242,.18); --track:rgba(229,235,242,.24); --shade:rgba(0,0,0,.55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1c2e; --ink:#e5ebf2; --muted:#a0b2c6; --accent:#e2b85e; --on-accent:#1b1404;
+  --panel:#15253a; --line:rgba(229,235,242,.18); --track:rgba(229,235,242,.24); --shade:rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:transparent}
+
+#app{position:fixed;inset:0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;color:var(--ink)}
+#app.space-on{--ink:#e5ebf2;--muted:#a9bbcf;--line:rgba(229,235,242,.22);--track:rgba(229,235,242,.26)}
+.space{position:absolute;inset:0;background:#0a1424;opacity:0;pointer-events:none}
+.stars{position:absolute;left:0;top:0;width:1px;height:1px;border-radius:50%}
+#stage{position:absolute;inset:0}
+#labels{position:absolute;inset:0;pointer-events:none}
+
+.obj{position:absolute;left:0;top:0;padding:0;margin:0;border:0;background:none;cursor:pointer;display:none;color:inherit;font:inherit;-webkit-tap-highlight-color:transparent}
+.obj:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.obj svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.obj .em{display:block;width:100%;height:100%;text-align:center;white-space:nowrap;pointer-events:none;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.k-line{border-radius:1px}
+.k-line::before,.k-line::after{content:"";position:absolute;bottom:0;width:2px;height:12px;background:inherit}
+.k-line::before{left:0}.k-line::after{right:0}
+.ring{position:absolute;left:-2%;top:28%;width:104%;height:44%;border-radius:50%;pointer-events:none;transform:rotate(-12deg);
+  background:radial-gradient(ellipse closest-side,transparent 0 50%,rgba(226,206,160,.95) 53%,rgba(178,150,104,.85) 72%,rgba(226,206,160,.65) 88%,transparent 100%)}
+.planet{position:absolute;left:27.3%;top:0;width:45.4%;height:100%;border-radius:50%;pointer-events:none}
+
+.lbl{position:absolute;left:0;top:0;display:none;text-align:center;font-family:var(--serif);font-size:13.5px;line-height:1.22;color:var(--ink)}
+.lbl b{display:block;font-weight:600}
+.lbl span{display:block;font-family:var(--sans);font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:3px}
+
+.hud{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 22px 18px;background:linear-gradient(var(--veil,var(--bg)) 62%,transparent);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
+.hud > *{pointer-events:auto}
+.title{font-family:var(--serif);font-weight:600;font-size:clamp(19px,4.8vw,26px);line-height:1.1;margin:0;letter-spacing:-.01em}
+.scale{margin-top:12px;display:flex;align-items:flex-end;gap:10px;min-height:22px}
+.bar{height:9px;border:2px solid var(--ink);border-top:0;transition:width .08s linear}
+.scale-txt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+
+.btn{font:500 14px/1 var(--sans);color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:0 16px;min-height:42px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.btn:focus-visible,.zbtn:focus-visible,input:focus-visible,.item:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+
+.foot{position:absolute;left:0;right:0;bottom:0;padding:26px 14px calc(env(safe-area-inset-bottom,0px) + 12px);pointer-events:none;background:linear-gradient(to top,var(--veil,var(--bg)) 72%,transparent)}
+.foot > *{pointer-events:auto}
+.hint{margin:0 auto 4px;text-align:center;font-size:12.5px;color:var(--muted);transition:opacity .6s}
+.hint.gone{opacity:0}
+.controls{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto}
+.zbtn{flex:none;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:var(--ink);font:400 24px/1 var(--sans);cursor:pointer;display:grid;place-items:center;padding:0}
+.ends{display:flex;justify-content:space-between;max-width:620px;margin:-6px auto 0;padding:0 58px;font-size:11.5px;color:var(--muted)}
+input[type=range]{flex:1;min-width:0;-webkit-appearance:none;appearance:none;background:transparent;height:44px;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:2px;background:var(--track)}
+input[type=range]::-moz-range-track{height:4px;border-radius:2px;background:var(--track)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-11px;border-radius:50%;background:var(--accent);border:0;box-shadow:0 1px 6px rgba(0,0,0,.35)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--accent);border:0;box-shadow:0 1px 6px rgba(0,0,0,.35)}
+
+.scrim{position:fixed;inset:0;background:var(--shade);opacity:0;pointer-events:none;transition:opacity .25s;z-index:15}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:580px;background:var(--panel);color:var(--ink);border-radius:20px 20px 0 0;
+  padding:22px 22px calc(env(safe-area-inset-bottom,0px) + 22px);box-shadow:0 -12px 40px var(--shade);transform:translateY(110%);
+  transition:transform .32s cubic-bezier(.2,.8,.2,1);z-index:20;max-height:86%;display:flex;flex-direction:column;visibility:hidden}
+.sheet.open{transform:none;visibility:visible}
+.sheet h2{font-family:var(--serif);font-weight:600;font-size:25px;margin:0 0 6px;line-height:1.2}
+.meas{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;margin:0 0 14px;line-height:1.5}
+.desc{font-family:var(--serif);font-size:17.5px;line-height:1.6;margin:0 0 20px;max-width:62ch;overflow:auto}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.credit{font-size:12.5px;line-height:1.5;color:var(--muted);margin:-8px 0 18px}
+.credit:empty{display:none}
+.credit a{color:inherit}
+.obj img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;user-select:none}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.sheet-head h2{margin:0}
+.search{width:100%;font:400 16px var(--sans);color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.list{list-style:none;margin:0 -8px;padding:0;overflow:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
+.item{width:100%;display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 8px;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);text-align:left;cursor:pointer;font:inherit;border-radius:6px}
+.item:hover{background:var(--line)}
+.item b{font-family:var(--serif);font-weight:600;font-size:16px}
+.item span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#browse{height:86%}
+
+.intro{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:var(--shade);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);transition:opacity .35s}
+.intro.gone{opacity:0;pointer-events:none}
+.card{max-width:460px;background:var(--panel);color:var(--ink);border-radius:22px;padding:30px 28px 26px;box-shadow:0 20px 60px var(--shade)}
+.card h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,8vw,40px);line-height:1.05;margin:0 0 14px;letter-spacing:-.015em}
+.card p{font-family:var(--serif);font-size:17.5px;line-height:1.55;margin:0 0 14px}
+.small-link{margin:-4px 0 12px;font-size:13px}.small-link a,.card .small a{color:inherit}
+.card .small{font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--muted);margin:16px 0 0}
+@media (prefers-reduced-motion: reduce){.sheet,.scrim,.intro,.hint,.bar{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="space" id="space"><div class="stars" id="stars"></div></div>
+  <div id="stage" aria-label="Objects drawn to scale"></div>
+  <div id="labels" aria-hidden="true"></div>
+  <header class="hud">
+    <div>
+      <p class="title">The scale of the universe</p>
+      <div class="scale" aria-live="off"><div class="bar" id="bar"></div><div class="scale-txt" id="scaleTxt"></div></div>
+    </div>
+    <button class="btn" id="browseBtn" type="button">Browse</button>
+  </header>
+  <div class="foot">
+    <p class="hint" id="hint">Pinch, scroll or use the slider to zoom. Tap anything to read about it.</p>
+    <div class="controls">
+      <button class="zbtn" id="zin" type="button" aria-label="Zoom in to smaller things">−</button>
+      <input type="range" id="zoom" min="-35" max="27" step="0.01" value="0.24" aria-label="Zoom level">
+      <button class="zbtn" id="zout" type="button" aria-label="Zoom out to bigger things">+</button>
+    </div>
+    <div class="ends" aria-hidden="true"><span>Smaller</span><span>Larger</span></div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<section class="sheet" id="info" role="dialog" aria-modal="true" aria-labelledby="infoName">
+  <h2 id="infoName"></h2>
+  <p class="meas" id="infoMeas"></p>
+  <p class="desc" id="infoDesc"></p>
+  <p class="credit" id="infoCredit"></p>
+  <div class="row">
+    <button class="btn primary" id="infoZoom" type="button">Zoom to it</button>
+    <button class="btn" id="infoClose" type="button">Close</button>
+  </div>
+</section>
+
+<section class="sheet" id="browse" role="dialog" aria-modal="true" aria-labelledby="browseTitle">
+  <div class="sheet-head"><h2 id="browseTitle">Everything, smallest first</h2><button class="btn" id="browseClose" type="button">Close</button></div>
+  <p class="small-link"><a href="../../">Back to Watling Astronomy Club</a></p>
+  <input class="search" id="search" type="search" placeholder="Search, e.g. Ben Nevis" autocomplete="off" aria-label="Search objects">
+  <ul class="list" id="list"></ul>
+</section>
+
+<div class="intro" id="intro">
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <h1 id="introTitle">The scale of the universe</h1>
+    <p>From the smallest length in physics to the edge of the observable universe, all drawn to scale.</p>
+    <p>Pinch, scroll or use the slider to zoom. Tap anything to read about it.</p>
+    <button class="btn primary" id="start" type="button">Start with a person</button>
+    <p class="small"><a href="../../">Back to Watling Astronomy Club</a></p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const LY=9.4607e15, AU=1.495978707e11, FOCUS=0.4;
+const $=s=>document.querySelector(s);
+
+/* ---------- drawings ---------- */
+function spiky(n,knob){
+  let s='<circle cx="50" cy="50" r="34"/>';
+  for(let i=0;i<n;i++){const a=i/n*Math.PI*2,c=Math.cos(a),d=Math.sin(a);
+    s+=`<line x1="${50+c*33}" y1="${50+d*33}" x2="${50+c*45}" y2="${50+d*45}" stroke="currentColor" stroke-width="3"/>`;
+    if(knob) s+=`<circle cx="${50+c*46}" cy="${50+d*46}" r="4"/>`;}
+  return `<svg viewBox="0 0 100 100" fill="currentColor">${s}<circle cx="40" cy="38" r="12" fill="#fff" opacity=".25"/></svg>`;
+}
+function dodecagon(){const p=[];for(let i=0;i<12;i++){const a=(i+.5)/12*Math.PI*2;p.push(`${(50+50*Math.cos(a)).toFixed(2)}% ${(50+50*Math.sin(a)).toFixed(2)}%`)}return `polygon(${p.join(',')})`}
+const SV={
+  phone:'<svg viewBox="0 0 40 104" fill="currentColor"><path d="M2 16 Q20 0 38 16Z"/><rect x="1" y="16" width="38" height="88"/><rect x="5" y="20" width="30" height="7" fill="#1b1b1b"/><rect x="7" y="32" width="26" height="48" fill="#dde8ee" opacity=".9"/><path d="M7 41.6H33M7 51.2H33M7 60.8H33M7 70.4H33M15.7 32V80M24.3 32V80" stroke="currentColor" stroke-width="1.6"/></svg>',
+  bigben:'<svg viewBox="0 0 22 110" fill="currentColor"><path d="M11 0 L13 14 L18 34 H4 L9 14Z"/><rect x="3" y="34" width="16" height="18"/><circle cx="11" cy="43" r="6" fill="#f3ead2" stroke="#2a2a2a" stroke-width=".8"/><path d="M11 43V38.5M11 43L14 44.5" stroke="#2a2a2a" stroke-width=".8"/><rect x="4" y="52" width="14" height="58"/><path d="M7.5 58V106M11 58V106M14.5 58V106" stroke="#000" stroke-opacity=".22" stroke-width=".8"/></svg>',
+  nelson:'<svg viewBox="0 0 20 100" fill="currentColor"><circle cx="10" cy="4.5" r="2.4"/><rect x="8.6" y="6.5" width="2.8" height="5.5"/><rect x="6.5" y="12" width="7" height="3"/><rect x="8" y="15" width="4" height="66"/><rect x="5" y="81" width="10" height="5"/><rect x="2" y="86" width="16" height="14"/></svg>',
+  shard:'<svg viewBox="0 0 22 100" fill="currentColor"><path d="M0 100 L9 2 L10 6 L11.5 0 L13 8 L22 100Z"/><path d="M11 7 L11 100M5 100 L10 20M17 100 L12 22" stroke="#fff" stroke-opacity=".35" stroke-width=".6"/></svg>',
+  eiffel:'<svg viewBox="0 0 40 100" fill="currentColor"><path d="M19 0 H21 V7 L22 10 V18 L24 32 L27 48 L31 66 L40 100 H31 Q20 72 9 100 H0 L9 66 L13 48 L16 32 L18 18 V10 L19 7 Z"/><rect x="11.5" y="46.5" width="17" height="2.6"/><rect x="7" y="64" width="26" height="3"/></svg>',
+  blackpool:'<svg viewBox="0 0 36 100" fill="currentColor"><path d="M17 0 H19 V6 L20 9 V16 L27 82 H9 L16 16 V9 L17 6Z"/><rect x="0" y="82" width="36" height="18"/><path d="M3 88H33M3 94H33" stroke="#fff" stroke-opacity=".3"/></svg>',
+  pisa:'<svg viewBox="0 0 34 100"><g transform="rotate(4 17 100)" fill="#efe8d6" stroke="#7d7360" stroke-width="1"><rect x="9" y="7" width="16" height="93"/><rect x="11" y="0.5" width="12" height="7"/><path d="M9 20H25M9 32H25M9 44H25M9 56H25M9 68H25M9 80H25" stroke-width=".8"/></g></svg>',
+  stpauls:'<svg viewBox="0 0 90 100" fill="currentColor" stroke="#6f6656" stroke-width=".6"><rect x="44.2" y="0" width="1.6" height="6"/><rect x="42" y="6" width="6" height="12"/><path d="M27 52 Q27 16 45 16 Q63 16 63 52Z"/><rect x="25" y="52" width="40" height="10"/><rect x="2" y="44" width="11" height="18"/><rect x="77" y="44" width="11" height="18"/><rect x="0" y="62" width="90" height="38"/><path d="M8 70V94M16 70V94M24 70V94M36 70V94M45 70V94M54 70V94M66 70V94M74 70V94M82 70V94" stroke="#000" stroke-opacity=".2" stroke-width="2"/></svg>',
+  angel:'<svg viewBox="0 0 108 40" fill="currentColor"><path d="M0 10 L49 8 L49 15 L0 17Z"/><path d="M108 10 L59 8 L59 15 L108 17Z"/><path d="M51 40 L50 8 Q54 0 58 8 L57 40Z"/><path d="M8 10V17M18 9.6V16.6M28 9.2V16.2M38 8.8V15.8M70 8.8V15.8M80 9.2V16.2M90 9.6V16.6M100 10V17" stroke="#000" stroke-opacity=".25" stroke-width=".8"/></svg>',
+  stonehenge:'<svg viewBox="0 0 100 22" fill="currentColor"><rect x="2" y="6" width="6" height="16"/><rect x="11" y="6" width="6" height="16"/><rect x="1" y="3" width="17" height="4"/><rect x="24" y="9" width="5" height="13"/><rect x="34" y="4" width="7" height="18"/><rect x="45" y="4" width="7" height="18"/><rect x="33" y="1" width="20" height="4"/><rect x="60" y="7" width="6" height="15"/><rect x="69" y="7" width="6" height="15"/><rect x="59" y="4" width="17" height="4"/><rect x="82" y="10" width="5" height="12" transform="rotate(8 84 22)"/><rect x="92" y="7" width="6" height="15"/></svg>',
+  cab:'<svg viewBox="0 0 100 40" fill="currentColor"><path d="M4 31 V22 Q4 18 9 17 L22 15 Q28 4 38 3 H70 Q80 3 85 15 L93 17 Q97 18 97 22 V31Z" stroke="#9aa3ad" stroke-width="1"/><path d="M31 15 Q34 7 40 7 H50 V15Z M54 7 H68 Q74 7 78 15 H54Z" fill="#c9d4dc"/><rect x="46" y="0" width="10" height="3" fill="#f2c200"/><circle cx="22" cy="31" r="7.5" fill="#222" stroke="#9aa3ad"/><circle cx="78" cy="31" r="7.5" fill="#222" stroke="#9aa3ad"/></svg>',
+  mini:'<svg viewBox="0 0 100 44" fill="currentColor"><path d="M3 35 V22 Q3 18 8 17 L18 16 L26 5 H72 L80 16 L92 17 Q97 18 97 22 V35Z"/><rect x="25" y="3" width="49" height="3" fill="#f4f4f4"/><path d="M30 15 L35 8 H48 V15Z M52 8 H66 L72 15 H52Z" fill="#cfdbe3"/><circle cx="22" cy="36" r="7" fill="#222"/><circle cx="78" cy="36" r="7" fill="#222"/></svg>',
+  bus:'<svg viewBox="0 0 100 52" fill="currentColor"><rect x="2" y="2" width="96" height="42" rx="5"/><rect x="2" y="19" width="96" height="2.2" fill="#f1e9d2"/><g fill="#e3ebf0"><rect x="8" y="7" width="12" height="9" rx="1"/><rect x="24" y="7" width="12" height="9" rx="1"/><rect x="40" y="7" width="12" height="9" rx="1"/><rect x="56" y="7" width="12" height="9" rx="1"/><rect x="72" y="7" width="12" height="9" rx="1"/><rect x="8" y="25" width="12" height="9" rx="1"/><rect x="24" y="25" width="12" height="9" rx="1"/><rect x="40" y="25" width="12" height="9" rx="1"/><rect x="56" y="25" width="12" height="9" rx="1"/></g><rect x="80" y="24" width="14" height="20" fill="#000" opacity=".35"/><circle cx="20" cy="45" r="6.5" fill="#222"/><circle cx="78" cy="45" r="6.5" fill="#222"/></svg>',
+  concorde:'<svg viewBox="0 0 100 18" fill="currentColor" stroke="#8a96a3" stroke-width=".4"><path d="M0 9.6 L10 8 L86 7.2 Q94 7.2 100 9.6 L86 11.2 L10 11.2 Z"/><path d="M40 11.2 L84 11.2 L86 15 Z"/><path d="M84 7.4 L92 0 L95 0 L93 7.6Z"/></svg>',
+  bat:'<svg viewBox="0 0 12 100"><rect x="4.5" y="0" width="3" height="33" rx="1.4" fill="#2b2b2b"/><path fill="currentColor" d="M2 32 H10 Q12 33 12 36 V96 Q12 100 8 100 H4 Q0 100 0 96 V36 Q0 33 2 32Z"/></svg>',
+  towerbridge:'<svg viewBox="0 0 100 27" fill="currentColor"><path d="M0 17 Q12 9 24 6 M76 6 Q88 9 100 17" stroke="currentColor" fill="none" stroke-width="1.6"/><rect x="0" y="17" width="100" height="3"/><rect x="34" y="6" width="32" height="2"/><g fill="#cfc6b1" stroke="#7a705c" stroke-width=".4"><rect x="24" y="4" width="10" height="23"/><rect x="66" y="4" width="10" height="23"/><path d="M23 4 L29 0 L35 4Z M65 4 L71 0 L77 4Z"/></g></svg>',
+  forth:'<svg viewBox="0 0 115 5" fill="currentColor"><path d="M4 4.4 L19 0.4 L34 4.4 Z M42.5 4.4 L57.5 0.4 L72.5 4.4Z M81 4.4 L96 0.4 L111 4.4Z" fill="none" stroke="currentColor" stroke-width=".7"/><path d="M19 0.4V4.4M57.5 0.4V4.4M96 0.4V4.4" stroke="currentColor" stroke-width=".5"/><rect x="0" y="4" width="115" height=".8"/></svg>',
+  pitch:'<svg viewBox="0 0 105 68"><rect width="105" height="68" fill="#4c8a3e"/><g fill="none" stroke="#fff" stroke-width=".7"><rect x="1" y="1" width="103" height="66"/><path d="M52.5 1V67"/><circle cx="52.5" cy="34" r="9.15"/><rect x="1" y="13.85" width="16.5" height="40.3"/><rect x="87.5" y="13.85" width="16.5" height="40.3"/></g></svg>',
+  phage:'<svg viewBox="0 0 40 100" fill="currentColor"><path d="M20 0 L34 9 V27 L20 36 L6 27 V9Z"/><rect x="17" y="36" width="6" height="40"/><rect x="12" y="76" width="16" height="4"/><path d="M13 80 L2 98 M17 80 L12 100 M23 80 L28 100 M27 80 L38 98" stroke="currentColor" stroke-width="2" fill="none"/></svg>',
+  tardigrade:'<svg viewBox="0 0 100 52" fill="currentColor"><g stroke="currentColor" stroke-width="7" stroke-linecap="round"><path d="M22 36v12M41 40v9M60 40v9M79 36v12"/></g><ellipse cx="50" cy="24" rx="45" ry="19"/><path d="M25 14 Q50 4 75 14" stroke="#000" stroke-opacity=".15" fill="none" stroke-width="2"/><circle cx="11" cy="19" r="2.4" fill="#222"/></svg>',
+  hexring:'<svg viewBox="0 0 100 100"><path d="M50 10 L84.6 30 L84.6 70 L50 90 L15.4 70 L15.4 30Z" fill="none" stroke="#7b8794" stroke-width="5"/><g fill="#3d4650"><circle cx="50" cy="10" r="9"/><circle cx="84.6" cy="30" r="9"/><circle cx="84.6" cy="70" r="9"/><circle cx="50" cy="90" r="9"/><circle cx="15.4" cy="70" r="9"/><circle cx="15.4" cy="30" r="9"/></g></svg>',
+  water:'<svg viewBox="0 0 100 82"><circle cx="18" cy="60" r="18" fill="#f1f1f1" stroke="#9aa"/><circle cx="82" cy="60" r="18" fill="#f1f1f1" stroke="#9aa"/><circle cx="50" cy="36" r="31" fill="#e0503c"/><circle cx="41" cy="26" r="9" fill="#fff" opacity=".3"/></svg>',
+  chip:'<svg viewBox="0 0 100 60"><rect width="100" height="60" fill="#3a4a5a"/><g fill="#c3ccd5"><rect x="12" y="0" width="12" height="60"/><rect x="44" y="0" width="12" height="60"/><rect x="76" y="0" width="12" height="60"/></g><rect x="0" y="24" width="100" height="12" fill="#d9a441" opacity=".85"/></svg>',
+  card:'<svg viewBox="0 0 85.6 54"><defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2b4a73"/><stop offset="1" stop-color="#14243b"/></linearGradient><linearGradient id="chg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f3dc8e"/><stop offset="1" stop-color="#b8923c"/></linearGradient></defs><rect width="85.6" height="54" rx="3.2" fill="url(#cg)"/><rect x="9" y="18" width="12" height="9" rx="1.6" fill="url(#chg)"/><path d="M13 18v9M17 18v9M9 22.5h12" stroke="#8c6d28" stroke-width=".4"/><path d="M27 19.5a4 4 0 0 1 0 6M30 18a6.5 6.5 0 0 1 0 9M33 16.5a9 9 0 0 1 0 12" fill="none" stroke="#cfd8e3" stroke-width=".9" stroke-linecap="round"/><g fill="#cfd8e3" opacity=".85"><rect x="9" y="35" width="13" height="2.6" rx="1"/><rect x="25" y="35" width="13" height="2.6" rx="1"/><rect x="41" y="35" width="13" height="2.6" rx="1"/><rect x="57" y="35" width="13" height="2.6" rx="1"/><rect x="9" y="43" width="26" height="2.2" rx="1"/></g></svg>',
+  person:'<svg viewBox="0 0 40 175" fill="currentColor"><circle cx="20" cy="12" r="10"/><path d="M8 26 Q20 22 32 26 Q38 28 38 36 L38 88 Q38 92 34 92 L32 58 L31 92 L30 172 Q30 175 27 175 L23 175 Q21 175 21 172 L20 108 L19 172 Q19 175 17 175 L13 175 Q10 175 10 172 L9 92 L8 58 L6 92 Q2 92 2 88 L2 36 Q2 28 8 26Z"/></svg>',
+  mount:'<svg viewBox="0 0 160 100"><defs><linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8a97a6"/><stop offset="1" stop-color="#4c5866"/></linearGradient></defs><path d="M0 100 L38 56 L55 66 L85 0 L104 34 L118 26 L160 100Z" fill="url(#mg)"/><path d="M85 0 L97 22 L90 18 L84 27 L79 20 L73 26Z" fill="#f4f7fa"/><path d="M85 0 L104 34 L118 26 L160 100 L100 100 L92 52Z" fill="#000" opacity=".14"/></svg>',
+  hill:'<svg viewBox="0 0 200 100"><defs><linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d8873"/><stop offset="1" stop-color="#4a5a3f"/></linearGradient></defs><path d="M0 100 L30 70 L52 76 L88 18 Q100 0 112 14 L140 46 L160 40 L200 100Z" fill="url(#hg)"/><path d="M88 18 Q100 0 112 14 L106 20 L100 14 L94 22Z" fill="#e9eef2" opacity=".85"/></svg>',
+  whale:'<svg viewBox="0 0 250 46"><path d="M2 22 Q14 9 50 7 Q130 4 196 16 L226 4 Q233 1 236 6 L231 20 L248 30 Q246 35 238 32 L222 27 Q160 42 82 41 Q30 40 2 22Z" fill="#5b7488"/><path d="M8 27 Q40 38 82 39 Q150 39 210 28" fill="none" stroke="#cfd9e1" stroke-width="1.4" opacity=".7"/><path d="M70 34 Q76 46 92 44 Q84 40 82 33Z" fill="#4a6175"/><circle cx="22" cy="18" r="1.6" fill="#1d2a35"/></svg>',
+  eurostar:'<svg viewBox="0 0 400 5"><path d="M10 0.4 H392 Q398 0.4 400 3.4 V4.6 H0 V3.6 Q2 0.6 10 0.4Z" fill="#e9edf1" stroke="#7d8996" stroke-width=".15"/><rect x="0" y="2.4" width="400" height=".7" fill="#f4c400"/><rect x="0" y="3.1" width="400" height=".5" fill="#1f3a5f"/></svg>',
+  virus:spiky(18,true),
+  pollen:spiky(28,false)
+};
+
+/* ---------- images (Wikimedia Commons, credited in each info panel) ---------- */
+const IMG={"moon": {"src": "images/moon.webp", "w": 559, "h": 560, "credit": "Gregory H. Revera", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:FullMoon2010.jpg"}, "mercury": {"src": "images/mercury.webp", "w": 462, "h": 520, "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Arizona State University/Carnegie Institution of Washington", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Mercury_in_true_color.jpg"}, "venus": {"src": "images/venus.webp", "w": 482, "h": 520, "credit": "NASA/JPL-Caltech", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Venus_from_Mariner_10.jpg"}, "earth": {"src": "images/earth.webp", "w": 636, "h": 640, "credit": "NASA/Apollo 17 crew; taken by either Harrison Schmitt or Ron Evans", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:The_Blue_Marble_(remastered).jpg"}, "mars": {"src": "images/mars.webp", "w": 552, "h": 560, "credit": "Kevin Gill from Los Angeles, CA, United States", "licence": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png"}, "jupiter": {"src": "images/jupiter.webp", "w": 640, "h": 604, "credit": "NASA/STSCI (S.T.A.R.S)", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Jupiter_OPAL_2024.png"}, "saturn": {"src": "images/saturn.webp", "w": 720, "h": 285, "credit": "NASA / JPL-Caltech / SSI / color composite by Gordan Ugarkovic", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Saturn_global_view_from_Cassini,_rings_open_Better_Colour.png"}, "uranus": {"src": "images/uranus.webp", "w": 520, "h": 495, "credit": "Ardenau4", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Uranus_Voyager2_color_calibrated.png"}, "neptune": {"src": "images/neptune.webp", "w": 513, "h": 520, "credit": "NASA / Voyager 2 / PDS / OPUS / Ardenau4", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Neptune_Voyager2_color_calibrated.png"}, "pluto": {"src": "images/pluto.webp", "w": 520, "h": 518, "credit": "NASA/Johns Hopkins University Applied Physics Laboratory/Southwest Research Institute/Alex Parker", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pluto_in_True_Color_-_High-Res.png"}, "ceres": {"src": "images/ceres.webp", "w": 412, "h": 480, "credit": "Justin Cowart", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Ceres_-_RC3_-_Haulani_Crater_(22381131691)_(cropped).jpg"}, "sun": {"src": "images/sun.webp", "w": 639, "h": 640, "credit": "Matúš Motlo", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:The_Sun_in_white_light.jpg"}, "comet": {"src": "images/comet.webp", "w": 560, "h": 545, "credit": "ESA/Rosetta/MPS for OSIRIS Team MPS/UPD/LAM/IAA/SSO/INTA/UPM/DASP/IDA", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Comet_67P_True_color.jpg"}, "universe": {"src": "images/universe.webp", "w": 720, "h": 720, "credit": "Unmismoobjetivo", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Observable_universe_logarithmic_illustration.png"}, "crab": {"src": "images/crab.webp", "w": 720, "h": 720, "credit": "NASA, ESA, J. Hester and A. Loll (Arizona State University)", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Crab_Nebula.jpg"}, "orion": {"src": "images/orion.webp", "w": 720, "h": 720, "credit": "NASA, ESA, M. Robberto (Space Telescope Science Institute/ESA) and the Hubble Space Telescope Orion Treasury Project Team", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg"}, "lmc": {"src": "images/lmc.webp", "w": 720, "h": 480, "credit": "Harel Boren", "licence": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:LMC_full_color_(Large_Magellanic_Cloud).jpg"}, "milkyway": {"src": "images/milkyway.webp", "w": 720, "h": 720, "credit": "European Space Agency", "licence": "CC BY-SA 3.0 igo", "page": "https://commons.wikimedia.org/wiki/File:The_best_Milky_Way_map,_by_Gaia_ESA505408_-_The_best_Milky_Way_map_by_Gaia.jpg"}, "andromeda": {"src": "images/andromeda.webp", "w": 720, "h": 502, "credit": "Lviatour", "licence": "CC BY-SA 2.5", "page": "https://commons.wikimedia.org/wiki/File:M31-Andromede-16-09-2023-Hamois.jpg"}, "m87": {"src": "images/m87.webp", "w": 480, "h": 480, "credit": "Event Horizon Telescope, uploader cropped and converted TIF to JPG", "licence": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Black_hole_-_Messier_87_crop_max_res.jpg"}, "sgra": {"src": "images/sgra.webp", "w": 480, "h": 480, "credit": "EHT Collaboration", "licence": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:EHT_Sagittarius_A_black_hole.tif"}, "betelgeuse": {"src": "images/betelgeuse.webp", "w": 400, "h": 400, "credit": "ALMA (ESO/NAOJ/NRAO)/E. O’Gorman/P. Kervella", "licence": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Betelgeuse_captured_by_ALMA.jpg"}, "p_e_coli_bacterium": {"src": "images/p-e-coli-bacterium.webp", "w": 520, "h": 477, "credit": "Photo by Eric Erbe, digital colorization by Christopher Pooley, both of USDA, ARS, EMU.", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:E_coli_at_10000x,_original.jpg"}, "p_dust_mite": {"src": "images/p-dust-mite.webp", "w": 560, "h": 376, "credit": "Matt Colloff, CSIRO", "licence": "CC BY 3.0", "page": "https://commons.wikimedia.org/wiki/File:CSIRO_ScienceImage_11085_A_scanning_electron_micrograph_of_a_female_dust_mite.jpg"}, "p_tardigrade": {"src": "images/p-tardigrade.webp", "w": 560, "h": 508, "credit": "Schokraie E, Warnken U, Hotz-Wagenblatt A, Grohme MA, Hengherr S, et al. (2012)", "licence": "CC BY 2.5", "page": "https://commons.wikimedia.org/wiki/File:SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2_(white_background).png"}, "p_haemoglobin": {"src": "images/p-haemoglobin.webp", "w": 560, "h": 502, "credit": "Zephyris at English Wikipedia", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:1GZX_Haemoglobin.png"}, "p_seven_spot_ladybird": {"src": "images/p-seven-spot-ladybird.webp", "w": 535, "h": 560, "credit": "Photographer: Dominik Stodulski   Graphic Processing: User:MathKnight", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:7-Spotted-Ladybug-Coccinella-septempunctata-sq1.jpg"}, "p_red_wood_ant": {"src": "images/p-red-wood-ant.webp", "w": 537, "h": 447, "credit": "Richard Bartz, Munich Makro Freak", "licence": "CC BY-SA 2.5", "page": "https://commons.wikimedia.org/wiki/File:A_Formica_rufa_sideview.jpg"}, "p_honey_bee": {"src": "images/p-honey-bee.webp", "w": 560, "h": 425, "credit": "Andreas Trepte", "licence": "CC BY-SA 2.5", "page": "https://commons.wikimedia.org/wiki/File:Apis_mellifera_Western_honey_bee.jpg"}, "p_goldcrest": {"src": "images/p-goldcrest.webp", "w": 560, "h": 337, "credit": "Francis C. Franklin", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Goldcrest_1.jpg"}, "p_european_robin": {"src": "images/p-european-robin.webp", "w": 560, "h": 466, "credit": "Francis C. Franklin", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_with_cocked_head.jpg"}, "p_hedgehog": {"src": "images/p-hedgehog.webp", "w": 560, "h": 435, "credit": "Jörg Hempel", "licence": "CC BY-SA 2.0 de", "page": "https://commons.wikimedia.org/wiki/File:Erinaceus_europaeus_LC0119.jpg"}, "p_red_fox": {"src": "images/p-red-fox.webp", "w": 560, "h": 315, "credit": "ClaudiaTen", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Portrait_of_a_red_fox_in_Rautas_fj%C3%A4llurskog_(cropped).jpg"}, "p_badger": {"src": "images/p-badger.webp", "w": 560, "h": 370, "credit": "Charles J. Sharp", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:European_badger_(Meles_meles_taxus)_Drenthe.jpg"}, "p_mute_swan": {"src": "images/p-mute-swan.webp", "w": 560, "h": 391, "credit": "Sanchezn", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:CygneVaires.jpg"}, "p_red_deer_stag": {"src": "images/p-red-deer-stag.webp", "w": 560, "h": 553, "credit": "Lviatour", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Cervus_elaphus_Luc_Viatour_6.jpg"}, "p_digestive_biscuit": {"src": "images/p-digestive-biscuit.webp", "w": 262, "h": 306, "credit": "User:Caesura", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Digestive_biscuits.jpg"}, "p_pint_glass": {"src": "images/p-pint-glass.webp", "w": 204, "h": 367, "credit": "Image by Atelier Joly", "licence": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:Real_Ale_2004-05-09_cropped.jpg"}, "p_football": {"src": "images/p-football.webp", "w": 445, "h": 447, "credit": "OhanaUnitedTalk page", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Adidas_Trionda_ball.jpg"}, "p_rugby_ball": {"src": "images/p-rugby-ball.webp", "w": 560, "h": 366, "credit": "Hamedog", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Lions_signed_ball.jpg"}, "p_k6_red_phone_box": {"src": "images/p-k6-red-phone-box.webp", "w": 262, "h": 560, "credit": "Christoph Braun", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Red_telephone_box,_St_Paul%27s_Cathedral,_London,_England,_GB,_IMG_5182_edit.jpg"}, "p_classic_mini": {"src": "images/p-classic-mini.webp", "w": 560, "h": 352, "credit": "DeFacto", "licence": "CC BY-SA 2.5", "page": "https://commons.wikimedia.org/wiki/File:Morris_Mini-Minor_1959_(621_AOK).jpg"}, "p_routemaster_bus": {"src": "images/p-routemaster-bus.webp", "w": 442, "h": 507, "credit": "Murgatroyd49", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:RM8_AEC_Routemaster.jpg"}, "p_spitfire": {"src": "images/p-spitfire.webp", "w": 560, "h": 263, "credit": "Airwolfhound", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:Spitfire_-_Season_Premiere_Airshow_2018_(cropped).jpg"}, "p_james_webb_space_telescope": {"src": "images/p-james-webb-space-telescope.webp", "w": 513, "h": 560, "credit": "NASA", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:JWST_spacecraft_model_3.png"}, "p_angel_of_the_north": {"src": "images/p-angel-of-the-north.webp", "w": 560, "h": 545, "credit": "saw2th", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:Angel_of_the_North_2010.jpg"}, "p_stonehenge": {"src": "images/p-stonehenge.webp", "w": 560, "h": 114, "credit": "garethwiscombe", "licence": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:Stonehenge2007_07_30.jpg"}, "p_nelson_s_column": {"src": "images/p-nelson-s-column.webp", "w": 171, "h": 560, "credit": "Beata May", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Nelson%27s_Column,_Trafalgar_Square,_London.JPG"}, "p_leaning_tower_of_pisa": {"src": "images/p-leaning-tower-of-pisa.webp", "w": 234, "h": 560, "credit": "Arne Müseler", "licence": "CC BY-SA 3.0 de", "page": "https://commons.wikimedia.org/wiki/File:Italy_-_Pisa_-_Leaning_Tower.jpg"}, "p_concorde": {"src": "images/p-concorde.webp", "w": 560, "h": 242, "credit": "Eduard Marmet", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:British_Airways_Concorde_G-BOAC_03.jpg"}, "p_airbus_a380": {"src": "images/p-airbus-a380.webp", "w": 560, "h": 201, "credit": "Maarten Visser from Capelle aan den IJssel, Nederland", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:A6-EDY_A380_Emirates_31_jan_2013_jfk_(8442269364)_(cropped).jpg"}, "p_international_space_station": {"src": "images/p-international-space-station.webp", "w": 560, "h": 324, "credit": "NASA", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:The_station_pictured_from_the_SpaceX_Crew_Dragon_5.jpg"}, "p_salisbury_cathedral_spire": {"src": "images/p-salisbury-cathedral-spire.webp", "w": 560, "h": 469, "credit": "Antony McCallum: Who is the uploader, photographer, full copyright owner and proprietor of WyrdLight.com", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:SalisburyCathedral-wyrdlight-EastExt.jpg"}, "p_london_eye": {"src": "images/p-london-eye.webp", "w": 560, "h": 509, "credit": "Khamtran", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:London-Eye-2009.JPG"}, "p_blackpool_tower": {"src": "images/p-blackpool-tower.webp", "w": 180, "h": 560, "credit": "Nathanemmison", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Blackpool_Tower_05082017_(cropped).jpg"}, "p_rms_titanic": {"src": "images/p-rms-titanic.webp", "w": 560, "h": 326, "credit": "Francis Godolphin Osbourne Stuart", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:RMS_Titanic_3_(cropped_to_ship).jpg"}, "p_hms_queen_elizabeth": {"src": "images/p-hms-queen-elizabeth.webp", "w": 560, "h": 377, "credit": "Dave Jenkins - InfoGibraltar", "licence": "CC BY 2.0", "page": "https://commons.wikimedia.org/wiki/File:HMS_Queen_Elizabeth_in_Gibraltar_-_2018_(28386226189).jpg"}, "p_the_shard": {"src": "images/p-the-shard.webp", "w": 131, "h": 560, "credit": "Colin", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:The_Shard_at_sunset_2017_(cropped).jpg"}, "p_eiffel_tower": {"src": "images/p-eiffel-tower.webp", "w": 238, "h": 560, "credit": "Benh LIEU SONG", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Tour_Eiffel_Wikimedia_Commons_(cropped).jpg"}, "p_matterhorn": {"src": "images/p-matterhorn.webp", "w": 560, "h": 464, "credit": "Photo: chil, on Camptocamp.org\nDerivative work:Zacharie Grossen", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Matterhorn_from_Domh%C3%BCtte_-_2.jpg"}, "p_mount_everest": {"src": "images/p-mount-everest.webp", "w": 560, "h": 400, "credit": "Rdevany", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Mt._Everest_from_Gokyo_Ri_November_5,_2012.jpg"}, "p_forth_bridge": {"src": "images/p-forth-bridge.webp", "w": 560, "h": 109, "credit": "MrMasterKeyboard", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Forth_Bridge_2022.jpg"}, "p_1_coin": {"src": "images/p-1-coin.webp", "w": 524, "h": 514, "credit": "stux", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Reverso_1_euro.jpg"}, "p_conker": {"src": "images/p-conker.webp", "w": 156, "h": 156, "credit": "Evelyn Simak", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:Conkers_-_geograph.org.uk_-_1532739.jpg"}, "p_cricket_bat": {"src": "images/p-cricket-bat.webp", "w": 128, "h": 560, "credit": "Acabashi", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Cricket_bat_at_Fenner%27s_Field_ground,_Cambridge_University_Cricket_Club,_England_01.jpg"}, "p_london_black_cab": {"src": "images/p-london-black-cab.webp", "w": 560, "h": 423, "credit": "Oleg Yunakov", "licence": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:2016_LTI_TX4_London_black_cab.jpg"}, "p_st_paul_s_cathedral": {"src": "images/p-st-paul-s-cathedral.webp", "w": 477, "h": 560, "credit": "Mike Quinn", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:The_west_front_of_St._Paul%27s_Cathedral_-_geograph.org.uk_-_1274664.jpg"}, "p_elizabeth_tower_big_ben": {"src": "images/p-elizabeth-tower-big-ben.webp", "w": 108, "h": 560, "credit": "Diliff", "licence": "CC BY 3.0", "page": "https://commons.wikimedia.org/wiki/File:Clock_Tower_-_Palace_of_Westminster,_London_-_September_2006-2.jpg"}, "p_tower_bridge": {"src": "images/p-tower-bridge.webp", "w": 524, "h": 243, "credit": "Ввласенко", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:View_of_the_Tower_Bridge_from_the_Thames_from_northwest._London.jpg"}, "p_dna_double_helix": {"src": "images/p-dna-double-helix.webp", "w": 254, "h": 560, "credit": "ynse from Poland", "licence": "CC BY-SA 2.0", "page": "https://commons.wikimedia.org/wiki/File:DNA-molecule2.jpg"}, "p_brompton_bicycle_folded": {"src": "images/p-brompton-bicycle-folded.webp", "w": 499, "h": 560, "credit": "Bossphotography", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Brompton_bicycle_half_folded_and_loaded.jpg"}, "p_highland_midge": {"src": "images/p-highland-midge.webp", "w": 560, "h": 405, "credit": "Alan R Walker", "licence": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Culicoides-imicola-biting-midge-2.jpg"}, "p_shetland_pony": {"src": "images/p-shetland-pony.webp", "w": 560, "h": 385, "credit": "Daderot", "licence": "CC0", "page": "https://commons.wikimedia.org/wiki/File:Shetland_pony_-_Copenhagen_Zoo_-_DSC08960.JPG"}, "p_basking_shark": {"src": "images/p-basking-shark.webp", "w": 560, "h": 246, "credit": "NOAA", "licence": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:The_Basking_Shark,_or_Bone_Shark.jpg"}};
+const BLUE='grayscale(1) brightness(.72) sepia(1) hue-rotate(175deg) saturate(2.2) brightness(1.45)';
+const YEL='grayscale(1) brightness(.8) sepia(1) saturate(1.8) brightness(1.25)';
+const ORANGE='grayscale(1) brightness(.7) sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.3)';
+const RED='grayscale(1) brightness(.62) sepia(1) saturate(6) hue-rotate(-30deg) brightness(1.25)';
+
+/* ---------- data: s in metres ---------- */
+const D=[
+{n:'Planck length',s:1.616e-35,k:'line',c:'#9b7be0',q:'Length',t:'Physicists suspect that distances shorter than this may have no meaning at all. It is built from three constants of nature: the strength of gravity, the speed of light and Planck’s constant.'},
+{n:'Quark (upper limit)',s:1e-19,k:'sphere',c:['#ffb3d6','#b0306f'],q:'Largest possible size',t:'Quarks are bound together in threes to make protons and neutrons. Collisions at CERN, near Geneva, have found no sign of any size down to roughly this scale.'},
+{n:'Electron (upper limit)',s:1e-18,k:'sphere',c:['#bfe3ff','#2b7bd0'],q:'Largest possible size',t:'As far as anyone can tell, the electron is a point with no size at all; experiments only say it must be smaller than this. J. J. Thomson discovered it at Cambridge’s Cavendish Laboratory in 1897.'},
+{n:'Proton',s:1.68e-15,k:'atom',c:['#ffb0a2','#c0392b'],t:'The nucleus of a hydrogen atom. Ernest Rutherford showed in Manchester in 1917 that hydrogen nuclei could be knocked out of other atoms, proving they were a building block of all nuclei.'},
+{n:'Neutron',s:1.7e-15,k:'atom',c:['#d7dee4','#66737f'],t:'Discovered by James Chadwick at Cambridge in 1932. A free neutron falls apart in about 15 minutes, but inside a nucleus it can last indefinitely.'},
+{n:'Gold nucleus',s:1.4e-14,k:'atom',c:['#ffe39a','#c08a1e'],t:'In 1909 Hans Geiger and Ernest Marsden fired alpha particles at gold foil in Manchester. A few bounced straight back, revealing that almost all of an atom’s mass sits in a tiny nucleus.'},
+{n:'Helium atom',s:6.2e-11,k:'atom',c:['#ffe4b8','#e09a3e'],t:'The second lightest element. It was spotted in the Sun’s light in 1868 by Norman Lockyer and Jules Janssen, decades before anyone found it on Earth.'},
+{n:'Hydrogen atom',s:1.06e-10,k:'atom',c:['#d6eaff','#5d8fd6'],t:'The simplest atom: one proton and one electron. About three quarters of the ordinary matter in the universe is hydrogen.'},
+{n:'Carbon atom',s:1.4e-10,k:'atom',c:['#c4c4c4','#3f3f3f'],t:'Every living thing on Earth is built on chains and rings of carbon atoms. Most of the carbon in your body was forged inside stars that died before the Sun was born.'},
+{n:'Water molecule',s:2.75e-10,k:'v',c:'water',t:'Two hydrogen atoms and one oxygen. A single drop of water holds about 1.7 thousand billion billion of them.'},
+{n:'Graphene ring',s:2.8e-10,k:'v',c:'hexring',q:'Width',t:'Graphene is a single layer of carbon atoms in a honeycomb of rings like this one. Andre Geim and Konstantin Novoselov first isolated it at the University of Manchester using sticky tape, winning the 2010 Nobel Prize in Physics.'},
+{n:'Gold atom',s:2.9e-10,k:'atom',c:['#ffeaa8','#c9971c'],t:'Gold barely reacts with anything, which is why ancient jewellery still gleams. All the gold ever mined would fit in a cube about 22 metres along each side.'},
+{n:'Caesium atom',s:5.3e-10,k:'atom',c:['#f7e6c8','#b58b4b'],t:'Since 1967 the second has been defined by the vibrations of caesium atoms. The first accurate caesium atomic clock was built at the National Physical Laboratory in Teddington in 1955.'},
+{n:'Buckyball (C₆₀)',s:1.0e-9,k:'sphere',c:['#a8a8a8','#2f2f2f'],t:'Sixty carbon atoms arranged like the panels of a football. Harry Kroto of the University of Sussex shared the 1996 Nobel Prize in Chemistry for its discovery.'},
+{n:'DNA double helix',s:2e-9,k:'photo',img:'p_dna_double_helix',d:'w',q:'Width',t:'Rosalind Franklin’s X‑ray images at King’s College London were key to working out its shape, published by Watson and Crick in Cambridge in 1953. Stretched out, the DNA in one of your cells would be about 2 metres long.'},
+{n:'Haemoglobin',s:6.4e-9,k:'photo',img:'p_haemoglobin',t:'The protein that carries oxygen in your blood. Max Perutz spent over twenty years working out its structure in Cambridge and shared the 1962 Nobel Prize in Chemistry.'},
+{n:'Transistor spacing in a modern chip',s:5e-8,k:'v',c:'chip',q:'Gate spacing',t:'The finest features on today’s chips are a few tens of nanometres apart. A phone processor packs in more than ten billion transistors, and most phone chips are built on designs from Arm in Cambridge.'},
+{n:'Coronavirus',s:1.0e-7,k:'v',c:'virus',col:'#d86a6a',t:'About a ten thousandth of a millimetre across. June Almeida took the first electron microscope picture of a coronavirus at St Thomas’s Hospital in London in 1964.'},
+{n:'Bacteriophage T4',s:2e-7,d:'h',k:'v',c:'phage',col:'#7f9fbf',q:'Length',t:'A virus that infects bacteria, with a head, tail and legs like a lunar lander. Phages are being studied as a way to treat infections that antibiotics can no longer cure.'},
+{n:'Wavelength of yellow‑green light',s:5.55e-7,k:'line',c:'#8fd14f',q:'Wavelength',t:'The colour your eyes are most sensitive to in daylight. Isaac Newton showed with prisms in the 1660s that white sunlight is a mixture of colours.'},
+{n:'E. coli bacterium',s:2e-6,k:'photo',img:'p_e_coli_bacterium',span:2.5,q:'Length',t:'A rod-shaped bacterium that mostly lives harmlessly in your gut. Bacteria were first seen in the 1670s by Antonie van Leeuwenhoek of Delft, through microscopes he made himself.'},
+{n:'Penicillium mould spore',s:3e-6,k:'sphere',c:['#d3eba8','#5f8f2e'],t:'In 1928 Alexander Fleming noticed that a mould growing on a culture plate at St Mary’s Hospital, London, had killed the bacteria around it. Penicillin has since saved many millions of lives.'},
+{n:'Red blood cell',s:7.5e-6,k:'disc',c:['#9c1119','#df343b'],t:'Shaped like a dimpled disc and without a nucleus, leaving more room for haemoglobin. Your body makes about two million of them every second.'},
+{n:'Birch pollen grain',s:2.2e-5,k:'v',c:'pollen',col:'#e2b33a',t:'A leading cause of hay fever across northern Europe, peaking in April and May.'},
+{n:'Width of a human hair',s:7e-5,k:'line',c:'#7a5233',q:'Width',t:'Typically around 70 micrometres, though it varies a lot from person to person. Hair grows roughly a centimetre a month.'},
+{n:'Human egg cell',s:1.2e-4,k:'sphere',c:['#fff3e4','#e2b48a'],t:'The largest cell in the human body and only just visible to the naked eye. Louise Brown, the world’s first IVF baby, was born in Oldham in 1978.'},
+{n:'Dust mite',s:3e-4,k:'photo',img:'p_dust_mite',q:'Length',t:'Too small to see, dust mites live in mattresses and soft furnishings, feeding on flakes of skin.'},
+{n:'Full stop',s:4e-4,k:'ink',q:'Width',t:'The dot at the end of a printed sentence is roughly this wide, depending on the font and type size.'},
+{n:'Grain of sand',s:5e-4,k:'sphere',c:['#f2dcae','#b88f4a'],t:'Medium sand, like that on many British beaches, is between a quarter and half a millimetre across.'},
+{n:'Tardigrade',s:5e-4,k:'photo',img:'p_tardigrade',q:'Length',t:'Also called a water bear or moss piglet. Tardigrades can survive being dried out, frozen and even exposed to open space, as an ESA experiment showed in 2007.'},
+{n:'Highland midge',s:1.4e-3,k:'photo',img:'p_highland_midge',q:'Length',t:'Culicoides impunctatus, the bane of summer walks in the Scottish Highlands. Only the females bite.'},
+{n:'Seven-spot ladybird',s:7e-3,k:'photo',img:'p_seven_spot_ladybird',q:'Length',t:'Britain’s most familiar ladybird. A single one can eat around 5,000 aphids in its lifetime.'},
+{n:'Red wood ant',s:9e-3,k:'photo',img:'p_red_wood_ant',q:'Length',t:'Found in woodland across Britain and Europe. A large nest mound can hold several hundred thousand workers, which spray formic acid to defend it.'},
+{n:'Honey bee',s:1.5e-2,k:'photo',img:'p_honey_bee',q:'Length',t:'A worker visits thousands of flowers a day, yet makes only about a twelfth of a teaspoon of honey in her whole life.'},
+{n:'1p coin',s:2.03e-2,k:'coin',c:['#c98a52','#a8662f'],t:'The UK penny has been 20.3 mm across since decimalisation in 1971.'},
+{n:'€1 coin',s:2.325e-2,k:'photo',img:'p_1_coin',t:'Used across the euro area. One side is shared by every country, while the other carries a national design.'},
+{n:'£1 coin',s:2.343e-2,k:'coin',c:['#cfd3d7','#d8b54c'],poly:true,t:'The twelve-sided pound replaced the round one in 2017, with its shape and two metals making it much harder to fake.'},
+{n:'Conker',s:3e-2,k:'photo',img:'p_conker',t:'The seed of the horse chestnut. The World Conker Championships have been held in Northamptonshire since 1965.'},
+{n:'Digestive biscuit',s:6.7e-2,k:'photo',img:'p_digestive_biscuit',t:'McVitie’s first baked its digestive in 1892. Britons dunk millions of them in tea every day.'},
+{n:'Bank card',s:8.56e-2,k:'v',c:'card',q:'Width',t:'Payment cards everywhere share the same international size: 85.6 by 54 millimetres.'},
+{n:'Goldcrest',s:9e-2,k:'photo',img:'p_goldcrest',q:'Length',t:'Britain’s smallest bird, weighing about the same as a 20p coin.'},
+{n:'European robin',s:0.14,k:'photo',img:'p_european_robin',q:'Length',t:'Voted Britain’s national bird in 2015. Robins sing right through winter, and both males and females defend territories.'},
+{n:'Pint glass',s:0.165,d:'h',k:'photo',img:'p_pint_glass',q:'Height',t:'A British pint is 568 millilitres, about a fifth bigger than an American one.'},
+{n:'Football',s:0.22,k:'photo',img:'p_football',t:'A size 5 ball is 68 to 70 cm round. The Football Association wrote the first rules of the modern game in a London pub in 1863.'},
+{n:'Hedgehog',s:0.25,k:'photo',img:'p_hedgehog',q:'Length',t:'Hedgehogs have declined sharply in the British countryside since 2000. A gap 13 cm square at the bottom of a garden fence lets them roam between gardens.'},
+{n:'Rugby ball',s:0.29,k:'photo',img:'p_rugby_ball',q:'Length',t:'Named after Rugby School in Warwickshire, where the game took shape in the early 1800s. A ball is 28 to 30 cm long.'},
+{n:'Brompton bicycle (folded)',s:0.585,d:'h',k:'photo',img:'p_brompton_bicycle_folded',q:'Folded height',t:'Built in London since 1976, it folds in under 20 seconds to about 58 by 56 by 27 cm.'},
+{n:'Red fox',s:0.7,k:'photo',img:'p_red_fox',span:1.5,q:'Body length',t:'Foxes moved into British towns in the 1930s. London alone is thought to have around 10,000 or more.'},
+{n:'Badger',s:0.8,k:'photo',img:'p_badger',q:'Length',t:'Badgers live in family groups in underground setts, some of which have been in use for over a century.'},
+{n:'Cricket bat',s:0.965,d:'h',k:'photo',img:'p_cricket_bat',q:'Maximum length',t:'The Laws of Cricket limit a bat to 38 inches, or 96.5 cm. Blades are traditionally made from English willow.'},
+{n:'Shetland pony',s:1.07,k:'photo',img:'p_shetland_pony',d:'h',span:1.25,q:'Maximum height at the withers',t:'Native to the Shetland Islands. To be registered, a pony must be no taller than 107 cm at the shoulder.'},
+{n:'Mute swan',s:1.5,k:'photo',img:'p_mute_swan',q:'Length',t:'The Crown has claimed ownership of unmarked mute swans on open water since the 12th century, which is why the swans on the Thames are counted each July.'},
+{n:'Average UK adult',s:1.75,d:'h',k:'v',c:'person',col:'#5f6d7c',q:'Height',t:'The average height of an adult in the UK is about 1.75 m for men and 1.62 m for women.'},
+{n:'Red deer stag',s:2.0,k:'photo',img:'p_red_deer_stag',q:'Length',t:'Britain’s largest native land mammal. Stags roar to attract hinds during the autumn rut.'},
+{n:'K6 red phone box',s:2.5,d:'h',k:'photo',img:'p_k6_red_phone_box',q:'Height',t:'Designed by Sir Giles Gilbert Scott for George V’s Silver Jubilee in 1935. Thousands have since been adopted by communities as tiny libraries, galleries and defibrillator stations.'},
+{n:'Classic Mini',s:1.35,k:'photo',img:'p_classic_mini',d:'h',q:'Height',t:'Alec Issigonis designed it in 1959 to seat four adults in a car just over three metres long.'},
+{n:'London black cab',s:1.83,k:'photo',img:'p_london_black_cab',d:'h',q:'Height',t:'London cabbies must pass ‘the Knowledge’, memorising some 25,000 streets within six miles of Charing Cross.'},
+{n:'Basking shark',s:8,k:'photo',img:'p_basking_shark',q:'Length',t:'The second-largest fish in the world, and harmless. It feeds on plankton and is seen off Cornwall, the Isle of Man and the Hebrides each summer.'},
+{n:'Routemaster bus',s:4.38,k:'photo',img:'p_routemaster_bus',d:'h',q:'Height',t:'Introduced in 1956, the original Routemaster stayed in regular London service until 2005.'},
+{n:'Spitfire',s:11.23,k:'photo',img:'p_spitfire',q:'Wingspan',t:'Designed by R. J. Mitchell in Southampton, with its distinctive elliptical wing. More than 20,000 were built.'},
+{n:'James Webb Space Telescope',s:21.2,k:'photo',img:'p_james_webb_space_telescope',q:'Sunshield length',t:'A joint mission of NASA, ESA and the Canadian Space Agency, launched on a European Ariane 5 rocket in 2021. Its sunshield is about the size of a tennis court.'},
+{n:'Angel of the North',s:20,d:'h',k:'photo',img:'p_angel_of_the_north',q:'Height',t:'Antony Gormley’s steel sculpture near Gateshead went up in 1998. It is 20 m tall with wings 54 m across.'},
+{n:'Blue whale',s:25,k:'v',c:'whale',q:'Length',t:'The largest animal known ever to have lived. The 25 m skeleton of ‘Hope’ hangs in the Natural History Museum in London.'},
+{n:'Stonehenge',s:33,k:'photo',img:'p_stonehenge',q:'Diameter of the sarsen circle',t:'The great sarsen circle went up around 2500 BC. In 2024 scientists traced the Altar Stone at its centre to north-east Scotland, over 700 km away.'},
+{n:'Nelson’s Column',s:51.6,d:'h',k:'photo',img:'p_nelson_s_column',q:'Height',t:'Built between 1840 and 1843 in Trafalgar Square and guarded by Landseer’s four bronze lions.'},
+{n:'Leaning Tower of Pisa',s:56,d:'h',k:'photo',img:'p_leaning_tower_of_pisa',q:'Height',t:'Begun in 1173, it started to lean before the third storey was finished. Engineering work around 2000 reduced the tilt to about 4 degrees.'},
+{n:'Concorde',s:61.66,k:'photo',img:'p_concorde',t:'The Anglo-French supersonic airliner crossed from London to New York in about three and a half hours. The final flight landed at Filton, near Bristol, in 2003.'},
+{n:'Airbus A380',s:72.7,k:'photo',img:'p_airbus_a380',t:'The world’s largest passenger airliner. Its wings were built at Broughton in north Wales and shipped to Toulouse for assembly.'},
+{n:'Elizabeth Tower (Big Ben)',s:96,d:'h',k:'photo',img:'p_elizabeth_tower_big_ben',q:'Height',t:'Big Ben is strictly the 13.7 tonne bell inside. The tower was renamed Elizabeth Tower in 2012 to mark Queen Elizabeth II’s Diamond Jubilee.'},
+{n:'Football pitch',s:105,k:'v',c:'pitch',t:'Professional pitches, including Wembley’s, are usually 105 by 68 m, the size UEFA recommends.'},
+{n:'International Space Station',s:109,k:'photo',img:'p_international_space_station',q:'Width',t:'About the length of a football pitch, orbiting roughly 400 km up. Europe’s main contribution is the Columbus laboratory.'},
+{n:'St Paul’s Cathedral',s:111,d:'h',k:'photo',img:'p_st_paul_s_cathedral',q:'Height',t:'Christopher Wren’s masterpiece, finished in 1710 after the Great Fire of London. A whisper against the wall of its Whispering Gallery can be heard on the far side of the dome.'},
+{n:'Salisbury Cathedral spire',s:123,d:'h',k:'photo',img:'p_salisbury_cathedral_spire',q:'Height',t:'The tallest church spire in Britain, completed around 1320. The cathedral also keeps one of four surviving original copies of the 1215 Magna Carta.'},
+{n:'London Eye',s:135,d:'h',k:'photo',img:'p_london_eye',q:'Height',t:'When it opened in 2000 it was the world’s tallest observation wheel. One full turn of its 32 capsules takes about 30 minutes.'},
+{n:'Blackpool Tower',s:158,d:'h',k:'photo',img:'p_blackpool_tower',q:'Height',t:'Opened in 1894 and inspired by the Eiffel Tower, with a ballroom and circus in the building at its feet.'},
+{n:'Tower Bridge',s:244,k:'photo',img:'p_tower_bridge',t:'Opened in 1894. Its two bascules still lift hundreds of times a year to let tall ships up the Thames.'},
+{n:'RMS Titanic',s:269,k:'photo',img:'p_rms_titanic',t:'Built by Harland and Wolff in Belfast and lost on her maiden voyage in April 1912.'},
+{n:'HMS Queen Elizabeth',s:284,k:'photo',img:'p_hms_queen_elizabeth',t:'The largest warship ever built for the Royal Navy, commissioned in 2017. Its flight deck covers about four acres.'},
+{n:'The Shard',s:310,d:'h',k:'photo',img:'p_the_shard',q:'Height',t:'Designed by Renzo Piano and completed in 2012, it is the tallest building in the UK.'},
+{n:'Eiffel Tower',s:330,d:'h',k:'photo',img:'p_eiffel_tower',q:'Height',t:'Built for the 1889 World’s Fair in Paris. Heat makes the iron expand, so it can grow by about 15 cm on a hot summer day.'},
+{n:'Eurostar e320 train',s:400,k:'v',c:'eurostar',t:'Carries around 900 passengers between London and the continent at up to 320 km/h.'},
+{n:'Yr Wyddfa (Snowdon)',s:1085,d:'h',k:'v',c:'hill',q:'Height',t:'The highest mountain in Wales. A rack railway has carried visitors towards the summit since 1896.'},
+{n:'Ben Nevis',s:1345,d:'h',k:'v',c:'hill',q:'Height',t:'The highest mountain in the British Isles, near Fort William. Its summit is wrapped in cloud for much of the year.'},
+{n:'Forth Bridge',s:2528,k:'photo',img:'p_forth_bridge',t:'A steel cantilever railway bridge across the Firth of Forth, opened in 1890 and now a UNESCO World Heritage Site.'},
+{n:'Comet 67P',s:4100,k:'img',img:'comet',q:'Length',t:'ESA’s Rosetta spacecraft followed this comet for two years, and its Philae lander made the first ever landing on a comet in 2014.'},
+{n:'Matterhorn',s:4478,d:'h',k:'photo',img:'p_matterhorn',q:'Height',t:'On the Swiss–Italian border. The first ascent in 1865, led by the English climber Edward Whymper, ended in tragedy when four of the party fell on the way down.'},
+{n:'Mont Blanc',s:4806,d:'h',k:'v',c:'mount',q:'Height',t:'The highest mountain in western Europe, on the border of France and Italy. Its exact height changes from year to year with the thickness of its icy summit.'},
+{n:'Mount Everest',s:8849,d:'h',k:'photo',img:'p_mount_everest',q:'Height',t:'The highest peak above sea level, known locally as Chomolungma and Sagarmatha. Its English name honours Sir George Everest, a Surveyor General of India.'},
+{n:'Neutron star',s:2.4e4,k:'tstar',f:BLUE,glow:'#9fc4ff',t:'The collapsed core of a massive star; a teaspoonful would weigh billions of tonnes. Jocelyn Bell Burnell discovered the first pulsars, spinning neutron stars, at Cambridge in 1967.'},
+{n:'Strait of Dover',s:33300,k:'line',c:'#3f8fd0',q:'Width',t:'The narrowest point of the English Channel, between Dover and Cap Gris-Nez. On a clear day you can see France from the White Cliffs.'},
+{n:'Loch Ness',s:36300,k:'line',c:'#2e6d9e',q:'Length',t:'Long, narrow and very deep, it holds more fresh water than all the lakes in England and Wales put together.'},
+{n:'Channel Tunnel',s:50450,k:'line',c:'#c58a1b',q:'Length',t:'Opened in 1994. At 37.9 km, its undersea section is the longest of any tunnel in the world.'},
+{n:'Lake Geneva',s:73000,k:'line',c:'#3f8fd0',q:'Length',t:'Shared by Switzerland and France, it is one of the largest lakes in western Europe.'},
+{n:'Kármán line',s:1e5,k:'line',c:'#7d8cf0',q:'Height above sea level',t:'A widely used boundary between the atmosphere and outer space, 100 km above sea level.'},
+{n:'Hadrian’s Wall',s:117000,k:'line',c:'#9c8f7a',q:'Length',t:'Built from AD 122 across northern England, from Wallsend on the Tyne to Bowness-on-Solway.'},
+{n:'London to Paris',s:344000,k:'line',c:'#c58a1b',q:'Straight-line distance',t:'The distance between the two capitals as the crow flies. Eurostar covers it in about two hours and twenty minutes.'},
+{n:'River Thames',s:346000,k:'line',c:'#2e6d9e',q:'Length',t:'From its source in the Cotswolds to the North Sea, it is the longest river entirely in England.'},
+{n:'Ceres',s:939000,k:'img',img:'ceres',t:'The largest object in the asteroid belt, now classed as a dwarf planet. Giuseppe Piazzi discovered it from Palermo on the first night of 1801.'},
+{n:'Land’s End to John o’ Groats',s:970000,k:'line',c:'#c58a1b',q:'Straight-line distance',t:'The traditional end-to-end journey across Great Britain, roughly 970 km in a straight line and nearer 1,400 km by road.'},
+{n:'The Alps',s:1.2e6,k:'line',c:'#8a9aa8',q:'Length',t:'The Alps arc for about 1,200 km across eight countries, from France to Slovenia.'},
+{n:'Pluto',s:2.377e6,k:'img',img:'pluto',t:'A dwarf planet at the edge of the Solar System. Its name was suggested in 1930 by Venetia Burney, an 11‑year‑old schoolgirl in Oxford.'},
+{n:'River Danube',s:2.85e6,k:'line',c:'#2e6d9e',q:'Length',t:'Flows through or along ten countries, more than any other river, and passes four capital cities: Vienna, Bratislava, Budapest and Belgrade.'},
+{n:'The Moon',s:3.4748e6,k:'img',img:'moon',t:'A little over a quarter of Earth’s width. It always shows us the same face because it spins exactly once for every orbit.'},
+{n:'Lisbon to Moscow',s:3.91e6,k:'line',c:'#c58a1b',q:'Straight-line distance',t:'A rough measure of the width of Europe, from the Atlantic coast to the Russian capital.'},
+{n:'Mercury',s:4.879e6,k:'img',img:'mercury',t:'The smallest planet and the closest to the Sun. ESA and Japan’s joint BepiColombo mission was sent to study it.'},
+{n:'Mars',s:6.779e6,k:'img',img:'mars',t:'Its red colour comes from iron oxide, or rust, in its dust. ESA’s Rosalind Franklin rover, named after the British scientist, is being built to search there for signs of past life.'},
+{n:'Sirius B',s:1.17e7,k:'tstar',f:BLUE,glow:'#cfe0ff',t:'A white dwarf, the dense leftover core of a star, packing about the Sun’s mass into something slightly smaller than Earth.'},
+{n:'Venus',s:1.2104e7,k:'img',img:'venus',t:'Almost Earth’s twin in size, but its thick carbon dioxide atmosphere makes the surface hot enough to melt lead.'},
+{n:'Earth',s:1.2742e7,k:'img',img:'earth',t:'Longitude is measured from the prime meridian at Greenwich, agreed as the world’s zero line in 1884.'},
+{n:'Neptune',s:4.9244e7,k:'img',img:'neptune',t:'Its position was predicted mathematically by Urbain Le Verrier in Paris and John Couch Adams in Cambridge before it was first seen in 1846. Recalibrated Voyager 2 images show it is a pale greenish blue much like Uranus, not the deep blue of older pictures.'},
+{n:'Uranus',s:5.0724e7,k:'img',img:'uranus',t:'Discovered by William Herschel from his garden in Bath in 1781, the first planet found with a telescope.'},
+{n:'Saturn',s:1.1646e8,k:'img',img:'saturn',span:2.35,q:'Diameter (without rings)',t:'Its rings are mostly chunks of ice, some as small as dust and some as big as a house, yet in most places they are only tens of metres thick.'},
+{n:'Jupiter',s:1.3982e8,k:'img',img:'jupiter',t:'More than twice as massive as all the other planets combined. Its Great Red Spot is a storm wider than Earth.'},
+{n:'Proxima Centauri',s:2.14e8,k:'tstar',f:RED,glow:'#d2452c',t:'A small red dwarf and the nearest star to the Sun. It has at least one planet in its habitable zone.'},
+{n:'Earth to the Moon',s:3.844e8,k:'line',c:'#b9c4d0',q:'Average distance',t:'All the other planets in the Solar System could fit side by side in the gap between Earth and the Moon.'},
+{n:'The Sun',s:1.3927e9,k:'img',img:'sun',glow:'rgba(255,190,70,.6)',t:'About 109 times wider than Earth and holding 99.8% of the Solar System’s mass.'},
+{n:'Sirius A',s:2.38e9,k:'tstar',f:BLUE,glow:'#a9c8ff',t:'The brightest star in the night sky, in Canis Major, the Great Dog. It is about twice the mass of the Sun.'},
+{n:'Sagittarius A*',s:2.5e10,k:'img',img:'sgra',span:4.7,q:'Event horizon diameter',t:'The black hole at the centre of our galaxy, about four million times the mass of the Sun. The Event Horizon Telescope released this image in 2022. The glowing ring is hot gas; the dark centre is about 2.5 times wider than the event horizon itself.'},
+{n:'Polaris',s:5.2e10,k:'tstar',f:YEL,glow:'#ffd76a',t:'The North Star, which sits almost exactly above Earth’s North Pole. It is a yellow supergiant about 450 light-years away.'},
+{n:'Aldebaran',s:6.2e10,k:'tstar',f:ORANGE,glow:'#e86a2e',t:'The orange eye of Taurus, the Bull, easy to spot from Britain on winter evenings.'},
+{n:'Rigel',s:1.1e11,k:'tstar',f:BLUE,glow:'#7fa6ff',t:'The blue-white supergiant at Orion’s foot, tens of thousands of times brighter than the Sun.'},
+{n:'Earth to the Sun',s:1.496e11,k:'line',c:'#ffb32b',q:'Average distance (1 AU)',t:'One astronomical unit, about 150 million km. Sunlight takes about 8 minutes 20 seconds to reach us.'},
+{n:'Betelgeuse',s:1.06e12,k:'img',img:'betelgeuse',span:1.82,t:'The red supergiant at Orion’s shoulder, one of the few stars whose surface can be resolved; this is how the ALMA radio telescopes in Chile see it. Put in place of the Sun, it would reach beyond the orbit of Mars.'},
+{n:'VY Canis Majoris',s:1.98e12,k:'tstar',f:RED,glow:'#a8281a',t:'One of the largest stars known. Put in place of the Sun, it would stretch beyond the orbit of Jupiter.'},
+{n:'Sun to Neptune',s:4.5e12,k:'line',c:'#8aaeff',q:'Average distance',t:'Light from the Sun takes about four hours to reach the outermost planet.'},
+{n:'M87*',s:3.8e13,k:'img',img:'m87',span:5.8,q:'Event horizon diameter',t:'A black hole about 6.5 billion times the Sun’s mass. In 2019 it became the first black hole ever imaged, using radio dishes around the world, including several in Europe. The dark centre of the ring is about 2.5 times wider than the event horizon itself.'},
+{n:'One light-year',s:LY,k:'line',c:'#f0e28a',q:'Length',t:'The distance light travels in a year, about 9.5 million million km.'},
+{n:'Oort cloud',s:3.2*LY,k:'cloud',c:['rgba(190,215,255,.32)','rgba(130,170,235,.18)','rgba(90,130,210,.06)'],t:'A vast, mostly theoretical shell of icy bodies surrounding the Solar System, where many long-period comets are thought to come from.'},
+{n:'Distance to Proxima Centauri',s:4.24*LY,k:'line',c:'#ffb08a',q:'Distance',t:'About 4.2 light-years. The fastest spacecraft yet would still take thousands of years to get there.'},
+{n:'Crab Nebula',s:11*LY,k:'img',img:'crab',t:'The remains of a star that astronomers saw explode in 1054. It is the first entry, M1, in Charles Messier’s famous catalogue.'},
+{n:'Orion Nebula',s:24*LY,k:'img',img:'orion',t:'The nearest big star-forming region, about 1,300 light-years away. From Britain you can see it with the naked eye in Orion’s sword on winter nights.'},
+{n:'Large Magellanic Cloud',s:32000*LY,k:'img',img:'lmc',span:1.25,t:'A satellite galaxy of the Milky Way, only visible from the southern hemisphere. Named after Ferdinand Magellan, whose expedition recorded it.'},
+{n:'Milky Way',s:100000*LY,k:'img',img:'milkyway',span:1.18,t:'Our galaxy: a barred spiral of a few hundred billion stars. From a dark site in Britain you can see its band arching across the summer sky. Nobody can photograph it from outside, so this view is ESA’s map built from Gaia data.'},
+{n:'Andromeda Galaxy',s:220000*LY,k:'img',img:'andromeda',span:1.25,t:'The nearest large galaxy, and the most distant thing most people can see with the naked eye. It is heading towards the Milky Way.'},
+{n:'Distance to Andromeda',s:2.5e6*LY,k:'line',c:'#b8b3ff',q:'Distance',t:'About 2.5 million light-years. The light reaching your eyes from Andromeda tonight set off before modern humans existed.'},
+{n:'Local Group',s:1e7*LY,k:'cloud',c:['rgba(210,215,255,.45)','rgba(150,160,240,.2)','rgba(120,120,220,.06)'],t:'Our small family of galaxies, more than 80 of them, dominated by the Milky Way and Andromeda.'},
+{n:'Laniakea Supercluster',s:5.2e8*LY,k:'cloud',c:['rgba(255,220,180,.4)','rgba(240,150,190,.22)','rgba(150,110,220,.08)'],t:'The vast supercluster containing the Milky Way and around 100,000 other galaxies. Its name is Hawaiian for ‘immeasurable heaven’.'},
+{n:'Hercules–Corona Borealis Great Wall',s:1e10*LY,k:'cloud',a:2.4,c:['rgba(200,220,255,.45)','rgba(130,160,255,.22)','rgba(90,110,220,.08)'],t:'Possibly the largest structure known, traced by gamma-ray bursts. Astronomers still debate whether it is real.'},
+{n:'Observable universe',s:9.3e10*LY,k:'img',img:'universe',t:'The furthest we can ever see, about 93 billion light-years across. Its edge is set by how far light has travelled since the Big Bang, while space itself has been stretching. This illustration squeezes it all into one logarithmic view, with the Solar System at the centre.'}
+];
+
+/* ---------- build ---------- */
+const stage=$('#stage'), labels=$('#labels');
+const O=D.map(d=>{
+  const o=Object.assign({d:'w'},d);
+  let ar=1;
+  if(o.k==='v'){const m=SV[o.c].match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);ar=m[1]/m[2]}
+  else if(o.k==='line') ar=40;
+  else if(o.k==='img'||o.k==='photo'){const I=IMG[o.img];ar=I.w/I.h}
+  else if(o.a) ar=o.a;
+  o.ar=ar;
+  if(o.k==='img'){const sp=o.s*(o.span||1);if(ar>=1){o.wm=sp;o.hm=sp/ar}else{o.hm=sp;o.wm=sp*ar}}
+  else if(o.k==='photo'){const sp=o.s*(o.span||1);if(o.d==='h'){o.hm=sp;o.wm=sp*ar}else{o.wm=sp;o.hm=sp/ar}}
+  else if(o.d==='h'){o.hm=o.s;o.wm=o.s*ar}else{o.wm=o.s;o.hm=o.s/ar}
+  o.max=Math.max(o.wm,o.hm);
+  o.fw=Math.max(o.wm,0.4*o.hm);
+  if(!o.q) o.q=['sphere','atom','star','tstar','img','coin','disc','hole','cloud','galaxy','cmb','ink'].includes(o.k)?'Diameter':(o.d==='h'?'Height':'Length');
+  return o;
+}).sort((a,b)=>a.max-b.max);
+
+// Everything zooms about one fixed point. Each object sits a few of its own
+// widths from that point, so things of a similar size share the screen and
+// smaller things shrink into the centre as you zoom out.
+// Objects alternate between the left and right of a fixed centre, each one
+// just beyond the outermost object already on that side. Smaller things sit
+// nearer the middle and shrink into it as you zoom out; bigger things come in
+// from the edges as you zoom out.
+O.forEach(o=>{o.L=Math.log10(o.max)});
+// 2D layout: each object takes the nearest free spot around the focal point,
+// measured in units of its own size, so things of a similar size gather in a
+// ring round the centre and everything smaller nests inside them.
+let layoutAspect=0;
+function layout(aspect){
+  layoutAspect=aspect;
+  const placed=[];
+  const GOLD=2.399963;
+  O.forEach((o,i)=>{
+    const m=o.max, hw=o.wm*0.56+m*0.05, hh=o.hm*0.56+m*0.05, lab=m*0.26;
+    let found=null;
+    for(let r=0.6;r<=6&&!found;r+=0.12){
+      const n=Math.max(10,Math.round(r*14));
+      for(let j=0;j<n;j++){
+        const th=i*GOLD+j/n*Math.PI*2;
+        const X=Math.cos(th)*r*m, Y=Math.sin(th)*r*m*aspect;
+        let ok=true;
+        for(const p of placed){
+          if(X-hw<p.X+p.hw&&X+hw>p.X-p.hw&&Y-hh<p.Y+p.hh+p.lab&&Y+hh+lab>p.Y-p.hh){ok=false;break}
+        }
+        if(ok){found=[X,Y];break}
+      }
+    }
+    if(!found)found=[0,(placed.length?-1:0)*m];
+    o.X=found[0];o.Y=found[1];o.hw=hw;o.hh=hh;o.lab=lab;
+    placed.push(o);
+  });
+}
+const ZMIN=O[0].L-0.4, ZMAX=O[O.length-1].L+0.5;
+const POLY=dodecagon();
+
+O.slice().reverse().forEach(o=>{
+  const b=document.createElement('button');
+  b.type='button';b.className='obj k-'+o.k;
+  b.setAttribute('aria-label',o.n+', '+shortLen(o.s));
+  const c=o.c;
+  switch(o.k){
+    case 'sphere': b.style.background=`radial-gradient(circle at 36% 30%, ${c[0]}, ${c[1]} 78%)`;b.style.borderRadius='50%';break;
+    case 'atom': b.style.background=`radial-gradient(circle closest-side, ${c[0]} 0%, ${c[1]} 55%, transparent 100%)`;b.style.borderRadius='50%';break;
+    case 'star': b.style.background=`radial-gradient(circle closest-side, ${c[0]} 0%, ${c[0]} 35%, ${c[1]} 100%)`;b.style.borderRadius='50%';break;
+    case 'coin': b.style.background=`conic-gradient(from 20deg, rgba(255,255,255,.28), rgba(0,0,0,.12) 25%, rgba(255,255,255,.22) 50%, rgba(0,0,0,.14) 75%, rgba(255,255,255,.28)), radial-gradient(circle closest-side, ${c[0]} 0 60%, rgba(0,0,0,.25) 61%, ${c[1]} 63% 94%, rgba(0,0,0,.3) 96% 100%)`;
+      if(o.poly) b.style.clipPath=POLY; else b.style.borderRadius='50%';break;
+    case 'disc': b.style.background=`radial-gradient(circle closest-side, ${c[0]} 0%, ${c[0]} 22%, ${c[1]} 72%, ${c[0]} 100%)`;b.style.borderRadius='50%';break;
+    case 'ink': b.style.background='var(--ink)';b.style.borderRadius='50%';break;
+    case 'hole': b.style.background='#000';b.style.borderRadius='50%';break;
+    case 'cloud': b.style.background=`radial-gradient(ellipse closest-side, ${c[0]} 0%, ${c[1]} 40%, ${c[2]} 72%, transparent 100%)`;b.style.borderRadius='50%';break;
+    case 'galaxy': b.style.background=`radial-gradient(ellipse closest-side, #fffaf0 0%, ${c[0]} 9%, ${c[1]} 42%, rgba(140,150,255,.25) 70%, transparent 100%)`;b.style.borderRadius='50%';break;
+    case 'cmb': b.style.background='radial-gradient(circle at 30% 35%, rgba(255,210,120,.8), transparent 30%), radial-gradient(circle at 68% 62%, rgba(80,160,255,.75), transparent 34%), radial-gradient(circle at 60% 25%, rgba(255,120,90,.7), transparent 28%), radial-gradient(circle at 30% 72%, rgba(90,110,255,.7), transparent 30%), radial-gradient(circle, #f08a5d, #3a4cc9 92%)';b.style.borderRadius='50%';break;
+    case 'line': b.style.background=c;break;
+    case 'ring': {const p=document.createElement('span');p.className='planet';p.style.background=`radial-gradient(circle at 36% 30%, ${c[0]}, ${c[1]} 78%)`;const r=document.createElement('span');r.className='ring';b.append(p,r);break;}
+    case 'e': {const s=document.createElement('span');s.className='em';s.textContent=c;b.append(s);o.em=s;break;}
+    case 'v': b.innerHTML=SV[c];if(o.col) b.style.color=o.col;break;
+    case 'img': case 'photo': case 'tstar': {const im=new Image();im.alt='';im.draggable=false;im.decoding='async';im.src=IMG[o.k==='tstar'?'sun':o.img].src;
+      if(o.f) im.style.filter=o.f;
+      if(o.glow) b.style.borderRadius='50%';
+      b.append(im);break;}
+  }
+  b.addEventListener('click',e=>{if(e.detail!==0&&dragged)return;openInfo(o)});
+  stage.append(b);o.el=b;
+  const l=document.createElement('div');l.className='lbl';
+  l.innerHTML=`<b></b><span></span>`;l.firstChild.textContent=o.n;l.lastChild.textContent=shortLen(o.s);
+  labels.append(l);o.lb=l;o.on=false;o.lon=false;
+});
+
+/* ---------- formatting ---------- */
+function nf(v,d){return new Intl.NumberFormat('en-GB',{maximumSignificantDigits:d||4}).format(v)}
+function sup(n){const S={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return String(n).split('').map(ch=>S[ch]).join('')}
+function sci(m,d){let e=Math.floor(Math.log10(m)+1e-9);let ms=nf(m/Math.pow(10,e),d||3);if(ms==='10'){e++;ms='1'}return (ms==='1'?'':ms+' × ')+'10'+sup(e)+' m'}
+function shortLen(m){
+  if(m<1e-15) return sci(m);
+  const u=(v,s)=>nf(v)+' '+s;
+  if(m<1e-12) return u(m/1e-15,'fm'); if(m<1e-9) return u(m/1e-12,'pm'); if(m<1e-6) return u(m/1e-9,'nm');
+  if(m<1e-3) return u(m/1e-6,'µm'); if(m<0.1) return u(m*1e3,'mm'); if(m<1) return u(m*100,'cm');
+  if(m<1e4) return u(m,'m'); if(m<1e12) return u(m/1e3,'km'); if(m<1e15) return nf(m/AU,3)+' AU';
+  const ly=m/LY; if(ly<1e6){const t=nf(ly,3);return t+(t==='1'?' light-year':' light-years')}
+  if(ly<1e9) return nf(ly/1e6,3)+' million light-years'; return nf(ly/1e9,3)+' billion light-years';
+}
+function longLen(m){
+  const u=(v,s,p,d)=>{const t=nf(v,d);return t+' '+(t==='1'?s:p)};
+  if(m<1e-15) return sci(m);
+  if(m<1e-12) return u(m/1e-15,'femtometre','femtometres');
+  if(m<1e-9) return u(m/1e-12,'picometre','picometres');
+  if(m<1e-6) return u(m/1e-9,'nanometre','nanometres');
+  if(m<1e-3) return u(m/1e-6,'micrometre','micrometres');
+  if(m<0.1) return u(m*1e3,'millimetre','millimetres');
+  if(m<1) return u(m*100,'centimetre','centimetres');
+  if(m<1e4) return u(m,'metre','metres');
+  if(m<1e12) return u(m/1e3,'kilometre','kilometres');
+  if(m<1e15) return u(m/AU,'astronomical unit','astronomical units',3);
+  const ly=m/LY;
+  if(ly<1e6) return u(ly,'light-year','light-years',3);
+  if(ly<1e9) return nf(ly/1e6,3)+' million light-years';
+  return nf(ly/1e9,3)+' billion light-years';
+}
+const BAR_UNITS=[[1e-15,'fm'],[1e-12,'pm'],[1e-9,'nm'],[1e-6,'µm'],[1e-3,'mm'],[1e-2,'cm'],[1,'m'],[1e3,'km'],[AU,'AU'],[LY,'light-years'],[1e6*LY,'million light-years'],[1e9*LY,'billion light-years']];
+function barFor(L){
+  if(L<1e-15){
+    const E=Math.floor(Math.log10(L)+1e-9),m=L/Math.pow(10,E),n=m>=5?5:m>=2?2:1;
+    return {m:n*Math.pow(10,E),label:(n===1?'':n+' × ')+'10'+sup(E)+' m'};
+  }
+  let unit=1,name='m';
+  for(const [v,nm] of BAR_UNITS){if(L>=v){unit=v;name=nm}}
+  const v=L/unit,e=Math.floor(Math.log10(v)+1e-9),m=v/Math.pow(10,e);
+  const nice=(m>=5?5:m>=2?2:1)*Math.pow(10,e);
+  let label=nf(nice)+' '+name;
+  if(name==='light-years'&&nice===1) label='1 light-year';
+  return {m:nice*unit,label};
+}
+
+/* ---------- view ---------- */
+let z=Math.log10(1.75), raf=0, groundY=0, dragged=false;
+const slider=$('#zoom'), space=$('#space'), app=$('#app'), bar=$('#bar'), scaleTxt=$('#scaleTxt'), hint=$('#hint');
+slider.min=ZMIN.toFixed(2);slider.max=ZMAX.toFixed(2);
+const U=()=>FOCUS*Math.min(innerWidth,innerHeight*0.62);
+function camAt_unused(v){
+  const n=O.length;
+  if(v<=O[0].L) return O[0].X; if(v>=O[n-1].L) return O[n-1].X;
+  let lo=0,hi=n-1;
+  while(hi-lo>1){const mid=(lo+hi)>>1;if(O[mid].L<=v)lo=mid;else hi=mid}
+  const a=O[lo],b=O[hi],span=b.L-a.L;const t=span>0?(v-a.L)/span:0;
+  return a.X+(b.X-a.X)*t;
+}
+let cy=0,hx=0,hy=0,bgRGB=[232,238,244];
+const SPACE=[10,20,36];
+function readBg(){const h=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim().replace('#','');
+  if(h.length===6)bgRGB=[0,2,4].map(i=>parseInt(h.slice(i,i+2),16));queue()}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readBg);
+function measure(){
+  const f=document.querySelector('.foot').getBoundingClientRect();
+  const h=document.querySelector('.hud').getBoundingClientRect();
+  const top=h.bottom+8, bottom=f.top-8;
+  cy=(top+bottom)/2; hx=innerWidth/2-8; hy=(bottom-top)/2;
+  groundY=bottom;
+  const a=Math.min(1.8,Math.max(0.55,hy/hx));
+  if(Math.abs(a-layoutAspect)>0.08) layout(a);
+  queue();
+}
+function queue(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;render()})}
+function render(){
+  const W=innerWidth, H=innerHeight, ppm=U()/Math.pow(10,z), cands=[];
+  for(const o of O){
+    const wpx=o.wm*ppm, hpx=o.hm*ppm, cx=W/2+o.X*ppm, oy=cy+o.Y*ppm, big=Math.max(wpx,hpx);
+    const lim=o.k==='e'?7000:40000;
+    const vis=big>0.7&&big<lim&&cx+wpx/2>-60&&cx-wpx/2<W+60&&oy+hpx/2>-60&&oy-hpx/2<H+60;
+    if(!vis){if(o.on){o.el.style.display='none';o.on=false}if(o.lon){o.lb.style.display='none';o.lon=false}continue}
+    if(!o.on){o.el.style.display='block';o.on=true}
+    const h=o.k==='line'?Math.max(3,hpx):hpx;
+    const s=o.el.style;
+    s.width=wpx+'px';s.height=h+'px';
+    s.transform=`translate(${cx-wpx/2}px,${oy-h/2}px)`;
+    if(o.em){o.em.style.fontSize=(h*0.86)+'px';o.em.style.lineHeight=h+'px'}
+    if(o.glow) s.boxShadow=`0 0 ${Math.min(wpx*(o.k==='tstar'?0.12:0.22),200)}px ${o.glow}`;
+    else if(o.k==='star') s.boxShadow=`0 0 ${Math.min(wpx*0.22,220)}px ${o.c[1]}`;
+    else if(o.k==='hole') s.boxShadow=`0 0 0 ${wpx*0.13}px rgba(255,150,60,.55), 0 0 ${Math.min(wpx*0.7,400)}px ${Math.min(wpx*0.18,140)}px rgba(255,170,80,.55)`;
+    // label
+    const room=Math.min(Math.max(o.fw*ppm*1.4,96),200);
+    const ly=oy+h/2+6;
+    if(big>=30&&cx>12&&cx<W-12&&ly>40&&ly<groundY+20){
+      const lx=Math.min(Math.max(cx,room/2+8),W-room/2-8);
+      const occ=Math.min(room,Math.max(o.n.length*6.6+12,64));
+      const lines=Math.ceil(o.n.length*6.6/room);
+      cands.push({o,lx,ly,room,occ,lh:lines*17+18});
+    }else if(o.lon){o.lb.style.display='none';o.lon=false}
+  }
+  cands.sort((a,b)=>Math.abs(a.o.L-z)-Math.abs(b.o.L-z));
+  const taken=[];
+  for(const c of cands){
+    const a=c.lx-c.occ/2-6,b=c.lx+c.occ/2+6,t0=c.ly,t1=c.ly+c.lh;
+    const clash=taken.some(t=>a<t[1]&&b>t[0]&&t0<t[3]&&t1>t[2]);
+    const o=c.o;
+    if(clash){if(o.lon){o.lb.style.display='none';o.lon=false}continue}
+    taken.push([a,b,t0,t1]);
+    if(!o.lon){o.lb.style.display='block';o.lon=true}
+    o.lb.style.width=c.room+'px';
+    o.lb.style.transform=`translate(${c.lx-c.room/2}px,${c.ly}px)`;
+  }
+  const op=Math.min(1,Math.max(0,(z-5.6)/1.6));
+  space.style.opacity=op;
+  const v=bgRGB.map((c,i)=>Math.round(c+(SPACE[i]-c)*op));
+  app.style.setProperty('--veil',`rgb(${v[0]},${v[1]},${v[2]})`);
+  app.classList.toggle('space-on',op>0.5);
+  const b=barFor(110/ppm);
+  bar.style.width=(b.m*ppm)+'px';scaleTxt.textContent=b.label;
+}
+function setZ(v,fromAnim){
+  z=Math.min(ZMAX,Math.max(ZMIN,v));
+  slider.value=z;
+  if(!fromAnim) anim=null;
+  queue();
+}
+let ariaT=0;
+function updateAria(){clearTimeout(ariaT);ariaT=setTimeout(()=>{slider.setAttribute('aria-valuetext','Scale bar '+scaleTxt.textContent)},150)}
+
+function targetZ(o){
+  const u=U(),W=innerWidth;
+  const a=o.L-0.1;
+  const b=Math.log10(u*(Math.abs(o.X)+o.wm/2)/(hx-6));
+  const c=Math.log10(u*(Math.abs(o.Y)+o.hm/2)/Math.max(60,hy-36));
+  return Math.max(a,b,c);
+}
+/* ---------- animation ---------- */
+let anim=null;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+function animateTo(t){
+  if(reduce.matches){setZ(t);updateAria();return}
+  const from=z,d=Math.abs(t-from);
+  anim={from,t,dur:Math.min(2800,450+d*75),t0:performance.now()};
+  const step=now=>{
+    if(!anim)return;
+    const p=Math.min(1,(now-anim.t0)/anim.dur);
+    const e=p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+    setZ(anim.from+(anim.t-anim.from)*e,true);
+    if(p<1)requestAnimationFrame(step);else{anim=null;updateAria()}
+  };
+  requestAnimationFrame(step);
+}
+
+/* ---------- input ---------- */
+let hintGone=false;
+function dismissHint(){if(!hintGone){hintGone=true;setTimeout(()=>hint.classList.add('gone'),2500)}}
+slider.addEventListener('input',()=>{anim=null;setZ(+slider.value);updateAria();dismissHint()});
+$('#zin').addEventListener('click',()=>{animateTo(z-1)});
+$('#zout').addEventListener('click',()=>{animateTo(z+1)});
+
+const pts=new Map();let lastPinch=0,startX=0,startY=0,lastX=0;
+const dist=()=>{const p=[...pts.values()];return Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)};
+stage.addEventListener('pointerdown',e=>{
+  pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pts.size===1){dragged=false;startX=lastX=e.clientX;startY=e.clientY}
+  if(pts.size===2){lastPinch=dist();dragged=true}
+  anim=null;
+});
+addEventListener('pointermove',e=>{
+  const p=pts.get(e.pointerId);if(!p)return;
+  p.x=e.clientX;p.y=e.clientY;
+  if(pts.size>=2){const d=dist();if(lastPinch>0&&d>0)setZ(z-Math.log10(d/lastPinch));lastPinch=d;dismissHint()}
+  else if(!dragged&&(Math.abs(e.clientX-startX)>7||Math.abs(e.clientY-startY)>7)){dragged=true}
+});
+const endPtr=e=>{
+  if(!pts.has(e.pointerId))return;
+  pts.delete(e.pointerId);
+  if(pts.size<2)lastPinch=0;
+  if(pts.size===1){lastX=[...pts.values()][0].x}
+  if(pts.size===0)updateAria();
+};
+addEventListener('pointerup',endPtr);addEventListener('pointercancel',endPtr);
+stage.addEventListener('wheel',e=>{
+  e.preventDefault();anim=null;
+  const k=e.deltaMode===1?16:e.deltaMode===2?400:1;
+  const dy=(Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX)*k;
+  setZ(z+dy*(e.ctrlKey?0.012:0.0025));updateAria();dismissHint();
+},{passive:false});
+
+/* ---------- sheets ---------- */
+const scrim=$('#scrim'), info=$('#info'), browse=$('#browse'), intro=$('#intro');
+let current=null, lastFocus=null, openSheet=null;
+function show(sh){
+  lastFocus=document.activeElement;openSheet=sh;
+  sh.classList.add('open');scrim.classList.add('on');
+}
+function hide(){
+  if(!openSheet)return;
+  openSheet.classList.remove('open');scrim.classList.remove('on');openSheet=null;
+  if(lastFocus&&lastFocus.focus)lastFocus.focus({preventScroll:true});
+}
+function openInfo(o){
+  current=o;
+  $('#infoName').textContent=o.n;
+  $('#infoMeas').textContent=`${o.q}: ${longLen(o.s)}  (${sci(o.s)})`;
+  $('#infoDesc').textContent=o.t;
+  const cr=$('#infoCredit');cr.textContent='';
+  if(o.k==='img'||o.k==='photo'||o.k==='tstar'){
+    const I=IMG[o.k==='tstar'?'sun':o.img];
+    cr.append(o.k==='tstar'?'Illustration only: a photo of the Sun, recoloured, as this star’s surface can’t be photographed in detail. Sun photo: ':'Image: ');
+    const a=document.createElement('a');a.href=I.page;a.target='_blank';a.rel='noopener';a.textContent=I.credit;
+    cr.append(a,', ');
+    const licenseUrl=I.licence==='CC0'?'https://creativecommons.org/publicdomain/zero/1.0/':I.licence.startsWith('CC ')?'https://creativecommons.org/licenses/'+I.licence.slice(3).toLowerCase().replaceAll(' ','/')+'/':null;
+    if(licenseUrl){const l=document.createElement('a');l.href=licenseUrl;l.target='_blank';l.rel='noopener';l.textContent=I.licence;cr.append(l)}else cr.append(I.licence);
+    cr.append(', via Wikimedia Commons; image cropped, resized and converted to WebP for this visualisation.');
+  }
+  show(info);$('#infoClose').focus({preventScroll:true});
+}
+$('#infoClose').addEventListener('click',hide);
+$('#infoZoom').addEventListener('click',()=>{const o=current;hide();if(o)animateTo(targetZ(o))});
+scrim.addEventListener('click',hide);
+
+const list=$('#list'), search=$('#search');
+O.forEach(o=>{
+  const li=document.createElement('li');const b=document.createElement('button');
+  b.type='button';b.className='item';
+  b.innerHTML='<b></b><span></span>';b.firstChild.textContent=o.n;b.lastChild.textContent=shortLen(o.s);
+  b.addEventListener('click',()=>{hide();animateTo(targetZ(o))});
+  li.append(b);list.append(li);o.li=li;o.key=o.n.toLowerCase();
+});
+search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();O.forEach(o=>{o.li.hidden=!!q&&!o.key.includes(q)})});
+$('#browseBtn').addEventListener('click',()=>{show(browse);search.value='';O.forEach(o=>o.li.hidden=false);
+  // scroll to the nearest object
+  let best=O[0];for(const o of O){if(Math.abs(targetZ(o)-z)<Math.abs(targetZ(best)-z))best=o}
+  best.li.scrollIntoView({block:'center'});
+  setTimeout(()=>search.focus({preventScroll:true}),50);
+});
+$('#browseClose').addEventListener('click',hide);
+
+$('#start').addEventListener('click',()=>{intro.classList.add('gone');setTimeout(()=>intro.remove(),400);slider.focus({preventScroll:true})});
+
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(openSheet){hide();return}if(document.body.contains(intro)){$('#start').click();return}}
+  if(openSheet||document.body.contains(intro)&&!intro.classList.contains('gone'))return;
+  if(e.target===slider||e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowRight'||e.key==='+'||e.key==='='){e.preventDefault();setZ(z+0.1);updateAria()}
+  if(e.key==='ArrowLeft'||e.key==='-'||e.key==='_'){e.preventDefault();setZ(z-0.1);updateAria()}
+});
+
+/* ---------- stars ---------- */
+(function(){let s=[];for(let i=0;i<180;i++){const x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),a=(0.3+Math.random()*0.7).toFixed(2),r=Math.random()<.12?1:0;s.push(`${x}vw ${y}vh 0 ${r}px rgba(255,255,255,${a})`)}$('#stars').style.boxShadow=s.join(',')})();
+
+addEventListener('resize',measure);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(measure);
+readBg();measure();setZ(targetZ(O.find(o=>o.n==='Average UK adult'))+0.25);updateAria();
+})();
+</script>
+</body>
+</html>
