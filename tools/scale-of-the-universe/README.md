@@ -7,6 +7,7 @@ Inspired by Scale of the Universe by Cary and Michael Huang. The layout, drawing
 ## How it works
 
 - `index.html` is self-contained HTML, CSS and vanilla JavaScript with no libraries, build step, external fonts or network requests.
+- The live scale-bar readout shows both the familiar unit and its scientific-notation equivalent in metres. The **Units** guide explains powers of ten, SI prefixes, and the difference between `mm` (millimetre) and `Mm` (megametre).
 - Images are transparent WebP files in `images/`, loaded locally. There are no live data requests, analytics or user-data collection.
 - Sizes are typical or approximate values. Each object is drawn at its stated size; for photos the stated dimension (length, height, diameter or wingspan, shown in the info panel) is matched to the photo, so perspective in some photos makes them approximate.
 - Stars whose surfaces cannot be photographed in detail are shown with a recoloured photo of the Sun, and their info panels say so.

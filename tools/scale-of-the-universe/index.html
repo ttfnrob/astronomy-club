@@ -61,9 +61,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .hud{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 22px 18px;background:linear-gradient(var(--veil,var(--bg)) 62%,transparent);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
 .hud > *{pointer-events:auto}
 .title{font-family:var(--serif);font-weight:600;font-size:clamp(19px,4.8vw,26px);line-height:1.1;margin:0;letter-spacing:-.01em}
-.scale{margin-top:12px;display:flex;align-items:flex-end;gap:10px;min-height:22px}
+.scale{margin-top:12px;display:flex;align-items:center;gap:10px;min-height:30px}
+.scale-readout{display:flex;flex-direction:column;gap:4px}
 .bar{height:9px;border:2px solid var(--ink);border-top:0;transition:width .08s linear}
-.scale-txt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.scale-txt{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.scale-sci{font-size:12px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.1}
+.hud-actions{display:flex;align-items:center;gap:8px;flex:none}
 
 .btn{font:500 14px/1 var(--sans);color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:0 16px;min-height:42px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--ink)}
@@ -106,6 +109,15 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .item b{font-family:var(--serif);font-weight:600;font-size:16px}
 .item span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 #browse{height:86%}
+@media(max-width:380px){.hud{padding-left:14px;padding-right:14px;gap:8px}.hud-actions{gap:6px}.hud-actions .btn{padding-left:12px;padding-right:12px}}
+.units-body{overflow:auto;min-height:0;flex:1;-webkit-overflow-scrolling:touch}
+.units-body p{font-size:14px;line-height:1.55;margin:0 0 12px}
+.prefix-table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.prefix-table th,.prefix-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.prefix-table th{font-size:12px;color:var(--muted);font-weight:600}
+.prefix-table td:last-child,.prefix-table th:last-child{white-space:nowrap}
+.prefix-table td:last-child{font-weight:600}
+.units-examples{padding:12px;border-radius:12px;background:var(--line);font-variant-numeric:tabular-nums}
 
 .intro{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:var(--shade);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);transition:opacity .35s}
 .intro.gone{opacity:0;pointer-events:none}
@@ -125,9 +137,9 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   <header class="hud">
     <div>
       <p class="title">The scale of the universe</p>
-      <div class="scale" aria-live="off"><div class="bar" id="bar"></div><div class="scale-txt" id="scaleTxt"></div></div>
+      <div class="scale" aria-live="off"><div class="bar" id="bar"></div><div class="scale-readout"><div class="scale-txt" id="scaleTxt"></div><div class="scale-sci" id="scaleSci"></div></div></div>
     </div>
-    <button class="btn" id="browseBtn" type="button">Browse</button>
+    <div class="hud-actions"><button class="btn" id="unitsBtn" type="button" aria-label="Explain scientific notation and metric prefixes">Units</button><button class="btn" id="browseBtn" type="button">Browse</button></div>
   </header>
   <div class="foot">
     <p class="hint" id="hint">Pinch, scroll or use the slider to zoom. Tap anything to read about it.</p>
@@ -160,11 +172,34 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   <ul class="list" id="list"></ul>
 </section>
 
+<section class="sheet" id="units" role="dialog" aria-modal="true" aria-labelledby="unitsTitle">
+  <div class="sheet-head"><h2 id="unitsTitle">Powers of ten &amp; metric prefixes</h2><button class="btn" id="unitsClose" type="button">Close</button></div>
+  <div class="units-body">
+    <p>Scientific notation writes very small or very large numbers compactly. The exponent tells you how many times to multiply by 10. A minus sign means a fraction of a metre; a plus sign means many metres.</p>
+    <p><strong>For example:</strong> 10<sup>−5</sup> m = 0.00001 m (one hundred-thousandth); 10<sup>−6</sup> m = 0.000001 m (one millionth). And 10<sup>+6</sup> m = 1,000,000 m = 1,000 km (one million metres).</p>
+    <table class="prefix-table">
+      <thead><tr><th>Prefix and symbol</th><th>In metres</th></tr></thead>
+      <tbody>
+        <tr><td>femto (fm)</td><td>10<sup>−15</sup> m</td></tr>
+        <tr><td>pico (pm)</td><td>10<sup>−12</sup> m</td></tr>
+        <tr><td>nano (nm)</td><td>10<sup>−9</sup> m</td></tr>
+        <tr><td>micro (µm)</td><td>10<sup>−6</sup> m</td></tr>
+        <tr><td>milli (mm)</td><td>10<sup>−3</sup> m</td></tr>
+        <tr><td>centi (cm)</td><td>10<sup>−2</sup> m</td></tr>
+        <tr><td>metre (m)</td><td>10<sup>0</sup> m</td></tr>
+        <tr><td>kilo (km)</td><td>10<sup>+3</sup> m</td></tr>
+        <tr><td>mega (Mm)</td><td>10<sup>+6</sup> m</td></tr>
+      </tbody>
+    </table>
+    <p class="units-examples"><strong>Watch the capitals:</strong> mm is a millimetre, one thousandth of a metre. Mm is a megametre, one million metres. The scale also writes its current bar in metres using scientific notation, alongside the familiar unit.</p>
+  </div>
+</section>
+
 <div class="intro" id="intro">
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <h1 id="introTitle">The scale of the universe</h1>
-    <p>From the smallest length in physics to the edge of the observable universe, all drawn to scale.</p>
-    <p>Pinch, scroll or use the slider to zoom. Tap anything to read about it.</p>
+    <p>From the smallest length in physics to the edge of the observable universe, all drawn to scale. The scale readout pairs familiar units with their value in metres.</p>
+    <p>Pinch, scroll or use the slider to zoom. Tap anything to read about it. Choose <strong>Units</strong> for a guide to powers of ten and metric prefixes.</p>
     <button class="btn primary" id="start" type="button">Start with a person</button>
     <p class="small"><a href="../../">Back to Watling Astronomy Club</a></p>
   </div>
@@ -462,7 +497,7 @@ O.slice().reverse().forEach(o=>{
 
 /* ---------- formatting ---------- */
 function nf(v,d){return new Intl.NumberFormat('en-GB',{maximumSignificantDigits:d||4}).format(v)}
-function sup(n){const S={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};return String(n).split('').map(ch=>S[ch]).join('')}
+function sup(n){const S={'-':'⁻','+':'⁺','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'},v=Number(n)>0?'+'+n:String(n);return v.split('').map(ch=>S[ch]).join('')}
 function sci(m,d){let e=Math.floor(Math.log10(m)+1e-9);let ms=nf(m/Math.pow(10,e),d||3);if(ms==='10'){e++;ms='1'}return (ms==='1'?'':ms+' × ')+'10'+sup(e)+' m'}
 function shortLen(m){
   if(m<1e-15) return sci(m);
@@ -507,7 +542,7 @@ function barFor(L){
 
 /* ---------- view ---------- */
 let z=Math.log10(1.75), raf=0, groundY=0, dragged=false;
-const slider=$('#zoom'), space=$('#space'), app=$('#app'), bar=$('#bar'), scaleTxt=$('#scaleTxt'), hint=$('#hint');
+const slider=$('#zoom'), space=$('#space'), app=$('#app'), bar=$('#bar'), scaleTxt=$('#scaleTxt'), scaleSci=$('#scaleSci'), hint=$('#hint');
 slider.min=ZMIN.toFixed(2);slider.max=ZMAX.toFixed(2);
 const U=()=>FOCUS*Math.min(innerWidth,innerHeight*0.62);
 function camAt_unused(v){
@@ -578,7 +613,7 @@ function render(){
   app.style.setProperty('--veil',`rgb(${v[0]},${v[1]},${v[2]})`);
   app.classList.toggle('space-on',op>0.5);
   const b=barFor(110/ppm);
-  bar.style.width=(b.m*ppm)+'px';scaleTxt.textContent=b.label;
+  bar.style.width=(b.m*ppm)+'px';scaleTxt.textContent=b.label;scaleSci.textContent='= '+sci(b.m);
 }
 function setZ(v,fromAnim){
   z=Math.min(ZMAX,Math.max(ZMIN,v));
@@ -587,7 +622,7 @@ function setZ(v,fromAnim){
   queue();
 }
 let ariaT=0;
-function updateAria(){clearTimeout(ariaT);ariaT=setTimeout(()=>{slider.setAttribute('aria-valuetext','Scale bar '+scaleTxt.textContent)},150)}
+function updateAria(){clearTimeout(ariaT);ariaT=setTimeout(()=>{slider.setAttribute('aria-valuetext','Scale bar '+scaleTxt.textContent+', '+scaleSci.textContent)},150)}
 
 function targetZ(o){
   const u=U(),W=innerWidth;
@@ -698,6 +733,8 @@ $('#browseBtn').addEventListener('click',()=>{show(browse);search.value='';O.for
   setTimeout(()=>search.focus({preventScroll:true}),50);
 });
 $('#browseClose').addEventListener('click',hide);
+$('#unitsBtn').addEventListener('click',()=>{show($('#units'));$('#unitsClose').focus({preventScroll:true})});
+$('#unitsClose').addEventListener('click',hide);
 
 $('#start').addEventListener('click',()=>{intro.classList.add('gone');setTimeout(()=>intro.remove(),400);slider.focus({preventScroll:true})});
 
