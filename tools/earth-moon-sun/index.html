@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32.png">
+  <link rel="shortcut icon" href="../../favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#103d78">
+  <meta name="description" content="Explore Earth’s seasons and the Moon’s phases in a Sun-centred teaching orrery from Watling Astronomy Club.">
+  <title>Earth, Moon and Sun | Watling Astronomy Club</title>
+  <style>
+    :root{color-scheme:light;--navy:#103d78;--blue:#1f64a5;--sky:#eaf3fb;--ink:#142a43;--muted:#52677c;--line:#d7e2ed;--gold:#ffc95e;--white:#fff;--sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#f5f8fc;color:var(--ink);font:16px/1.6 var(--sans)}
+    a{color:var(--navy)}
+    .wrap{width:min(1360px,calc(100% - 48px));margin-inline:auto}
+    .top{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center}
+    .top-inner{display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--navy);font-size:.97rem;font-weight:800;letter-spacing:.015em}
+    .crest{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--navy);font-size:21px}
+    .nav-note{display:flex;align-items:center;gap:18px;font-size:.84rem;color:var(--muted);font-weight:600}
+    .nav-note a{color:var(--navy);font-weight:800;text-decoration:none}
+    .nav-note a:hover{text-decoration:underline}
+    .hero{padding:34px 0 64px}
+    .intro{text-align:left;max-width:900px;margin:0 0 28px}
+    .eyebrow{margin:0 0 10px;color:var(--blue);font-size:.76rem;line-height:1.3;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    h1,h2,h3,p{margin-top:0}
+    h1{margin:0 0 14px;color:var(--navy);font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.04;letter-spacing:-.045em;font-weight:700}
+    .lede{max-width:660px;margin:0 auto;color:var(--muted);font-size:clamp(1rem,2vw,1.15rem)}
+    .scene-card{overflow:hidden;border-radius:22px;background:#091a35;box-shadow:0 20px 60px #143c681a;border:1px solid #dce7f1}
+    .scene-head{position:absolute;top:18px;left:22px;z-index:2;color:#dcecff;font-size:.75rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+    .scene{position:relative;height:clamp(460px,52vw,700px);background:radial-gradient(ellipse at 50% 52%,#193b66 0,#10294c 43%,#08172d 100%)}
+    #space{display:block;width:100%;height:100%;outline:none}
+    #space:focus-visible{outline:3px solid #ffe08d;outline-offset:-5px}
+    .scene-caption{position:absolute;right:20px;bottom:14px;color:#dce8f5;font-size:.73rem;text-shadow:0 1px 4px #001}
+    .scene-caption strong{color:#fff}
+    .season-mark{position:absolute;z-index:2;width:max-content;max-width:145px;padding:5px 9px;border:1px solid #7893b26b;border-radius:9px;background:#091a35df;color:#dce8f5;font-size:.68rem;line-height:1.2;text-align:center;box-shadow:0 2px 10px #0015;pointer-events:none}
+    .season-mark strong,.season-mark small{display:block}
+    .season-mark strong{font-size:.73rem;color:#fff}
+    .season-mark small{margin-top:2px;color:#bdcfe5;font-size:.62rem}
+    .sun-tag{position:absolute;z-index:2;left:calc(50% + 47px);top:50%;color:#ffe08d;font-size:.65rem;font-weight:900;letter-spacing:.12em;text-shadow:0 1px 4px #001;pointer-events:none}
+    .orrery-title{margin:0 0 18px;text-align:center}
+    .season-mark.summer{left:50%;top:calc(50% - min(31vw,31vh,190px));transform:translate(-50%,-100%)}
+    .season-mark.winter{left:50%;top:calc(50% + min(31vw,31vh,190px));transform:translate(-50%,4px)}
+    .season-mark.spring{left:calc(50% + min(31vw,31vh,190px));top:50%;transform:translate(-50%,-50%)}
+    .season-mark.autumn{left:calc(50% - min(31vw,31vh,190px));top:50%;transform:translate(-50%,-50%)}
+    .axis-note{position:absolute;z-index:2;left:18px;bottom:14px;max-width:180px;color:#dce8f5;font-size:.68rem;line-height:1.25;text-shadow:0 1px 4px #001}
+    .model-legend{position:absolute;z-index:2;top:16px;right:20px;display:flex;gap:12px;color:#dce8f5;font-size:.67rem;font-weight:700;text-shadow:0 1px 4px #001}
+    .legend-sun,.legend-earth,.legend-moon{margin-right:4px;font-size:.78rem}
+    .legend-sun{color:#ffc95e}.legend-earth{color:#7db9e9}.legend-moon{color:#d6d9df}
+    .facts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid #d4e0ee;background:white}
+    .fact{padding:18px 20px;min-width:0}
+    .fact+.fact{border-left:1px solid var(--line)}
+    .fact-label{display:block;color:#60758a;font-size:.69rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    .fact strong{display:block;margin-top:4px;color:var(--navy);font-size:1.1rem;line-height:1.3}
+    .fact small{display:block;margin-top:2px;color:var(--muted);font-size:.78rem}
+    .controls{margin-top:18px;padding:20px 24px 18px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 26px #163d6410}
+    .control-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:9px}
+    .date-label{font-size:.78rem;color:var(--muted);font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    #date-output{color:var(--navy);font-weight:800;font-size:1.04rem}
+    .range{display:block;width:100%;height:26px;margin:0;accent-color:#1e65a7;cursor:pointer}
+    .range:focus-visible{outline:3px solid #8ab9e4;outline-offset:3px;border-radius:8px}
+    .range-hints{display:flex;justify-content:space-between;margin-top:-2px;color:#65798d;font-size:.72rem}
+    .buttons{display:flex;align-items:center;gap:10px;margin-top:16px}
+    button{min-height:42px;padding:8px 16px;border:1px solid #b8cbe0;border-radius:9px;background:#fff;color:var(--navy);font:700 .9rem var(--sans);cursor:pointer;transition:background .15s,border-color .15s,transform .15s}
+    button:hover{background:#edf5fc;border-color:#6f9bca}
+    button:active{transform:translateY(1px)}
+    button:focus-visible,a:focus-visible{outline:3px solid #e4a92c;outline-offset:3px}
+    button.primary{background:var(--navy);border-color:var(--navy);color:#fff}
+    button.primary:hover{background:#185495}
+    .keyboard-hint{margin-left:auto;color:var(--muted);font-size:.76rem}
+    .model-note{max-width:880px;margin:18px auto 0;color:#617489;text-align:center;font-size:.82rem}
+    .credits{margin:8px auto 0;color:#718398;text-align:center;font-size:.75rem}
+    .credits a{color:#345f8a}
+    .tools{padding:50px 0 76px;background:#eaf2fa;border-top:1px solid #d9e5f0}
+    .tools-quick{margin:30px 0 38px;padding:22px 0 0;background:transparent;border:0}
+    .tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px}
+    h2{margin:0;color:var(--navy);font-size:clamp(1.7rem,3.5vw,2.35rem);line-height:1.15;letter-spacing:-.03em}
+    .section-head p{max-width:420px;margin:0;color:var(--muted);font-size:.93rem}
+    .card{display:grid;grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:hidden;border-radius:16px;background:#fff;border:1px solid #d5e2ed;box-shadow:0 8px 28px #173b5b0d;text-decoration:none;transition:transform .18s,box-shadow .18s}
+    .card:hover{transform:translateY(-3px);box-shadow:0 14px 35px #173b5b19}
+    .thumb{display:block;width:100%;height:auto;aspect-ratio:16/8;min-height:0;object-fit:cover;background:#0b1b30}
+    .card-body{padding:16px 20px;display:flex;flex-direction:column;align-items:flex-start}
+    .tag{margin:0 0 9px;color:#3c6e9e;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+    h3{margin:0 0 8px;color:var(--navy);font-size:1.55rem;line-height:1.2}
+    .card p{max-width:680px;margin:0 0 12px;color:var(--muted);font-size:.91rem}
+    .link{margin-top:auto;color:#14558f;font-weight:800}
+    .about{padding:28px 0 34px;background:#fff;color:var(--muted);font-size:.88rem}
+    .about p{max-width:800px;margin:0 0 8px}
+    .about strong{color:var(--navy)}
+    footer{padding:17px 0 25px;border-top:1px solid #dfe7ef;background:#fff;color:#63778b;font-size:.8rem}
+    .fallback{display:none;position:absolute;inset:0;place-items:center;padding:25px;text-align:center;color:#e5f0ff;background:radial-gradient(circle,#214a78,#09172e)}
+    .fallback h2{color:#fff}
+    .webgl-off .fallback{display:grid}
+    .webgl-off #space{visibility:hidden}
+    @media(max-width:700px){.wrap{width:min(100% - 32px,1160px)}.top{height:66px}.nav-note{font-size:.76rem}.nav-note .club-note{display:none}.hero{padding:38px 0 48px}.intro{margin-bottom:22px}.tools-quick{margin:22px 0 30px;padding:18px 0 0}.tool-grid{grid-template-columns:1fr;gap:12px}.scene{height:clamp(380px,62vh,500px)}.scene-head{left:14px;top:14px;font-size:.68rem}.model-legend{right:12px;top:12px;gap:7px;font-size:.59rem}.scene-caption{right:12px;bottom:10px;font-size:.66rem}.axis-note{left:12px;bottom:10px;font-size:.62rem}.season-mark{max-width:125px;padding:4px 6px;font-size:.61rem}.season-mark strong{font-size:.66rem}.season-mark small{font-size:.57rem}.fact{padding:13px 10px}.fact strong{font-size:.95rem}.fact small{font-size:.7rem}.controls{padding:17px 16px}.control-top{align-items:flex-start;flex-direction:column;gap:2px}.buttons{flex-wrap:wrap}.keyboard-hint{width:100%;margin:2px 0 0}.tools{padding:38px 0 52px}.tools-quick{padding:18px 0 0}.section-head{display:block}.section-head p{margin-top:9px}.card{grid-template-columns:1fr}.card-body{padding:16px}.card h3{font-size:1.2rem}.card p{font-size:.84rem}.thumb{height:auto;aspect-ratio:16/8;min-height:0}.model-note{text-align:left}}
+    @media(max-width:410px){.scene{height:clamp(360px,64vh,440px)}.facts{grid-template-columns:1fr}.fact{display:grid;grid-template-columns:1fr auto;align-items:center;gap:0 12px;padding:10px 14px}.fact+.fact{border-left:0;border-top:1px solid var(--line)}.fact-label{grid-column:1}.fact strong{grid-column:2;grid-row:1/3;text-align:right}.fact small{grid-column:1}.season-mark{max-width:112px}.card{grid-template-columns:1fr}.thumb{height:auto;aspect-ratio:16/8;min-height:0}.card-body{padding:16px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+  </style>
+</head>
+<body>
+  <header class="top"><div class="wrap top-inner"><a class="brand" href="../../" aria-label="Back to Watling Astronomy Club"><span class="crest" aria-hidden="true">✦</span><span>Watling Astronomy Club</span></a><span class="nav-note"><span class="club-note">Earth, Moon and Sun</span><a href="../../">← Club homepage</a></span></div></header>
+  <main>
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="intro"><p class="eyebrow">Watling Astronomy Club · interactive model</p><h1 id="hero-title">Earth, Moon and Sun</h1><p class="lede">Scrub through the year to see Earth’s seasons and the Moon’s changing phase. The Sun stays at the centre.</p></div>
+      <h2 id="orrery-title" class="orrery-title">A year around the Sun · distances and sizes schematic</h2>
+      <div class="scene-card">
+        <div class="scene" id="scene">
+          <span class="scene-head">Sun-centred orrery · not to scale</span>
+          <canvas id="space" tabindex="0" role="img" aria-label="Interactive Sun-centred orrery. The Sun stays at the centre while Earth follows its yearly orbit with a fixed tilted axis; the Moon moves around Earth. Use the date slider below to explore the seasons and lunar phases."></canvas>
+          <span class="season-mark summer" data-season="Summer"><strong>June</strong><small>Northern summer solstice</small></span>
+          <span class="season-mark autumn" data-season="Autumn"><strong>September</strong><small>Autumn equinox</small></span>
+          <span class="season-mark winter" data-season="Winter"><strong>December</strong><small>Northern winter solstice</small></span>
+          <span class="season-mark spring" data-season="Spring"><strong>March</strong><small>Spring equinox</small></span>
+          <span class="sun-tag" aria-hidden="true">SUN</span>
+          <span class="model-legend" aria-hidden="true"><span><b class="legend-sun">●</b>Sun</span><span><b class="legend-earth">●</b>Earth</span><span><b class="legend-moon">●</b>Moon</span></span>
+          <span class="axis-note">Earth’s north axis stays tilted in the same direction · 23.4°</span>
+          <div class="fallback"><div><h2>Explore the sky model</h2><p>Your browser does not support WebGL. Use the date control below to read how the seasons and Moon phase change through the year.</p></div></div>
+          <div class="scene-caption"><strong>Distances are schematic.</strong></div>
+        </div>
+        <div class="facts" aria-live="polite">
+          <div class="fact"><span class="fact-label">Northern season</span><strong id="season">—</strong><small id="tilt-note">Earth’s axis is tilted 23.4°</small></div>
+          <div class="fact"><span class="fact-label">Moon phase</span><strong id="phase">—</strong><small id="illumination">— illuminated</small></div>
+          <div class="fact"><span class="fact-label">Sunlight</span><strong id="sunlight">—</strong><small>on the Northern Hemisphere</small></div>
+        </div>
+      </div>
+      <div class="controls" aria-label="Time controls">
+        <div class="control-top"><label class="date-label" for="day-slider">Scrub through the year</label><output id="date-output" for="day-slider">—</output></div>
+        <input class="range" id="day-slider" type="range" min="0" max="365" step="1" value="0" aria-label="Date of the year">
+        <div class="range-hints" aria-hidden="true"><span>Jan</span><span>Apr</span><span>Jul</span><span>Oct</span><span>Dec</span></div>
+        <div class="buttons"><button class="primary" id="play" type="button" aria-pressed="false">▶ Play through year</button><button id="today" type="button">Today</button><span class="keyboard-hint">Tip: focus the slider, then use ← → to move one day.</span></div>
+      </div>
+      <p class="model-note">An explanatory model, not a precision ephemeris. The Sun remains at the centre; Earth’s circular orbit, fixed 23.4° axial tilt, and the Moon’s orbit and phase all change with the selected date. Distances and sizes are deliberately altered for legibility, and the Moon follows an average 29.53-day cycle.</p>
+      <p class="credits">Earth texture: <a href="https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/">NASA Blue Marble: Next Generation</a>. Moon texture: <a href="https://svs.gsfc.nasa.gov/4720/">NASA/GSFC/ASU, Lunar Reconnaissance Orbiter Wide Angle Camera</a>.</p>
+    </section>
+  </main>
+  <footer><div class="wrap">A schematic teaching model · <a href="../../">← Back to the club’s tools</a></div></footer>
+  <script>
+  (()=>{
+    'use strict';
+    const canvas=document.getElementById('space'), scene=document.getElementById('scene'), slider=document.getElementById('day-slider');
+    const output=document.getElementById('date-output'), seasonOut=document.getElementById('season'), phaseOut=document.getElementById('phase'), illumOut=document.getElementById('illumination'), sunlightOut=document.getElementById('sunlight'), playBtn=document.getElementById('play');
+    const gl=canvas.getContext('webgl',{alpha:true,antialias:true,powerPreference:'high-performance'});
+    if(!gl){document.body.classList.add('webgl-off');}
+    const TAU=Math.PI*2, DEG=Math.PI/180, SYNODIC=29.530588853, J2000_NEW_MOON=2451550.1, AXIAL=23.44*DEG, reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
+    const now=new Date(), year=now.getFullYear(), jan1=new Date(year,0,1), yearDays=(new Date(year+1,0,1)-jan1)/86400000;
+    slider.max=String(yearDays-1);
+    const todayIndex=Math.floor((new Date(now.getFullYear(),now.getMonth(),now.getDate())-jan1)/86400000);
+    let playing=false, timer=null, sceneDate=new Date(jan1.getTime()+todayIndex*86400000);
+    slider.value=String(todayIndex);
+    function mod(n,m){return ((n%m)+m)%m;}
+    function seasonFor(d){const m=d.getMonth()+1, day=d.getDate(), md=m*100+day;if(md>=320&&md<621)return 'Spring';if(md>=621&&md<923)return 'Summer';if(md>=923&&md<1221)return 'Autumn';return 'Winter';}
+    function phaseFor(d){const jd=d.getTime()/86400000+2440587.5, age=mod(jd-J2000_NEW_MOON,SYNODIC), f=age/SYNODIC, illum=(1-Math.cos(TAU*f))/2;let name;if(f<.035||f>.965)name='New Moon';else if(f<.215)name='Waxing crescent';else if(f<.285)name='First quarter';else if(f<.465)name='Waxing gibbous';else if(f<.535)name='Full Moon';else if(f<.715)name='Waning gibbous';else if(f<.785)name='Last quarter';else name='Waning crescent';return {f,illum,name};}
+    const fmt=new Intl.DateTimeFormat('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    function updateReadout(render=true){const d=sceneDate,idx=Math.floor((d-jan1)/86400000),season=seasonFor(d),moon=phaseFor(d);output.value=fmt.format(d);output.textContent=fmt.format(d);seasonOut.textContent=season;phaseOut.textContent=moon.name;illumOut.textContent=Math.round(moon.illum*100)+'% illuminated';let light=season==='Summer'?'More direct':season==='Winter'?'Less direct':'Changing';sunlightOut.textContent=light;slider.value=String(idx);if(gl&&render)draw(d,moon);}
+    function setIndex(n){sceneDate=new Date(jan1.getTime()+Number(n)*86400000);updateReadout();}
+    slider.addEventListener('input',()=>setIndex(slider.value));
+    document.getElementById('today').addEventListener('click',()=>{stop();setIndex(todayIndex);});
+    function stop(){playing=false;clearInterval(timer);timer=null;playBtn.textContent='▶ Play through year';playBtn.setAttribute('aria-pressed','false');}
+    playBtn.addEventListener('click',()=>{if(playing){stop();return;}playing=true;playBtn.textContent='❚❚ Pause';playBtn.setAttribute('aria-pressed','true');timer=setInterval(()=>{let n=Number(slider.value)+1;if(n>=yearDays)n=0;setIndex(n);},reduceMotion.matches?1000:220);});
+    if(!gl){updateReadout(false);return;}
+    const vs=`attribute vec3 aPosition; attribute vec3 aNormal; attribute vec2 aUV; uniform mat4 uProjection; uniform mat4 uView; uniform mat4 uModel; varying vec3 vNormal; varying vec3 vWorld; varying vec2 vUV; void main(){vec4 w=uModel*vec4(aPosition,1.0);vWorld=w.xyz;vNormal=normalize(mat3(uModel)*aNormal);vUV=aUV;gl_Position=uProjection*uView*w;}`;
+    const fs=`precision mediump float; uniform sampler2D uTexture; uniform bool uTextured; uniform bool uEmissive; uniform vec3 uColor; uniform vec3 uSunPosition; uniform vec3 uLightDirection; uniform float uAmbient; uniform bool uEarth; uniform bool uDirectional; varying vec3 vNormal; varying vec3 vWorld; varying vec2 vUV; void main(){vec3 base=uTextured?texture2D(uTexture,vUV).rgb:uColor; if(uEmissive){float facing=max(dot(normalize(vNormal),normalize(uLightDirection)),0.0);gl_FragColor=vec4(base*(.62+.48*pow(facing,.45)),1.0);return;} if(uEarth){base=mix(base,vec3(.018,.075,.16),.18);} vec3 N=normalize(vNormal);vec3 L=uDirectional?normalize(uLightDirection):normalize(uSunPosition-vWorld);float diffuse=max(dot(N,L),0.0);float light=uAmbient+0.92*diffuse;gl_FragColor=vec4(base*light,1.0);}`;
+    const lineVS=`attribute vec3 aPosition; uniform mat4 uProjection; uniform mat4 uView; uniform mat4 uModel; void main(){gl_Position=uProjection*uView*uModel*vec4(aPosition,1.0);}`;
+    const lineFS=`precision mediump float; uniform vec4 uLineColor; void main(){gl_FragColor=uLineColor;}`;
+    function shader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
+    function program(v,f){const p=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,v));gl.attachShader(p,shader(gl.FRAGMENT_SHADER,f));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));return p;}
+    let sphereP,lineP;try{sphereP=program(vs,fs);lineP=program(lineVS,lineFS);}catch(e){document.body.classList.add('webgl-off');console.error('WebGL shader setup failed',e);updateReadout(false);return;}
+    function sphereMesh(lat=44,lon=64){const p=[],n=[],uv=[],ix=[];for(let y=0;y<=lat;y++){const v=y/lat,phi=v*Math.PI;for(let x=0;x<=lon;x++){const u=x/lon,theta=u*TAU,px=-Math.cos(theta)*Math.sin(phi),py=Math.cos(phi),pz=Math.sin(theta)*Math.sin(phi);p.push(px,py,pz);n.push(px,py,pz);uv.push(u,1-v);}}for(let y=0;y<lat;y++)for(let x=0;x<lon;x++){const a=y*(lon+1)+x,b=a+lon+1;ix.push(a,b,a+1,b,b+1,a+1);}return {p:new Float32Array(p),n:new Float32Array(n),uv:new Float32Array(uv),ix:new Uint16Array(ix)};}
+    const mesh=sphereMesh();
+    function buf(target,data){const b=gl.createBuffer();gl.bindBuffer(target,b);gl.bufferData(target,data,gl.STATIC_DRAW);return b;}
+    const pb=buf(gl.ARRAY_BUFFER,mesh.p),nb=buf(gl.ARRAY_BUFFER,mesh.n),ub=buf(gl.ARRAY_BUFFER,mesh.uv),ib=buf(gl.ELEMENT_ARRAY_BUFFER,mesh.ix);
+    const attrib=(p,name,b,size)=>{const loc=gl.getAttribLocation(p,name);if(loc<0)return;gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,size,gl.FLOAT,false,0,0);};
+    function matMul(a,b){const o=new Float32Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++)for(let k=0;k<4;k++)o[c*4+r]+=a[k*4+r]*b[c*4+k];return o;}
+    function ident(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
+    function trans(x,y,z){const m=ident();m[12]=x;m[13]=y;m[14]=z;return m;}
+    function scale(s){const m=ident();m[0]=m[5]=m[10]=s;return m;}
+    function rotX(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1]);}
+    function rotY(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1]);}
+    function rotZ(a){const c=Math.cos(a),s=Math.sin(a);return new Float32Array([c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1]);}
+    function projection(aspect){const f=1/Math.tan(38*DEG),near=.1,far=30;return new Float32Array([f/aspect,0,0,0,0,f,0,0,0,0,(far+near)/(near-far),-1,0,0,2*far*near/(near-far),0]);}
+    const view=matMul(trans(0,0,-6.2),rotX(25*DEG));
+    function model(x,y,z,r,ry=0,rz=0){return matMul(trans(x,y,z),matMul(rotY(ry),matMul(rotZ(rz),scale(r))));}
+    function texture(path){const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,1,1,0,gl.RGB,gl.UNSIGNED_BYTE,new Uint8Array([120,155,190]));gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);const img=new Image();img.onload=()=>{gl.bindTexture(gl.TEXTURE_2D,t);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img);gl.generateMipmap(gl.TEXTURE_2D);draw(sceneDate,phaseFor(sceneDate));};img.onerror=()=>console.error('Texture failed to load:',path);img.src=path;return t;}
+    const earthTex=texture('../../assets/textures/earth-blue-marble.jpg'),moonTex=texture('../../assets/textures/moon-lro-color.jpg');
+    function circle(radius,segments=160){const p=[];for(let i=0;i<segments;i++){const a=TAU*i/segments;p.push(radius*Math.cos(a),radius*Math.sin(a),-.035);}return buf(gl.ARRAY_BUFFER,new Float32Array(p));}
+    const earthOrbit=circle(3.4),moonOrbit=circle(.9);
+    const AXIS_LENGTH=1.3, AXIS_TIP_Y=-Math.sin(AXIAL)*AXIS_LENGTH, AXIS_TIP_Z=Math.cos(AXIAL)*AXIS_LENGTH;
+    const axisLines=buf(gl.ARRAY_BUFFER,new Float32Array([0,0,0, 0,AXIS_TIP_Y,AXIS_TIP_Z, 0,AXIS_TIP_Y,AXIS_TIP_Z, -.13,AXIS_TIP_Y*.82,AXIS_TIP_Z*.82, 0,AXIS_TIP_Y,AXIS_TIP_Z, .13,AXIS_TIP_Y*.82,AXIS_TIP_Z*.82]));
+    const spAttrs=()=>{attrib(sphereP,'aPosition',pb,3);attrib(sphereP,'aNormal',nb,3);attrib(sphereP,'aUV',ub,2);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);};
+    function drawSphere(proj,world,modelM,tex,color,emissive=false,ambient=.1,isEarth=false,lightDirection=null){gl.useProgram(sphereP);spAttrs();gl.uniformMatrix4fv(gl.getUniformLocation(sphereP,'uProjection'),false,proj);gl.uniformMatrix4fv(gl.getUniformLocation(sphereP,'uView'),false,world);gl.uniformMatrix4fv(gl.getUniformLocation(sphereP,'uModel'),false,modelM);gl.uniform3fv(gl.getUniformLocation(sphereP,'uSunPosition'),sunPosition);gl.uniform3fv(gl.getUniformLocation(sphereP,'uColor'),color);gl.uniform1i(gl.getUniformLocation(sphereP,'uTextured'),tex?1:0);gl.uniform1i(gl.getUniformLocation(sphereP,'uEmissive'),emissive?1:0);gl.uniform1f(gl.getUniformLocation(sphereP,'uAmbient'),ambient);gl.uniform1i(gl.getUniformLocation(sphereP,'uEarth'),isEarth?1:0);gl.uniform1i(gl.getUniformLocation(sphereP,'uDirectional'),lightDirection?1:0);gl.uniform3fv(gl.getUniformLocation(sphereP,'uLightDirection'),lightDirection||[0,0,1]);if(tex){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,tex);gl.uniform1i(gl.getUniformLocation(sphereP,'uTexture'),0);}gl.drawElements(gl.TRIANGLES,mesh.ix.length,gl.UNSIGNED_SHORT,0);}
+    function drawLine(proj,world,b,color,modelM=ident()){gl.useProgram(lineP);const loc=gl.getAttribLocation(lineP,'aPosition');gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uProjection'),false,proj);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uView'),false,world);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uModel'),false,modelM);gl.uniform4fv(gl.getUniformLocation(lineP,'uLineColor'),color);gl.drawArrays(gl.LINE_LOOP,0,160);}
+    function drawSegments(proj,world,b,color,modelM){gl.useProgram(lineP);const loc=gl.getAttribLocation(lineP,'aPosition');gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,3,gl.FLOAT,false,0,0);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uProjection'),false,proj);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uView'),false,world);gl.uniformMatrix4fv(gl.getUniformLocation(lineP,'uModel'),false,modelM);gl.uniform4fv(gl.getUniformLocation(lineP,'uLineColor'),color);gl.drawArrays(gl.LINES,0,6);}
+    let sunPosition=new Float32Array([0,0,0]), spin=0, cameraView=view, viewDirection=new Float32Array([0,0,1]);
+    const starData=[];let seed=17120;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}for(let i=0;i<180;i++){const x=(rand()-.5)*10.4,y=(rand()-.5)*6.6,z=-1.3-rand()*1.6;starData.push(x,y,z);}const stars=buf(gl.ARRAY_BUFFER,new Float32Array(starData));
+    const starVS=`attribute vec3 aPosition;uniform mat4 uProjection;uniform mat4 uView;void main(){gl_Position=uProjection*uView*vec4(aPosition,1.0);gl_PointSize=1.5;}`;
+    const starFS=`precision mediump float;void main(){gl_FragColor=vec4(.69,.82,1.,.58);}`;
+    const starP=program(starVS,starFS);
+    function fit(){const rect=canvas.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2),w=Math.max(1,Math.round(rect.width*dpr)),h=Math.max(1,Math.round(rect.height*dpr));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}gl.viewport(0,0,w,h);draw(sceneDate,phaseFor(sceneDate));}
+    const resizeObs=new ResizeObserver(fit);resizeObs.observe(canvas);
+    function draw(d,moon){
+      if(!gl||!canvas.width)return;
+      const w=canvas.width,h=canvas.height,aspect=w/h,proj=projection(aspect);
+      gl.viewport(0,0,w,h);gl.clearColor(.025,.065,.13,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+      const day=Math.floor((d-jan1)/86400000),spring=new Date(year,2,20),springIdx=Math.floor((spring-jan1)/86400000),annual=TAU*(day-springIdx)/365.2422;
+      const ex=3.4*Math.cos(annual),ey=3.4*Math.sin(annual),earthCenter=trans(ex,ey,0);
+      const moonAngle=annual+Math.PI+moon.f*TAU,mx=ex+.9*Math.cos(moonAngle),my=ey+.9*Math.sin(moonAngle);
+      sunPosition=new Float32Array([0,0,0]);viewDirection=new Float32Array([0,0,1]);cameraView=view;
+      gl.useProgram(starP);const sl=gl.getAttribLocation(starP,'aPosition');gl.bindBuffer(gl.ARRAY_BUFFER,stars);gl.enableVertexAttribArray(sl);gl.vertexAttribPointer(sl,3,gl.FLOAT,false,0,0);gl.uniformMatrix4fv(gl.getUniformLocation(starP,'uProjection'),false,proj);gl.uniformMatrix4fv(gl.getUniformLocation(starP,'uView'),false,cameraView);gl.drawArrays(gl.POINTS,0,starData.length/3);
+      drawLine(proj,cameraView,earthOrbit,[.64,.78,.94,.32]);
+      drawSphere(proj,cameraView,model(0,0,.06,.82),null,[1,.62,.18],true,.1,false,viewDirection);
+      const earthModel=matMul(earthCenter,matMul(rotX(Math.PI/2+AXIAL),matMul(rotY(spin),scale(.48))));
+      drawSphere(proj,cameraView,earthModel,earthTex,[1,1,1],false,.34,true);
+      drawLine(proj,cameraView,moonOrbit,[.76,.84,.96,.46],trans(ex,ey,-.025));
+      gl.disable(gl.DEPTH_TEST);drawSegments(proj,cameraView,axisLines,[1,.79,.37,.95],earthCenter);gl.enable(gl.DEPTH_TEST);
+      const moonLight=[-mx,-my,.06];
+      drawSphere(proj,cameraView,model(mx,my,.06,.16,0,moonAngle),moonTex,[1,1,1],false,.08,false,moonLight);
+    }
+    function frame(){if(!playing)return;spin+=.0016;draw(sceneDate,phaseFor(sceneDate));requestAnimationFrame(frame);}
+    playBtn.addEventListener('click',()=>{if(playing&&!reduceMotion.matches)requestAnimationFrame(frame);});
+    updateReadout();fit();
+  })();
+  </script>
+</body>
+</html>

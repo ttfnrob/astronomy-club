@@ -45,7 +45,9 @@ button,input,select,textarea{font:inherit; color:inherit}
 :focus-visible{outline:2px solid var(--focus); outline-offset:2px}
 
 /* Masthead */
-.mast{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.25rem 1.5rem; padding:1.5rem 0 1rem}
+.mast{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:.5rem 1.1rem; padding:1.5rem 0 1rem}
+.mast .club-link{display:inline-flex;align-items:center;min-height:36px;padding:.25rem .75rem;border:1px solid var(--rule);border-radius:999px;text-decoration:none;font-size:.875rem;font-weight:600;white-space:nowrap}
+.mast .club-link:hover{border-color:var(--muted);background:var(--surface)}
 .mast h1{margin:0; font-size:1.25rem; font-weight:700; font-stretch:115%; letter-spacing:-.005em}
 .mast .where{color:var(--muted); font-size:.9375rem}
 .mast .where strong{color:var(--ink); font-weight:600}
@@ -241,6 +243,7 @@ textarea{width:100%; min-height:5.5rem; padding:.6rem; border:1px solid var(--ru
 <body>
 <div class="wrap">
   <header class="mast">
+    <a class="club-link" href="../../" aria-label="Back to Watling Astronomy Club">← Club home</a>
     <h1>ISS passes overhead</h1>
     <div class="where">Seen from <strong id="placeName">Milton Keynes</strong> <span id="tzLabel"></span> <button type="button" class="linkbtn" id="changeLoc">Change place</button></div>
   </header>

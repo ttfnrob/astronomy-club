@@ -60,6 +60,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 .hud{position:absolute;top:0;left:0;right:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 22px 18px;background:linear-gradient(var(--veil,var(--bg)) 62%,transparent);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none}
 .hud > *{pointer-events:auto}
+.club-home{display:inline-flex;align-items:center;min-height:36px;margin-bottom:7px;padding:5px 11px;border:1px solid var(--line);border-radius:999px;color:var(--ink);font-size:12px;font-weight:600;text-decoration:none}
+.club-home:hover{border-color:var(--ink)}
 .title{font-family:var(--serif);font-weight:600;font-size:clamp(19px,4.8vw,26px);line-height:1.1;margin:0;letter-spacing:-.01em}
 .scale{margin-top:12px;display:flex;align-items:center;gap:10px;min-height:30px}
 .scale-readout{display:flex;flex-direction:column;gap:4px}
@@ -136,6 +138,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   <div id="labels" aria-hidden="true"></div>
   <header class="hud">
     <div>
+      <a class="club-home" href="../../" aria-label="Back to Watling Astronomy Club">← Club home</a>
       <p class="title">The scale of the universe</p>
       <div class="scale" aria-live="off"><div class="bar" id="bar"></div><div class="scale-readout"><div class="scale-txt" id="scaleTxt"></div><div class="scale-sci" id="scaleSci"></div></div></div>
     </div>

@@ -1,10 +1,14 @@
 # Watling Astronomy Club
 
-A small collection of browser-based astronomy tools for the Friday astronomy club at Watling Academy in Milton Keynes. The club runs from October to February; this site is its growing project hub. The landing page features a date-driven, Sun-centred teaching orrery: Earth circles the Sun with its fixed axial tilt, while the Moon circles Earth.
+A collection of browser-based astronomy tools for the Friday astronomy club at Watling Academy in Milton Keynes. The club runs from October to February. The homepage is a short welcome and a list of the tools.
 
 **Live hub:** https://club.orbitingfrog.com/ (GitHub Pages origin: https://ttfnrob.github.io/astronomy-club/).
 
 ## Projects
+
+### Earth, Moon and Sun
+
+The teaching model at `tools/earth-moon-sun/` gives the Sun a fixed position at the centre, moves Earth on an annual circular orbit, and keeps Earth’s axis fixed in inertial space at a 23.44° tilt. The Moon is placed relative to Earth, with its phase and illuminated fraction derived from the Sun–Earth–Moon geometry and a mean 29.53-day cycle. Scrub or play the date slider to explore seasons, sunlight and lunar phases. Distances and sizes are schematic; this is not a precision ephemeris. NASA Earth and Moon textures are bundled locally. The interactive view uses WebGL, with a readable HTML fallback when WebGL is unavailable.
 
 ### Exoplanet Drawing Board
 
@@ -32,9 +36,9 @@ This is a static site with no build step or server-side code. Open `index.html` 
 python3 -m http.server 8000
 ```
 
-Then visit `http://localhost:8000/astronomy-club/` if serving the parent directory, or `http://localhost:8000/` if serving this repository itself. The Exoplanet Drawing Board is under `tools/exoplanet-drawing-board/`, the ISS Pass Predictor is under `tools/iss-passes/`, the Mission Explorer is under `tools/mission-explorer/`, and The Scale of the Universe is under `tools/scale-of-the-universe/`.
+Then visit `http://localhost:8000/astronomy-club/` if serving the parent directory, or `http://localhost:8000/` if serving this repository itself. The standalone tools are under `tools/earth-moon-sun/`, `tools/exoplanet-drawing-board/`, `tools/iss-passes/`, `tools/mission-explorer/`, and `tools/scale-of-the-universe/`.
 
-The landing page is self-contained HTML, CSS and vanilla WebGL JavaScript with no JavaScript libraries or build step. It uses system fonts; NASA Earth and Moon textures and screenshots of the actual tool interfaces are bundled locally. There are no analytics, accounts, or server-side data collection. The ISS tool bundles satellite.js, three.js, and Leaflet locally; it contacts CelesTrak for orbit data and OpenStreetMap for optional map tiles and place search. The Mission Explorer embeds its trajectory data and photographs and makes no live astronomy data/API requests or user-data collection; it loads Three.js from cdnjs for WebGL and optional fonts from Google Fonts. The Scale of the Universe page bundles its images locally, uses system fonts, and makes no network requests.
+The homepage is static HTML and CSS. The Earth, Moon and Sun model is a standalone page with vanilla WebGL and no JavaScript libraries; its NASA textures and tool-card screenshots are bundled locally. There are no analytics, accounts, or server-side data collection. The ISS tool bundles satellite.js, three.js, and Leaflet locally; it contacts CelesTrak for orbit data and OpenStreetMap for optional map tiles and place search. The Mission Explorer embeds its trajectory data and photographs and makes no live astronomy data/API requests or user-data collection; it loads Three.js from cdnjs for WebGL and optional fonts from Google Fonts. The Scale of the Universe page bundles its images locally, uses system fonts, and makes no network requests.
 
 ### Image credits
 
@@ -43,7 +47,7 @@ The landing page is self-contained HTML, CSS and vanilla WebGL JavaScript with n
 - Mission Explorer photographs: NASA public-domain and ESA CC BY-SA 3.0 IGO material, plus the Beagle 2 replica under CC BY-SA 4.0. Individual authors, source links and licences are listed in `tools/mission-explorer/src/image-credits.json` and displayed in the app.
 - The Scale of the Universe: photos from Wikimedia Commons under CC0, public domain, CC BY, CC BY-SA and GFDL licences. Each image is credited in the app and listed in `tools/scale-of-the-universe/README.md`.
 
-The scene is a teaching visualization, not a precision ephemeris. It uses a circular, Sun-centred Earth orbit, a fixed 23.44° axial tilt, an average 29.53-day lunar cycle, and simplified lunar orbital geometry. The Moon’s phase and Earth’s seasonal sunlight change with the date control; orbital distances and apparent sizes are schematic, not to scale.
+The Earth, Moon and Sun model is a teaching visualization, not a precision ephemeris. It uses a circular, Sun-centred Earth orbit, a fixed 23.44° axial tilt, an average 29.53-day lunar cycle, and simplified lunar orbital geometry. The Moon’s phase and Earth’s seasonal sunlight change with the date control; orbital distances and apparent sizes are schematic, not to scale.
 
 ## Publishing
 
